@@ -6,12 +6,12 @@
     "version": "1.0.7",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Added Dark / Light theme toggle, studio hub styling, and real-time cloud sync.",
+    "release_notes": "Added Dark / Light theme toggle, studio hub styling, and instant jsDelivr global CDN sync.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/i5d64w.zip",
-        "sha256": "0a1a0ecb84a79ff2f58069c92b736d09ff4279cbed98f0acf2b2ac1f56944963",
-        "size_bytes": 3424167
+        "url": "https://files.catbox.moe/amohst.zip",
+        "sha256": "cb8c77a54e91d5c024847b1329fabd3fd2f301bc7269e5c8e3a633219b78cf5a",
+        "size_bytes": 3424120
       }
     }
   },
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/7re1j8.zip",
+      "download_url_win": "https://files.catbox.moe/5jc3eh.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/7re1j8.zip",
-          "sha256": "f196de0284fa19026de4567a262ed20f1627af8e362905e940bee6921645cf0b"
+          "url": "https://files.catbox.moe/5jc3eh.zip",
+          "sha256": "94cfb6b2ab938e26cd3813f1f9693a475d0fac670ddd8950b7e64a9cef67a009"
         }
       }
     }
