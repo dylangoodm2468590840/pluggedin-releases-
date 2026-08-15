@@ -6,12 +6,12 @@
     "version": "1.0.8",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Master DSP Boutique Upgrade: 4-phase Hermite pitch & 3-pole vocal tract formant shifting (Murda Melodies / Vocal Bender caliber), Dattorro diffusion reverb, analog tape & tube saturation, MicroShift width, and complete 50-preset re-voicing.",
+    "release_notes": "Master Boutique DSP Release: 4-Phase Hermite Granular Pitch & Anatomical Formant Shifter (Murda Melodies / Vocal Bender caliber), 12AX7 Triode Tube & Studer Tape Saturation, Slate Fresh Air Exciter, Dattorro Diffusion Reverb, and complete 50-preset re-voicing.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/7oczfm.zip",
-        "sha256": "4c10aeff41dc67ba34b1bdc27d1aa9509820b7268474111a930b504b8969c018",
-        "size_bytes": 3424442
+        "url": "https://files.catbox.moe/j5tfek.zip",
+        "sha256": "2ae7cd780f9a1b172e7de482183ead3ddf81f317d72a5cd10ef8cc8f267416fe",
+        "size_bytes": 3424469
       }
     }
   },
@@ -20,13 +20,13 @@
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
-      "latest_version": "2.0.0",
-      "download_url_win": "https://files.catbox.moe/66d6hh.zip",
+      "latest_version": "2.1.0",
+      "download_url_win": "https://files.catbox.moe/92d85p.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/66d6hh.zip",
-          "sha256": "43172746ac595989e3cad5a664d7243eacf45b084ec7a606821c4d5699d3d3af"
+          "url": "https://files.catbox.moe/92d85p.zip",
+          "sha256": "e399eaf6a68d6bbbeb70dfc9b6d69e2bcf509f28162a722990056193628a17d2"
         }
       }
     }
