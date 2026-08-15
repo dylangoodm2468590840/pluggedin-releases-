@@ -1,0 +1,494 @@
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
+
+UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAudioProcessor& p)
+    : AudioProcessorEditor (&p), audioProcessor (p)
+{
+    setLookAndFeel(&customLookAndFeel);
+
+    // Generate high-quality procedural brushed gunmetal texture
+    chassisTexture = HardwareMaterials::createBrushedMetalTexture(800, 600);
+
+    // Helper for rotary sliders
+    auto setupRotary = [this](juce::Slider& slider, juce::Label& label, const juce::String& text) {
+        slider.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
+        slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+        addAndMakeVisible(slider);
+
+        label.setText(text, juce::dontSendNotification);
+        label.setJustificationType(juce::Justification::centred);
+        label.setColour(juce::Label::textColourId, juce::Colour(0xffa0b2c6));
+        label.setFont(juce::Font(8.5f, juce::Font::bold));
+        addAndMakeVisible(label);
+    };
+
+    // 0. Top Preset Selector & Navigation Buttons
+    juce::StringArray presetChoices { 
+        "DEGENERATE RAGE", "SLUDGE PLUGG", "CYBER AD-LIB", "GLITCH MONSTER", "UNDERGROUND TUBE",
+        "DEMON BELOW", "UNDERWORLD", "POSSESSED", "DEEP SHADOW", "HELL LAYER",
+        "WIDE LEAD", "FLOATING HOOK", "HEADPHONE WIDE", "CYBER DOUBLE", "STEREO AURA",
+        "DEEP CHEST", "GOBLIN", "TINY VOICE", "FORMANT SHIFTER", "OCTAVE STACK",
+        "CATHEDRAL", "SLAP ROOM", "FLOATING ECHO", "DARK VOID", "WASHED VOCAL",
+        "TAPE WARMTH", "CELL PHONE", "FRIED MIC", "BROKEN INTERCOM", "RADIO STATIC",
+        "CYBER CHORUS", "UNSTABLE PITCH", "UNDERWATER", "SPINNING VOCAL", "PULSING GATE",
+        "DARK SLAP", "THROW ECHO", "PING PONG SPACE", "FILTERED TAPE DELAY", "PITCH ECHO",
+        "MODERN RAP LEAD", "RAGE VOCAL", "DARK PLUGG LEAD", "INTIMATE TRAP", "RAW UNDERGROUND",
+        "MONSTER ADLIB", "TELEPHONE SHOUT", "DISTANCE ADLIB", "GHOST LAYER", "SPECTRAL GHOST",
+        "CUSTOM"
+    };
+
+    presetModeBox.addItemList(presetChoices, 1);
+    addAndMakeVisible(presetModeBox);
+
+    presetModeAttach = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::PRESET_MODE, presetModeBox);
+
+    presetModeBox.onChange = [this]() {
+        int idx = presetModeBox.getSelectedId() - 1;
+        if (idx >= 0 && idx < 50)
+        {
+            PresetManager::applyPreset(audioProcessor.getAPVTS(), static_cast<PresetManager::PresetIndex>(idx));
+        }
+    };
+
+    addAndMakeVisible(prevPresetButton);
+    prevPresetButton.onClick = [this]() {
+        int current = presetModeBox.getSelectedId();
+        if (current > 1) presetModeBox.setSelectedId(current - 1, juce::sendNotificationSync);
+    };
+
+    addAndMakeVisible(nextPresetButton);
+    nextPresetButton.onClick = [this]() {
+        int current = presetModeBox.getSelectedId();
+        if (current < 50) presetModeBox.setSelectedId(current + 1, juce::sendNotificationSync);
+    };
+
+    addAndMakeVisible(abButton);
+    addAndMakeVisible(bypassButton);
+    addAndMakeVisible(setupButton);
+    addAndMakeVisible(oversamplingButton);
+
+    // 1. DEGENERATE Signature Macro (Top Crown Hero)
+    addAndMakeVisible(degenerateKnob);
+    degenerateAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEGENERATE, degenerateKnob);
+
+    // 2. Real-Time Visual EQ Display Window
+    visualEQDisplay.setAPVTS(&audioProcessor.getAPVTS());
+    addAndMakeVisible(visualEQDisplay);
+
+    // 3. Global Master Trim Controls
+    setupRotary(inputGainSlider, inputGainLabel, "INPUT");
+    inputGainAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::INPUT_GAIN, inputGainSlider);
+
+    setupRotary(outputGainSlider, outputGainLabel, "OUTPUT");
+    outputGainAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::OUTPUT_GAIN, outputGainSlider);
+
+    setupRotary(mixGlobalSlider, mixGlobalLabel, "DRY/WET");
+    mixGlobalAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MIX_GLOBAL, mixGlobalSlider);
+
+    // 4. 15 Module Knobs across 5 Channels (Matching Sketch Photo 1:1)
+    // Column 1: SUB BASS
+    setupRotary(subDriveSlider, subDriveLabel, "DRIVE");
+    subDriveAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_DRIVE, subDriveSlider);
+
+    setupRotary(subWidthSlider, subWidthLabel, "WIDTH");
+    subWidthAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_MIX, subWidthSlider);
+
+    setupRotary(subCompSlider, subCompLabel, "COMP");
+    subCompAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_FORMANT, subCompSlider);
+
+    // Column 2: GRIT
+    setupRotary(gritFuzzSlider, gritFuzzLabel, "FUZZ");
+    gritFuzzAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::CRUSH_AMOUNT, gritFuzzSlider);
+
+    setupRotary(gritDustSlider, gritDustLabel, "DUST");
+    gritDustAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::CRUSH_TONE, gritDustSlider);
+
+    setupRotary(gritBitSlider, gritBitLabel, "BIT");
+    gritBitAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::CRUSH_MIX, gritBitSlider);
+
+    // Column 3: MODULATION
+    setupRotary(modChorusSlider, modChorusLabel, "CHORUS");
+    modChorusAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::WIDTH_AMOUNT, modChorusSlider);
+
+    setupRotary(modPhaseSlider, modPhaseLabel, "PHASE");
+    modPhaseAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_MOTION, modPhaseSlider);
+
+    setupRotary(modVibeSlider, modVibeLabel, "VIBE");
+    modVibeAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_CHAOS, modVibeSlider);
+
+    // Column 4: DELAY
+    setupRotary(delayTimeSlider, delayTimeLabel, "TIME");
+    delayTimeAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::SPACE_DELAY, delayTimeSlider);
+
+    setupRotary(delayFbSlider, delayFbLabel, "FEEDBACK");
+    delayFbAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_GHOST, delayFbSlider);
+
+    setupRotary(delayMixSlider, delayMixLabel, "MIX");
+    delayMixAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_DEPTH, delayMixSlider);
+
+    // Column 5: REVERB
+    setupRotary(verbSizeSlider, verbSizeLabel, "SIZE");
+    verbSizeAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::SPACE_REVERB, verbSizeSlider);
+
+    setupRotary(verbDecaySlider, verbDecayLabel, "DECAY");
+    verbDecayAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_DARK, verbDecaySlider);
+
+    setupRotary(verbSpaceSlider, verbSpaceLabel, "SPACE");
+    verbSpaceAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MACRO_AGE, verbSpaceSlider);
+
+    // 5 Module Bypass Toggle Buttons & APVTS Attachments
+    addAndMakeVisible(subEnableToggle);
+    subEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MODULE_SUB_ENABLE, subEnableToggle);
+
+    addAndMakeVisible(gritEnableToggle);
+    gritEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MODULE_GRIT_ENABLE, gritEnableToggle);
+
+    addAndMakeVisible(modEnableToggle);
+    modEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MODULE_MOD_ENABLE, modEnableToggle);
+
+    addAndMakeVisible(delayEnableToggle);
+    delayEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MODULE_DELAY_ENABLE, delayEnableToggle);
+
+    addAndMakeVisible(reverbEnableToggle);
+    reverbEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MODULE_REVERB_ENABLE, reverbEnableToggle);
+
+    // Compact resolution for FL Studio fit (780x560)
+    setSize(780, 560);
+    startTimerHz(30);
+}
+
+UndergroundAudioProcessorEditor::~UndergroundAudioProcessorEditor()
+{
+    stopTimer();
+    setLookAndFeel(nullptr);
+}
+
+void UndergroundAudioProcessorEditor::timerCallback()
+{
+    auto& chain = audioProcessor.getSignalChain();
+    currentInLevel  = currentInLevel * 0.7f  + chain.getInputLevel() * 0.3f;
+    currentOutLevel = currentOutLevel * 0.7f + chain.getOutputLevel() * 0.3f;
+
+    // Fetch real FFT spectrum bars from audio DSP chain
+    float fftBars[64];
+    chain.getSpectrumData(fftBars);
+
+    // Fetch 5-band EQ parameter values from APVTS
+    auto& apvts = audioProcessor.getAPVTS();
+    float lowCut   = apvts.getRawParameterValue(ParameterIDs::EQ_LOW_CUT)->load();
+    float lowGain  = apvts.getRawParameterValue(ParameterIDs::EQ_LOW_GAIN)->load();
+    float midGain  = apvts.getRawParameterValue(ParameterIDs::EQ_MID_GAIN)->load();
+    float highGain = apvts.getRawParameterValue(ParameterIDs::EQ_HIGH_GAIN)->load();
+    float highCut  = apvts.getRawParameterValue(ParameterIDs::EQ_HIGH_CUT)->load();
+
+    float lowQ     = apvts.getRawParameterValue(ParameterIDs::EQ_LOW_Q)->load();
+    float midQ     = apvts.getRawParameterValue(ParameterIDs::EQ_MID_Q)->load();
+    float highQ    = apvts.getRawParameterValue(ParameterIDs::EQ_HIGH_Q)->load();
+
+    int lowSlope   = juce::roundToInt(apvts.getRawParameterValue(ParameterIDs::EQ_LOW_CUT_SLOPE)->load());
+    int highSlope  = juce::roundToInt(apvts.getRawParameterValue(ParameterIDs::EQ_HIGH_CUT_SLOPE)->load());
+
+    visualEQDisplay.updateEQState(fftBars, lowCut, lowGain, midGain, highGain, highCut, lowQ, midQ, highQ, lowSlope, highSlope);
+
+    // Sync all UI dynamic nodes to live C++ audio biquad filtering thread!
+    const auto& uiNodes = visualEQDisplay.getDynamicNodes();
+    std::vector<AudioDynamicNode> dspNodes;
+    for (const auto& node : uiNodes)
+    {
+        dspNodes.push_back({ node.freqHz, node.gainDb, node.qFactor, node.filterType, node.stereoMode, node.active });
+    }
+    audioProcessor.getSignalChain().updateDynamicNodes(dspNodes);
+
+    repaint();
+}
+
+void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
+{
+    // 0. Base Gunmetal Metallic Chassis with Brushed Metal Texture & Top-Lit Studio Lighting
+    HardwareMaterials::drawGunmetalChassis(g, getLocalBounds().toFloat().reduced(2.0f), 10.0f, chassisTexture);
+
+    // Heavy Side Rack Mounting Ears with Countersunk Screws (Left & Right)
+    HardwareMaterials::drawRackEars(g, getLocalBounds().toFloat(), 24.0f);
+
+    // 1. Top Crown Arch Header (Housing DEGENERATE Macro Knob)
+    juce::Path crownPath;
+    float crownLeft = 285.0f;
+    float crownRight = 495.0f;
+    crownPath.startNewSubPath(crownLeft - 35.0f, 60.0f);
+    crownPath.lineTo(crownLeft + 20.0f, 10.0f);
+    crownPath.lineTo(crownRight - 20.0f, 10.0f);
+    crownPath.lineTo(crownRight + 35.0f, 60.0f);
+    crownPath.closeSubPath();
+
+    g.setColour(juce::Colour(0xff121722));
+    g.fillPath(crownPath);
+    g.setColour(juce::Colour(0xff00ff66).withAlpha(0.6f));
+    g.strokePath(crownPath, juce::PathStrokeType(1.8f));
+
+    // Screw Bolts on Crown
+    HardwareMaterials::drawHexBolt(g, crownLeft - 20.0f, 48.0f);
+    HardwareMaterials::drawHexBolt(g, crownRight + 20.0f, 48.0f);
+
+    // Clean Stencil Badge Underneath DEGENERATE Knob
+    g.setColour(juce::Colour(0xff00ff66));
+    g.setFont(juce::Font(12.0f, juce::Font::bold));
+    g.drawText("DEGENERATE", (int)crownLeft - 20, 118, 250, 16, juce::Justification::centred, true);
+
+    // Stencil Branding Title (Top-Left)
+    g.setColour(juce::Colour(0xff00f0ff));
+    g.setFont(juce::Font(22.0f, juce::Font::bold));
+    g.drawText("UNDER//GROUND", 28, 12, 220, 22, juce::Justification::left, true);
+
+    g.setColour(juce::Colour(0xff00ff66));
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("PluggedIN AUDIO  |  v2.5.0 VST3 64-BIT", 28, 34, 250, 14, juce::Justification::left, true);
+
+    // Top-Right Version Stamp
+    g.setColour(juce::Colour(0xff7f8b98));
+    g.setFont(juce::Font(10.0f, juce::Font::bold));
+    g.drawText("BUILD: v2.5.0", getLocalBounds().getWidth() - 120, 14, 100, 16, juce::Justification::right, true);
+
+    // Glowing PluggedIN In-Plugin Cloud Auto-Updater Notification Badge
+    if (audioProcessor.getAutoUpdater().isUpdateAvailable())
+    {
+        auto updateBadge = juce::Rectangle<float>(28, 52, 220, 18);
+        g.setColour(juce::Colour(0xffff0055).withAlpha(0.25f));
+        g.fillRoundedRectangle(updateBadge, 4.0f);
+        g.setColour(juce::Colour(0xffff0055));
+        g.drawRoundedRectangle(updateBadge, 4.0f, 1.0f);
+
+        g.setFont(juce::Font(8.5f, juce::Font::bold));
+        g.setColour(juce::Colour(0xff00ff66));
+        g.drawText("⚡ UPDATE AVAILABLE: v" + audioProcessor.getAutoUpdater().getLatestVersion(), updateBadge, juce::Justification::centred);
+    }
+
+    // 2. Upper Main Rack Card (Visual EQ & Flanking Meters)
+    auto upperCard = juce::Rectangle<float>(28, 140, 724, 192);
+    HardwareMaterials::drawRecessedPanel(g, upperCard, 6.0f, chassisTexture);
+
+    HardwareMaterials::drawHexBolt(g, upperCard.getX() + 8, upperCard.getY() + 8);
+    HardwareMaterials::drawHexBolt(g, upperCard.getRight() - 8, upperCard.getY() + 8);
+    HardwareMaterials::drawHexBolt(g, upperCard.getX() + 8, upperCard.getBottom() - 8);
+    HardwareMaterials::drawHexBolt(g, upperCard.getRight() - 8, upperCard.getBottom() - 8);
+
+    // Render Multi-Segment Vertical Hardware LED Peak Meters (Left IN, Right OUT)
+    auto drawLEDMeter = [&](float startX, float level, const juce::String& title) {
+        g.setColour(juce::Colour(0xff808e9b));
+        g.setFont(juce::Font(8.5f, juce::Font::bold));
+        g.drawText(title, (int)startX - 15, (int)upperCard.getY() + 6, 85, 12, juce::Justification::centred);
+
+        const int numSegments = 14;
+        float meterH = 145.0f;
+        float segmentH = meterH / numSegments;
+        int activeSegments = juce::roundToInt(std::clamp(level * 1.2f, 0.0f, 1.0f) * numSegments);
+
+        for (int i = 0; i < numSegments; ++i)
+        {
+            float segY = upperCard.getY() + 20.0f + (numSegments - 1 - i) * segmentH;
+            bool isActive = i < activeSegments;
+
+            juce::Colour segCol = (i >= 11) ? juce::Colour(0xffff0055) :
+                                  (i >= 8)  ? juce::Colour(0xffffcc00) :
+                                              juce::Colour(0xff00ff66);
+
+            g.setColour(isActive ? segCol : segCol.withAlpha(0.12f));
+            g.fillRect(startX, segY + 1.0f, 10.0f, segmentH - 2.0f);
+            g.fillRect(startX + 13.0f, segY + 1.0f, 10.0f, segmentH - 2.0f);
+        }
+
+        // dB markings scale
+        g.setColour(juce::Colour(0xff4a5d73));
+        g.setFont(juce::Font(8.0f, juce::Font::bold));
+        g.drawText("0",   (int)startX - 16, (int)upperCard.getY() + 20, 14, 10, juce::Justification::right);
+        g.drawText("-10", (int)startX - 16, (int)upperCard.getY() + 50, 14, 10, juce::Justification::right);
+        g.drawText("-20", (int)startX - 16, (int)upperCard.getY() + 80, 14, 10, juce::Justification::right);
+        g.drawText("-40", (int)startX - 16, (int)upperCard.getY() + 120, 14, 10, juce::Justification::right);
+        g.drawText("-60", (int)startX - 16, (int)upperCard.getY() + 155, 14, 10, juce::Justification::right);
+
+        g.setColour(juce::Colour(0xff808e9b));
+        g.drawText("IN  OUT", (int)startX - 4, (int)upperCard.getBottom() - 14, 34, 10, juce::Justification::centred);
+    };
+
+    drawLEDMeter(upperCard.getX() + 32.0f, currentInLevel, "STEREO PEAK METER (L & R)");
+    drawLEDMeter(upperCard.getRight() - 60.0f, currentOutLevel, "STEREO PEAK METER (L & R)");
+
+    // 3. Middle 5 Module Columns (5 Equal Metal Channel Strips Matching 1:1 Photo)
+    float colW = 140.0f;
+    float colGap = 6.0f;
+    float startX = 28.0f;
+    float colY = 338.0f;
+    float colH = 172.0f;
+
+    const char* colTitles[] = { "1. SUB BASS", "2. GRIT", "3. MODULATION", "4. DELAY", "5. REVERB" };
+    const juce::Colour colColours[] = { juce::Colour(0xff00ff66), juce::Colour(0xffff0055), juce::Colour(0xff00f0ff), juce::Colour(0xffffa800), juce::Colour(0xffff00aa) };
+
+    for (int i = 0; i < 5; ++i)
+    {
+        auto colRect = juce::Rectangle<float>(startX + i * (colW + colGap), colY, colW, colH);
+        HardwareMaterials::drawRecessedPanel(g, colRect, 5.0f, chassisTexture);
+
+        HardwareMaterials::drawHexBolt(g, colRect.getX() + 5, colRect.getY() + 5);
+        HardwareMaterials::drawHexBolt(g, colRect.getRight() - 5, colRect.getY() + 5);
+        HardwareMaterials::drawHexBolt(g, colRect.getX() + 5, colRect.getBottom() - 5);
+        HardwareMaterials::drawHexBolt(g, colRect.getRight() - 5, colRect.getBottom() - 5);
+
+        g.setColour(colColours[i]);
+        g.setFont(juce::Font(11.0f, juce::Font::bold));
+        g.drawText(colTitles[i], (int)colRect.getX() + 8, (int)colRect.getY() + 6, (int)colW - 40, 14, juce::Justification::left, true);
+
+        // Ruby Red Indicator LED for Module Status (ON / BYPASS)
+        bool isModuleOn = true;
+        if (i == 0) isModuleOn = subEnableToggle.getToggleState();
+        else if (i == 1) isModuleOn = gritEnableToggle.getToggleState();
+        else if (i == 2) isModuleOn = modEnableToggle.getToggleState();
+        else if (i == 3) isModuleOn = delayEnableToggle.getToggleState();
+        else if (i == 4) isModuleOn = reverbEnableToggle.getToggleState();
+
+        float ledX = colRect.getRight() - 28.0f;
+        float ledY = colRect.getY() + 8.0f;
+
+        if (isModuleOn)
+        {
+            // Glowing Ruby Red LED Halo & Core
+            g.setColour(juce::Colour(0xffff0044).withAlpha(0.40f));
+            g.fillEllipse(ledX - 3.0f, ledY - 3.0f, 14.0f, 14.0f);
+
+            g.setColour(juce::Colour(0xffff1133));
+            g.fillEllipse(ledX, ledY, 8.0f, 8.0f);
+
+            g.setColour(juce::Colours::white);
+            g.fillEllipse(ledX + 2.0f, ledY + 2.0f, 2.5f, 2.5f);
+        }
+        else
+        {
+            // Darkened Vintage Maroon Glass Lens (OFF)
+            g.setColour(juce::Colour(0xff25050a));
+            g.fillEllipse(ledX, ledY, 8.0f, 8.0f);
+            g.setColour(juce::Colour(0xff120204));
+            g.drawEllipse(ledX, ledY, 8.0f, 8.0f, 1.0f);
+        }
+
+        // Draw Vertical Mini LED Meter Bar on Right Side of Each Module Column
+        float meterX = colRect.getRight() - 18.0f;
+        float meterY = colRect.getY() + 24.0f;
+        float meterW = 8.0f;
+        float meterH = 125.0f;
+
+        g.setColour(juce::Colour(0xff070a0f));
+        g.fillRect(meterX, meterY, meterW, meterH);
+
+        for (int m = 0; m < 10; ++m)
+        {
+            float segY = meterY + (9 - m) * (meterH / 10.0f);
+            g.setColour(m > 8 ? juce::Colour(0xffff0055) : (m > 5 ? juce::Colour(0xffffcc00) : colColours[i]));
+            g.fillRect(meterX + 1.0f, segY + 1.0f, meterW - 2.0f, (meterH / 10.0f) - 2.0f);
+        }
+
+        // Draw 3D Chamfered Metallic Seam Ribs between columns
+        if (i < 4)
+        {
+            float seamX = colRect.getRight() + colGap * 0.5f;
+            HardwareMaterials::drawChamferedSeam(g, seamX, colY - 2.0f, colRect.getBottom() + 2.0f);
+        }
+    }
+
+    // 4. Bottom Master Deck
+    auto deckCard = juce::Rectangle<float>(28, 514, 724, 40);
+    HardwareMaterials::drawRecessedPanel(g, deckCard, 5.0f, chassisTexture);
+
+    HardwareMaterials::drawHexBolt(g, deckCard.getX() + 5, deckCard.getY() + 5);
+    HardwareMaterials::drawHexBolt(g, deckCard.getRight() - 5, deckCard.getY() + 5);
+
+    g.setColour(juce::Colour(0xff606f7b));
+    g.setFont(juce::Font(9.0f, juce::Font::plain));
+    g.drawText("VST3 64-BIT | CYBER-CRYPT RACK V2.0", (int)deckCard.getRight() - 220, (int)deckCard.getY() + 14, 210, 14, juce::Justification::right);
+}
+
+void UndergroundAudioProcessorEditor::resized()
+{
+    // 1. Top Crown DEGENERATE Macro Knob
+    degenerateKnob.setBounds(345, 10, 100, 100);
+
+    // Preset Controls Bar & Top Action Buttons (Top-Right)
+    prevPresetButton.setBounds(540, 12, 24, 24);
+    presetModeBox.setBounds(568, 12, 140, 24);
+    nextPresetButton.setBounds(712, 12, 24, 24);
+
+    abButton.setBounds(568, 40, 50, 22);
+    bypassButton.setBounds(623, 40, 60, 22);
+    oversamplingButton.setBounds(688, 40, 85, 22);
+
+    // 2. Upper Real-Time Visual EQ Window (Between LED meters)
+    visualEQDisplay.setBounds(100, 150, 580, 172);
+
+    // 3. Middle 5 Module Columns Positioning (3 Knobs Per Column + Bypass Toggle Switch)
+    float colW = 140.0f;
+    float colGap = 6.0f;
+    float startX = 28.0f;
+    float colY = 338.0f;
+
+    subEnableToggle.setBounds((int)(startX + 0 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+    gritEnableToggle.setBounds((int)(startX + 1 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+    modEnableToggle.setBounds((int)(startX + 2 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+    delayEnableToggle.setBounds((int)(startX + 3 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+    reverbEnableToggle.setBounds((int)(startX + 4 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+
+    auto layoutCol = [&](int colIdx, juce::Slider& s1, juce::Label& l1, juce::Slider& s2, juce::Label& l2, juce::Slider& s3, juce::Label& l3) {
+        float x = startX + colIdx * (colW + colGap);
+        float knobSize = 46.0f;
+        float knobX = x + (116.0f - knobSize) * 0.5f;
+
+        s1.setBounds((int)knobX, (int)colY + 20, (int)knobSize, (int)knobSize);
+        l1.setBounds((int)x + 4, (int)colY + 66, 112, 10);
+
+        s2.setBounds((int)knobX, (int)colY + 76, (int)knobSize, (int)knobSize);
+        l2.setBounds((int)x + 4, (int)colY + 122, 112, 10);
+
+        s3.setBounds((int)knobX, (int)colY + 130, (int)knobSize, (int)knobSize);
+        l3.setBounds((int)x + 4, (int)colY + 160, 112, 10);
+    };
+
+    layoutCol(0, subDriveSlider, subDriveLabel, subWidthSlider, subWidthLabel, subCompSlider, subCompLabel);
+    layoutCol(1, gritFuzzSlider, gritFuzzLabel, gritDustSlider, gritDustLabel, gritBitSlider, gritBitLabel);
+    layoutCol(2, modChorusSlider, modChorusLabel, modPhaseSlider, modPhaseLabel, modVibeSlider, modVibeLabel);
+    layoutCol(3, delayTimeSlider, delayTimeLabel, delayFbSlider, delayFbLabel, delayMixSlider, delayMixLabel);
+    layoutCol(4, verbSizeSlider, verbSizeLabel, verbDecaySlider, verbDecayLabel, verbSpaceSlider, verbSpaceLabel);
+
+    // 4. Bottom Master Deck Controls
+    float deckY = 516.0f;
+    inputGainSlider.setBounds(38, (int)deckY, 32, 32);
+    inputGainLabel.setBounds(38, (int)deckY + 30, 32, 9);
+
+    outputGainSlider.setBounds(85, (int)deckY, 32, 32);
+    outputGainLabel.setBounds(85, (int)deckY + 30, 32, 9);
+
+    mixGlobalSlider.setBounds(145, (int)deckY - 4, 40, 40);
+    mixGlobalLabel.setBounds(145, (int)deckY + 34, 40, 9);
+
+    oversamplingButton.setBounds(225, (int)deckY + 6, 95, 22);
+}
