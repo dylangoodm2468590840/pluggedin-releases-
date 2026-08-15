@@ -1,17 +1,17 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.0.2",
+  "hub_version": "1.0.3",
   "manager": {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Polished studio rack UI, removed factory presets button.",
+    "release_notes": "Removed all emojis, cleaned typography, and updated studio hub.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/qz1p5z.zip",
-        "sha256": "3ee3b1321fd53d88fe8cbcf703e41875e895600de7e750eaf4950a0643e9d885",
-        "size_bytes": 3420158
+        "url": "https://files.catbox.moe/l65jch.zip",
+        "sha256": "01993527574c83d338a25c80b50301bbfe8246a8e4461b1e67c5601fdd3900f6",
+        "size_bytes": 3420098
       }
     }
   },
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/6hd8rj.zip",
+      "download_url_win": "https://files.catbox.moe/bkvln6.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/6hd8rj.zip",
-          "sha256": "2548338a444b285243983232d0b0e4ed475b66dfc67a31f3adc2831881931b4a"
+          "url": "https://files.catbox.moe/bkvln6.zip",
+          "sha256": "a6cd703fcb67bec411ed60d421ab3d0be00c516b246ec23b1a2dc1ac1559a86e"
         }
       }
     }
