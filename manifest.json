@@ -6,12 +6,12 @@
     "version": "1.0.6",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Self-update trampoline fix: scoped zip decompression and atomic process hand-off.",
+    "release_notes": "Self-update trampoline fix with cache-busting real-time cloud streams.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/cjbgu0.zip",
-        "sha256": "bccef586c007784648ae83c7a7e5c1cfdbcf4a8c186966bb688ea17b1613cf4f",
-        "size_bytes": 3422085
+        "url": "https://files.catbox.moe/hxjx6p.zip",
+        "sha256": "5b61a589ae093eb315a806abebce8f879b780bb1e510a0f6e0663fe427c90f48",
+        "size_bytes": 3422379
       }
     }
   },
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/9fx5hu.zip",
+      "download_url_win": "https://files.catbox.moe/88vja9.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/9fx5hu.zip",
-          "sha256": "5e2e36110d98f0020511c4dc55c9145cb8f3c25ca1dbed930bef9d23e42774ad"
+          "url": "https://files.catbox.moe/88vja9.zip",
+          "sha256": "bb779d06561bff1989081b41a439e7593d8f640e1a580db71ea06a3a5461fdad"
         }
       }
     }
