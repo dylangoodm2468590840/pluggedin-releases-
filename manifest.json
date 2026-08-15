@@ -6,7 +6,7 @@
     "version": "1.1.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Master Boutique DSP Release: 4-Phase Hermite Granular Pitch & Anatomical Formant Shifter (Murda Melodies / Vocal Bender caliber), 12AX7 Triode Tube & Studer Tape Saturation, Slate Fresh Air Exciter, Dattorro Diffusion Reverb, and complete 50-preset re-voicing.",
+    "release_notes": "Official  Boutique Master DSP Release: 4-phase Hermite pitch shifting & anatomical 3-pole formant filter bank (Murda Melodies & Vocal Bender caliber), 12AX7 triode tube drive, Studer tape warmth with 60Hz head bump, Slate Fresh Air exciter, Dattorro diffusion reverb with auto-ducking, Soundtoys MicroShift width, and complete 50-preset overhaul.",
     "packages": {
       "windows_x64": {
         "url": "https://files.catbox.moe/2hd7pf.zip",
@@ -20,13 +20,13 @@
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
-      "latest_version": "2.2.0",
-      "download_url_win": "https://files.catbox.moe/mc7htj.zip",
+      "latest_version": "2.3.0",
+      "download_url_win": "https://files.catbox.moe/y5o0wb.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/mc7htj.zip",
-          "sha256": "a210d526190a7e6f16d2fe58ea1e8cfde713232df46472473412836279731512"
+          "url": "https://files.catbox.moe/y5o0wb.zip",
+          "sha256": "c119e6b8c0b57fd7253de88fa76829551af58677040ce2e9d8cf78bc83386aac"
         }
       }
     }
