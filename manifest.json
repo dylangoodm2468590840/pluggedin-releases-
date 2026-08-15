@@ -1,17 +1,17 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.0.5",
+  "hub_version": "1.0.6",
   "manager": {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Commercial Studio Hub overhaul: Waves & Slate-style sidebar navigation, search bar, and resizable window.",
+    "release_notes": "Self-update trampoline fix: scoped zip decompression and atomic process hand-off.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/3k9f9c.zip",
-        "sha256": "32249dd8c53c9ddc0ef694a86c7a6ecc15042f9714733172747b3d6eeb648d9c",
-        "size_bytes": 3422980
+        "url": "https://files.catbox.moe/cjbgu0.zip",
+        "sha256": "bccef586c007784648ae83c7a7e5c1cfdbcf4a8c186966bb688ea17b1613cf4f",
+        "size_bytes": 3422085
       }
     }
   },
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/mz0vq5.zip",
+      "download_url_win": "https://files.catbox.moe/9fx5hu.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/mz0vq5.zip",
-          "sha256": "9a67bd03cf04be83d282f7d53541e276400479b6f202092c25757f936d14668e"
+          "url": "https://files.catbox.moe/9fx5hu.zip",
+          "sha256": "5e2e36110d98f0020511c4dc55c9145cb8f3c25ca1dbed930bef9d23e42774ad"
         }
       }
     }
