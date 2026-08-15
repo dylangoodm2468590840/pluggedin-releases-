@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.0.4",
+  "hub_version": "1.0.5",
   "manager": {
-    "version": "1.0.4",
+    "version": "1.0.5",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Commercial release v1.0.4: zero emojis, crystal-clear typography, HTTP GET cloud streams, and live multi-machine sync.",
+    "release_notes": "Commercial Studio Hub redesign: Waves & Slate-style sidebar navigation, search bar, and resizable window.",
     "packages": {
       "windows_x64": {
         "url": "https://files.catbox.moe/d02vfh.zip",
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/389sel.zip",
+      "download_url_win": "https://files.catbox.moe/5q2k6t.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/389sel.zip",
-          "sha256": "97cd68147b10429e5d7c12d5b98929ec52a20d95832cb1fb540c2cf878099917"
+          "url": "https://files.catbox.moe/5q2k6t.zip",
+          "sha256": "b883dfdcbd4bbe3afe27ec8456aee8832783c40cbe68329d3c6164296c9c37e0"
         }
       }
     }
