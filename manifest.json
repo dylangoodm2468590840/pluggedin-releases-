@@ -6,12 +6,12 @@
     "version": "1.0.5",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Commercial Studio Hub redesign: Waves & Slate-style sidebar navigation, search bar, and resizable window.",
+    "release_notes": "Commercial Studio Hub overhaul: Waves & Slate-style sidebar navigation, search bar, and resizable window.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/d02vfh.zip",
-        "sha256": "e088676dd48ea1662ef48e7afe390d89379714dc402f40bd68aecf7445c3791a",
-        "size_bytes": 3420512
+        "url": "https://files.catbox.moe/3k9f9c.zip",
+        "sha256": "32249dd8c53c9ddc0ef694a86c7a6ecc15042f9714733172747b3d6eeb648d9c",
+        "size_bytes": 3422980
       }
     }
   },
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/5q2k6t.zip",
+      "download_url_win": "https://files.catbox.moe/mz0vq5.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/5q2k6t.zip",
-          "sha256": "b883dfdcbd4bbe3afe27ec8456aee8832783c40cbe68329d3c6164296c9c37e0"
+          "url": "https://files.catbox.moe/mz0vq5.zip",
+          "sha256": "9a67bd03cf04be83d282f7d53541e276400479b6f202092c25757f936d14668e"
         }
       }
     }
