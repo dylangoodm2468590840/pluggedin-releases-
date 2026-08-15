@@ -1,17 +1,17 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.0.7",
+  "hub_version": "1.0.8",
   "manager": {
-    "version": "1.0.7",
+    "version": "1.0.8",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Added Dark / Light theme toggle, studio hub styling, and instant jsDelivr global CDN sync.",
+    "release_notes": "Master DSP Boutique Upgrade: 4-phase Hermite pitch & 3-pole vocal tract formant shifting (Murda Melodies / Vocal Bender caliber), Dattorro diffusion reverb, analog tape & tube saturation, MicroShift width, and complete 50-preset re-voicing.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/amohst.zip",
-        "sha256": "cb8c77a54e91d5c024847b1329fabd3fd2f301bc7269e5c8e3a633219b78cf5a",
-        "size_bytes": 3424120
+        "url": "https://files.catbox.moe/dsczk4.zip",
+        "sha256": "5d1feaa604ffd2cfc8f8eb482d4ca3f79ff99c60f90fb3d2dfcd9f02a809e94c",
+        "size_bytes": 3424556
       }
     }
   },
@@ -20,13 +20,13 @@
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
-      "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/5jc3eh.zip",
+      "latest_version": "2.0.0",
+      "download_url_win": "https://files.catbox.moe/ftj3f5.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/5jc3eh.zip",
-          "sha256": "94cfb6b2ab938e26cd3813f1f9693a475d0fac670ddd8950b7e64a9cef67a009"
+          "url": "https://files.catbox.moe/ftj3f5.zip",
+          "sha256": "be30d0d787af9a792b61f86229f4fd363a39181a3016a005d3547d31817a7d3b"
         }
       }
     }
