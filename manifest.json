@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.0.3",
+  "hub_version": "1.0.4",
   "manager": {
-    "version": "1.0.3",
+    "version": "1.0.4",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Removed all emojis, cleaned typography, and updated studio hub.",
+    "release_notes": "Commercial release v1.0.4: zero emojis, crystal-clear typography, and live cloud multi-machine sync.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/l65jch.zip",
-        "sha256": "01993527574c83d338a25c80b50301bbfe8246a8e4461b1e67c5601fdd3900f6",
+        "url": "https://files.catbox.moe/y6hxh1.zip",
+        "sha256": "047e49d901cc32d1e8e83221cb4e6573982b5d6f6a1d8db7b1fcc048df467c39",
         "size_bytes": 3420098
       }
     }
@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "1.0.0",
-      "download_url_win": "https://files.catbox.moe/bkvln6.zip",
+      "download_url_win": "https://files.catbox.moe/91pzkd.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/bkvln6.zip",
-          "sha256": "a6cd703fcb67bec411ed60d421ab3d0be00c516b246ec23b1a2dc1ac1559a86e"
+          "url": "https://files.catbox.moe/91pzkd.zip",
+          "sha256": "c707cd48ad061dda7ef6959d83e2bc1fe35316fe610105cf112a94fa6774ff33"
         }
       }
     }
