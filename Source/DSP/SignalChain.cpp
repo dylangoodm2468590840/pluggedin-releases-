@@ -113,11 +113,22 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
                           float macroAge,
                           float macroGhost,
                           float macroTone,
+                          float compSqueeze,
+                          float deEssAmount,
+                          float deEssFreq,
+                          float airMid,
+                          float airTop,
+                          float spaceDucking,
                           ShadowProcessor& shadowModule,
                           CrushProcessor& crushModule,
                           WidthProcessor& widthModule,
                           SpaceProcessor& spaceModule,
-                          DeviceProcessor& deviceModule)
+                          DeviceProcessor& deviceModule,
+                          VocalCompressor& compModule,
+                          DeEsserProcessor& deEssModule,
+                          AirExciterProcessor& airModule)
+
+
 {
     const int numSamples = buffer.getNumSamples();
     const int numChannels = buffer.getNumChannels();
@@ -210,8 +221,24 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         masterEQEngine.processBlock(buffer);
     }
 
+    // 4c. Dynamic Split-Band De-Esser (Silk Vocal / Pro-DS caliber)
+    if (deEssAmount > 0.001f)
+    {
+        deEssModule.setAmount(deEssAmount);
+        deEssModule.setFrequency(deEssFreq);
+        deEssModule.process(buffer);
+    }
+
+    // 4d. Dual-Stage Vocal Dynamics & Leveling Engine (R-Vox / 1176 FET / LA-2A)
+    if (compSqueeze > 0.001f)
+    {
+        compModule.setSqueeze(compSqueeze);
+        compModule.process(buffer);
+    }
+
     // 5. DEGENERATE Demonic Vocal Multi-FX Engine Dynamics
     float degenVal = std::clamp(degenerateMacro, 0.0f, 1.0f);
+
     if (degenVal > 0.01f)
     {
         // Formant lowering & sub octave tracking drive
@@ -230,9 +257,22 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
     // Process Modules & Macro Engine conditionally based on Bypass Switches
     if (subEnable > 0.5f) shadowModule.process(buffer);
     if (gritEnable > 0.5f) crushModule.process(buffer);
+
+    // Psychoacoustic Fresh Air Exciter (Mid-Air & Top-Air Sheen)
+    if (airMid > 0.001f || airTop > 0.001f)
+    {
+        airModule.setMidAir(airMid);
+        airModule.setTopAir(airTop);
+        airModule.process(buffer);
+    }
+
     if (modEnable > 0.5f) widthModule.process(context);
+    
+    // Space Processor with Auto-Ducking Envelope Follower
+    spaceModule.setDucking(spaceDucking);
     if (delayEnable > 0.5f || reverbEnable > 0.5f) spaceModule.process(context);
     deviceModule.process(context);
+
 
     // 6. Global Dry/Wet Mix
     globalMixSmoother.setTargetValue(globalMix);
