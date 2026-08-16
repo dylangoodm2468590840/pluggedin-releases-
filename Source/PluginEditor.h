@@ -43,7 +43,26 @@ private:
     juce::Label degenerateLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> degenerateAttach;
 
+    // Dynamics & Taming Controls (Flanking DEGENERATE Crown)
+    juce::Slider compSqueezeSlider;
+    juce::Label compSqueezeLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> compSqueezeAttach;
+
+    juce::Slider deEssAmountSlider;
+    juce::Label deEssAmountLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> deEssAmountAttach;
+
+    // Psychoacoustic Fresh Air Controls
+    juce::Slider airMidSlider;
+    juce::Label airMidLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> airMidAttach;
+
+    juce::Slider airTopSlider;
+    juce::Label airTopLabel;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> airTopAttach;
+
     // Real-Time Visual EQ Curve Display Window
+
     VisualEQDisplay visualEQDisplay;
 
     // Global Trim Sliders
@@ -59,6 +78,7 @@ private:
     juce::Label mixGlobalLabel;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixGlobalAttach;
 
+
     // 15 Module Knobs & Controls (3 Per Column matching 1:1 Sketch Photo)
     // Column 1: SUB BASS (Shadow Engine)
     juce::Slider subDriveSlider;  juce::Label subDriveLabel;
@@ -68,13 +88,16 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> subWidthAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> subCompAttach;
 
-    // Column 2: GRIT (Crush Engine)
+    // Column 2: GRIT (Crush Engine & 5-Circuit Saturation)
     juce::Slider gritFuzzSlider;  juce::Label gritFuzzLabel;
     juce::Slider gritDustSlider;  juce::Label gritDustLabel;
     juce::Slider gritBitSlider;   juce::Label gritBitLabel;
+    juce::TextButton punishButton { "PUNISH" };
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gritFuzzAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gritDustAttach;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> gritBitAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> punishAttach;
+
 
     // Column 3: MODULATION (Width Engine)
     juce::Slider modChorusSlider; juce::Label modChorusLabel;
@@ -120,6 +143,9 @@ private:
     // Metering Levels
     float currentInLevel  { 0.0f };
     float currentOutLevel { 0.0f };
+    float currentCompGr   { 0.0f };
+    float currentDeEssGr  { 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UndergroundAudioProcessorEditor)
 };
+
