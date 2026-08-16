@@ -48,10 +48,11 @@ private:
     juce::String downloadUrl { "" };
 
     // Plugin Catalog Cache
-    juce::String undergroundLatestVersion { "2.2.0" };
+    juce::String undergroundLatestVersion { "3.0.0" };
     juce::String undergroundDownloadUrl { "" };
     juce::String undergroundSha256 { "" };
     std::atomic<bool> undergroundUpdateAvailable { false };
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluggedINAutoUpdater)
 };
