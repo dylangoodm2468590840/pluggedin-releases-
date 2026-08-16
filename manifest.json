@@ -21,12 +21,12 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
       "latest_version": "3.0.0",
-      "download_url_win": "https://files.catbox.moe/7jafdm.zip",
+      "download_url_win": "https://files.catbox.moe/6rnd6e.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/7jafdm.zip",
-          "sha256": "a9024025acacf48d3b2ce2aa96b601fe4dec4bf53bfca485c2013ff9e56324a2"
+          "url": "https://files.catbox.moe/6rnd6e.zip",
+          "sha256": "0557fe51fbf54db617085025dd41cc6ee250de6c8901a5b8bc000dbca6e50acd"
         }
       }
     }
