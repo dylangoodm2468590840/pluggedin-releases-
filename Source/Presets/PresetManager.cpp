@@ -108,17 +108,27 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
     setParam(ParameterIDs::SHADOW_DARKNESS, 0.5f);
     setParam(ParameterIDs::SHADOW_DRIVE, 0.0f);
 
-    setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // Soft Clip
+    setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Tube
     setParam(ParameterIDs::CRUSH_AMOUNT, 0.0f);
     setParam(ParameterIDs::CRUSH_TONE, 0.5f);
     setParam(ParameterIDs::CRUSH_MIX, 1.0f);
+    setParam(ParameterIDs::CRUSH_PUNISH, 0.0f);
 
     setParam(ParameterIDs::WIDTH_AMOUNT, 0.0f);
 
     setParam(ParameterIDs::SPACE_REVERB, 0.0f);
     setParam(ParameterIDs::SPACE_DELAY, 0.0f);
+    setParam(ParameterIDs::SPACE_DUCKING, 0.50f);
 
     setParam(ParameterIDs::DEVICE_TYPE, 0.0f);   // Off
+
+    // Dynamics, De-Essing & Fresh Air Defaults
+    setParam(ParameterIDs::COMP_SQUEEZE, 0.0f);
+    setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
+    setParam(ParameterIDs::DEESS_AMOUNT, 0.0f);
+    setParam(ParameterIDs::DEESS_FREQ, 6500.0f);
+    setParam(ParameterIDs::AIR_MID, 0.0f);
+    setParam(ParameterIDs::AIR_TOP, 0.0f);
 
     // 5-Band Visual & Audio EQ Default Reset
     setParam(ParameterIDs::EQ_LOW_CUT, 35.0f);
@@ -132,6 +142,7 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
     setParam(ParameterIDs::EQ_HIGH_CUT, 18000.0f);
     setParam(ParameterIDs::EQ_HIGH_CUT_SLOPE, 1.0f);
 
+
     // 2. Complete Handcrafted Parameter States for Every Preset ($100 Commercial Standard)
     switch (preset)
     {
@@ -140,19 +151,25 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
         // ----------------------------------------------------
         case DegenerateRage:
             setParam(ParameterIDs::DEGENERATE, 0.85f);
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
+            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.70f);
+            setParam(ParameterIDs::COMP_CHARACTER, 0.0f); // Fast FET
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.45f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.38f);
             setParam(ParameterIDs::SHADOW_PITCH, 0.0f); // -12
             setParam(ParameterIDs::SHADOW_FORMANT, 0.32f);
             setParam(ParameterIDs::SHADOW_DARKNESS, 0.55f);
             setParam(ParameterIDs::SHADOW_DRIVE, 0.35f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // Triode Tube Soft Clip
+            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f); // EL34 Pentode
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.78f); // Air exciter sparkle
+            setParam(ParameterIDs::CRUSH_PUNISH, 1.0f); // +20dB Punish
+            setParam(ParameterIDs::CRUSH_TONE, 0.78f);
+            setParam(ParameterIDs::AIR_TOP, 0.45f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.55f);
             setParam(ParameterIDs::SPACE_REVERB, 0.22f);
             setParam(ParameterIDs::SPACE_DELAY, 0.18f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.75f);
             setParam(ParameterIDs::EQ_LOW_CUT, 85.0f);
             setParam(ParameterIDs::EQ_LOW_GAIN, 2.0f);
             setParam(ParameterIDs::EQ_MID_GAIN, 3.0f);
@@ -163,19 +180,20 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
         case SludgePlugg:
             setParam(ParameterIDs::DEGENERATE, 0.65f);
             setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.55f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.60f);
             setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
             setParam(ParameterIDs::SHADOW_FORMANT, 0.28f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.82f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.50f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Tape Warmth & Head Bump
+            setParam(ParameterIDs::SHADOW_DARKNESS, 0.75f);
+            setParam(ParameterIDs::SHADOW_DRIVE, 0.45f);
+            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.55f);
             setParam(ParameterIDs::CRUSH_TONE, 0.35f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.45f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.40f);
+            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
+            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
             setParam(ParameterIDs::SPACE_DELAY, 0.28f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 45.0f);
+            setParam(ParameterIDs::EQ_LOW_CUT, 65.0f);
             setParam(ParameterIDs::EQ_LOW_GAIN, 5.0f);
             setParam(ParameterIDs::EQ_MID_GAIN, -1.5f);
             setParam(ParameterIDs::EQ_HIGH_GAIN, -3.5f);
@@ -185,13 +203,16 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
         case CyberAdlib:
             setParam(ParameterIDs::DEGENERATE, 0.70f);
             setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.60f);
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.40f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.30f);
             setParam(ParameterIDs::SHADOW_PITCH, 2.0f); // -5
             setParam(ParameterIDs::SHADOW_FORMANT, 0.68f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f); // Bitcrusher
+            setParam(ParameterIDs::CRUSH_CHARACTER, 4.0f); // Cyber Fuzz
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.60f);
             setParam(ParameterIDs::CRUSH_TONE, 0.85f);
+            setParam(ParameterIDs::AIR_TOP, 0.65f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.80f);
             setParam(ParameterIDs::SPACE_REVERB, 0.35f);
             setParam(ParameterIDs::SPACE_DELAY, 0.32f);
@@ -204,13 +225,14 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
         case GlitchMonster:
             setParam(ParameterIDs::DEGENERATE, 0.90f);
             setParam(ParameterIDs::OUTPUT_GAIN, -3.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.75f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.55f);
             setParam(ParameterIDs::SHADOW_PITCH, 3.0f); // -24
             setParam(ParameterIDs::SHADOW_FORMANT, 0.18f);
             setParam(ParameterIDs::SHADOW_DARKNESS, 0.68f);
             setParam(ParameterIDs::SHADOW_DRIVE, 0.65f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Fuzz
+            setParam(ParameterIDs::CRUSH_CHARACTER, 4.0f); // Cyber Fuzz
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.85f);
             setParam(ParameterIDs::CRUSH_TONE, 0.55f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.65f);
@@ -223,19 +245,27 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
             break;
 
         case UndergroundTube:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
+            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.45f);
+            setParam(ParameterIDs::COMP_CHARACTER, 1.0f); // Opto Leveler
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.30f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.18f);
             setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
             setParam(ParameterIDs::SHADOW_FORMANT, 0.42f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // Triode Tube
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
+            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Triode Tube
+            setParam(ParameterIDs::CRUSH_AMOUNT, 0.55f);
+            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
+            setParam(ParameterIDs::AIR_MID, 0.35f);
+            setParam(ParameterIDs::AIR_TOP, 0.50f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.12f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 1.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
+            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
+            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.60f);
+            setParam(ParameterIDs::EQ_LOW_CUT, 60.0f);
+            setParam(ParameterIDs::EQ_LOW_GAIN, 2.5f);
+            setParam(ParameterIDs::EQ_MID_GAIN, 1.5f);
+            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
             break;
 
         // ----------------------------------------------------
@@ -740,12 +770,19 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
         // ----------------------------------------------------
         case ModernRapLead:
             setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // Triode Tube
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.55f);
+            setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.40f);
+            setParam(ParameterIDs::DEESS_FREQ, 6800.0f);
+            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.75f); // Air sheen
+            setParam(ParameterIDs::CRUSH_TONE, 0.75f);
+            setParam(ParameterIDs::AIR_MID, 0.35f);
+            setParam(ParameterIDs::AIR_TOP, 0.65f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.12f);
+            setParam(ParameterIDs::SPACE_REVERB, 0.22f);
+            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.80f);
             setParam(ParameterIDs::EQ_LOW_CUT, 95.0f);
             setParam(ParameterIDs::EQ_LOW_GAIN, 1.5f);
             setParam(ParameterIDs::EQ_MID_GAIN, 2.5f);
@@ -753,13 +790,18 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
             break;
 
         case RageVocal:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
+            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.75f);
+            setParam(ParameterIDs::COMP_CHARACTER, 0.0f); // 1176 FET
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.50f);
+            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f); // EL34 Pentode
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.82f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.80f);
+            setParam(ParameterIDs::CRUSH_PUNISH, 1.0f);
+            setParam(ParameterIDs::AIR_TOP, 0.40f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.22f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.16f);
+            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
+            setParam(ParameterIDs::SPACE_DELAY, 0.18f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.85f);
             setParam(ParameterIDs::EQ_LOW_CUT, 110.0f);
             setParam(ParameterIDs::EQ_MID_GAIN, 4.0f);
             setParam(ParameterIDs::EQ_HIGH_GAIN, 5.0f);
@@ -767,6 +809,7 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
         case DarkPluggLead:
             setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.50f);
             setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setParam(ParameterIDs::SHADOW_MIX, 0.30f);
             setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
@@ -775,9 +818,11 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
             setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Tape Warmth
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.48f);
             setParam(ParameterIDs::CRUSH_TONE, 0.40f);
+            setParam(ParameterIDs::AIR_TOP, 0.30f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
             setParam(ParameterIDs::SPACE_REVERB, 0.30f);
             setParam(ParameterIDs::SPACE_DELAY, 0.20f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.65f);
             setParam(ParameterIDs::EQ_LOW_CUT, 75.0f);
             setParam(ParameterIDs::EQ_LOW_GAIN, 3.0f);
             setParam(ParameterIDs::EQ_HIGH_GAIN, 1.5f);
@@ -785,28 +830,38 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
         case IntimateTrap:
             setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.48f);
+            setParam(ParameterIDs::COMP_CHARACTER, 1.0f); // Opto Leveler
+            setParam(ParameterIDs::DEESS_AMOUNT, 0.35f);
+            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.22f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
+            setParam(ParameterIDs::AIR_MID, 0.30f);
+            setParam(ParameterIDs::AIR_TOP, 0.60f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.12f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.06f);
+            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
+            setParam(ParameterIDs::SPACE_DELAY, 0.08f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.70f);
             setParam(ParameterIDs::EQ_LOW_CUT, 85.0f);
             setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
             break;
 
         case RawUnderground:
             setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f);
+            setParam(ParameterIDs::COMP_SQUEEZE, 0.60f);
+            setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
+            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Preamp
             setParam(ParameterIDs::CRUSH_AMOUNT, 0.62f);
             setParam(ParameterIDs::CRUSH_TONE, 0.58f);
+            setParam(ParameterIDs::AIR_MID, 0.45f);
             setParam(ParameterIDs::WIDTH_AMOUNT, 0.45f);
             setParam(ParameterIDs::SPACE_REVERB, 0.20f);
             setParam(ParameterIDs::SPACE_DELAY, 0.14f);
+            setParam(ParameterIDs::SPACE_DUCKING, 0.70f);
             setParam(ParameterIDs::EQ_LOW_CUT, 80.0f);
             setParam(ParameterIDs::EQ_MID_GAIN, 3.0f);
             setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
             break;
+
 
         // ----------------------------------------------------
         // AD-LIBS CATEGORY (Travis Scott / Playboi Carti style)
