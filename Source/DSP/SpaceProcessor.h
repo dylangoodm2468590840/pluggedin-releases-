@@ -27,14 +27,16 @@ public:
     void setDelayTime(float newTime) noexcept   { delayTime = std::clamp(newTime, 0.01f, 1.5f); }
     void setFeedback(float newFb) noexcept      { feedback = std::clamp(newFb, 0.0f, 0.95f); }
     void setDucking(float newDucking) noexcept  { ducking = std::clamp(newDucking, 0.0f, 1.0f); }
+    void setShimmer(float newShimmer) noexcept  { shimmerMix = std::clamp(newShimmer, 0.0f, 1.0f); }
 
     void process(const juce::dsp::ProcessContextReplacing<float>& context);
 
 private:
-    float reverbMix { 0.3f };
-    float delayTime { 0.25f }; // Seconds
-    float feedback  { 0.35f };
-    float ducking   { 0.5f };
+    float reverbMix  { 0.3f };
+    float delayTime  { 0.25f }; // Seconds
+    float feedback   { 0.35f };
+    float ducking    { 0.5f };
+    float shimmerMix { 0.25f };
 
     double sampleRate { 44100.0 };
 
