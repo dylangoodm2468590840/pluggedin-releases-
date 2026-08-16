@@ -8,6 +8,11 @@
 #include "SpaceProcessor.h"
 #include "DeviceProcessor.h"
 #include "EQEngine.h"
+#include "VocalCompressor.h"
+#include "DeEsserProcessor.h"
+#include "AirExciterProcessor.h"
+
+
 
 struct AudioDynamicNode
 {
@@ -61,11 +66,22 @@ public:
                  float macroAge,
                  float macroGhost,
                  float macroTone,
+                 float compSqueeze,
+                 float deEssAmount,
+                 float deEssFreq,
+                 float airMid,
+                 float airTop,
+                 float spaceDucking,
                  ShadowProcessor& shadowModule,
                  CrushProcessor& crushModule,
                  WidthProcessor& widthModule,
                  SpaceProcessor& spaceModule,
-                 DeviceProcessor& deviceModule);
+                 DeviceProcessor& deviceModule,
+                 VocalCompressor& compModule,
+                 DeEsserProcessor& deEssModule,
+                 AirExciterProcessor& airModule);
+
+
 
     float getInputLevel() const noexcept { return inputLevelPeak.load(); }
     float getOutputLevel() const noexcept { return outputLevelPeak.load(); }
