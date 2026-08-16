@@ -73,9 +73,19 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     degenerateAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::DEGENERATE, degenerateKnob);
 
+    // Dynamics & Taming Controls (Flanking DEGENERATE Crown)
+    setupRotary(compSqueezeSlider, compSqueezeLabel, "SQUEEZE");
+    compSqueezeAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::COMP_SQUEEZE, compSqueezeSlider);
+
+    setupRotary(deEssAmountSlider, deEssAmountLabel, "DE-ESS");
+    deEssAmountAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEESS_AMOUNT, deEssAmountSlider);
+
     // 2. Real-Time Visual EQ Display Window
     visualEQDisplay.setAPVTS(&audioProcessor.getAPVTS());
     addAndMakeVisible(visualEQDisplay);
+
 
     // 3. Global Master Trim Controls
     setupRotary(inputGainSlider, inputGainLabel, "INPUT");
@@ -89,6 +99,16 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     setupRotary(mixGlobalSlider, mixGlobalLabel, "DRY/WET");
     mixGlobalAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MIX_GLOBAL, mixGlobalSlider);
+
+    // Fresh Air Psychoacoustic Controls
+    setupRotary(airMidSlider, airMidLabel, "MID AIR");
+    airMidAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::AIR_MID, airMidSlider);
+
+    setupRotary(airTopSlider, airTopLabel, "TOP AIR");
+    airTopAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::AIR_TOP, airTopSlider);
+
 
     // 4. 15 Module Knobs across 5 Channels (Matching Sketch Photo 1:1)
     // Column 1: SUB BASS
@@ -104,18 +124,28 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     subCompAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::SHADOW_FORMANT, subCompSlider);
 
-    // Column 2: GRIT
-    setupRotary(gritFuzzSlider, gritFuzzLabel, "FUZZ");
+    // Column 2: GRIT (Crush Engine & 5-Circuit Saturation)
+    setupRotary(gritFuzzSlider, gritFuzzLabel, "DRIVE");
     gritFuzzAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::CRUSH_AMOUNT, gritFuzzSlider);
 
-    setupRotary(gritDustSlider, gritDustLabel, "DUST");
+    setupRotary(gritDustSlider, gritDustLabel, "TONE");
     gritDustAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::CRUSH_TONE, gritDustSlider);
 
-    setupRotary(gritBitSlider, gritBitLabel, "BIT");
+    setupRotary(gritBitSlider, gritBitLabel, "MIX");
     gritBitAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::CRUSH_MIX, gritBitSlider);
+
+    punishButton.setClickingTogglesState(true);
+    punishButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff18050a));
+    punishButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff0044));
+    punishButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    punishButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff5577));
+    addAndMakeVisible(punishButton);
+    punishAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::CRUSH_PUNISH, punishButton);
+
 
     // Column 3: MODULATION
     setupRotary(modChorusSlider, modChorusLabel, "CHORUS");
@@ -193,6 +223,9 @@ void UndergroundAudioProcessorEditor::timerCallback()
     auto& chain = audioProcessor.getSignalChain();
     currentInLevel  = currentInLevel * 0.7f  + chain.getInputLevel() * 0.3f;
     currentOutLevel = currentOutLevel * 0.7f + chain.getOutputLevel() * 0.3f;
+    currentCompGr   = currentCompGr * 0.7f   + audioProcessor.getVocalCompressor().getGainReductionDb() * 0.3f;
+    currentDeEssGr  = currentDeEssGr * 0.7f  + audioProcessor.getDeEsser().getGainReductionDb() * 0.3f;
+
 
     // Fetch real FFT spectrum bars from audio DSP chain
     float fftBars[64];
@@ -267,6 +300,28 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
     g.setColour(juce::Colour(0xff00ff66));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
     g.drawText("PluggedIN AUDIO  |  v2.5.0 VST3 64-BIT", 28, 34, 250, 14, juce::Justification::left, true);
+
+    // SQUEEZE & DE-ESS Mini Gain Reduction (GR) Meters
+    auto drawMiniGrMeter = [&](float meterX, float meterY, float grDb) {
+        g.setColour(juce::Colour(0xff090c10));
+        g.fillRoundedRectangle(meterX, meterY, 5.0f, 44.0f, 2.0f);
+        g.setColour(juce::Colour(0xff1b222d));
+        g.drawRoundedRectangle(meterX, meterY, 5.0f, 44.0f, 2.0f, 1.0f);
+
+        int activeBars = juce::roundToInt(std::clamp(grDb / 18.0f, 0.0f, 1.0f) * 8.0f);
+        for (int b = 0; b < 8; ++b)
+        {
+            float barY = meterY + 44.0f - (b + 1) * 5.2f;
+            bool on = b < activeBars;
+            juce::Colour col = (b >= 6) ? juce::Colour(0xffff0055) : (b >= 3 ? juce::Colour(0xffffaa00) : juce::Colour(0xff00f0ff));
+            g.setColour(on ? col : col.withAlpha(0.15f));
+            g.fillRect(meterX + 1.0f, barY + 1.0f, 3.0f, 3.8f);
+        }
+    };
+
+    drawMiniGrMeter(262.0f, 28.0f, currentCompGr);
+    drawMiniGrMeter(522.0f, 28.0f, currentDeEssGr);
+
 
     // Top-Right Version Stamp
     g.setColour(juce::Colour(0xff7f8b98));
@@ -431,10 +486,17 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
 
 void UndergroundAudioProcessorEditor::resized()
 {
-    // 1. Top Crown DEGENERATE Macro Knob
+    // 1. Top Crown DEGENERATE Macro Knob & Flanking Dynamics Knobs
     degenerateKnob.setBounds(345, 10, 100, 100);
 
+    compSqueezeSlider.setBounds(272, 22, 58, 58);
+    compSqueezeLabel.setBounds(268, 80, 66, 12);
+
+    deEssAmountSlider.setBounds(460, 22, 58, 58);
+    deEssAmountLabel.setBounds(456, 80, 66, 12);
+
     // Preset Controls Bar & Top Action Buttons (Top-Right)
+
     prevPresetButton.setBounds(540, 12, 24, 24);
     presetModeBox.setBounds(568, 12, 140, 24);
     nextPresetButton.setBounds(712, 12, 24, 24);
@@ -454,9 +516,11 @@ void UndergroundAudioProcessorEditor::resized()
 
     subEnableToggle.setBounds((int)(startX + 0 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
     gritEnableToggle.setBounds((int)(startX + 1 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+    punishButton.setBounds((int)(startX + 1 * (colW + colGap) + 48.0f), (int)colY + 5, 54, 16);
     modEnableToggle.setBounds((int)(startX + 2 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
     delayEnableToggle.setBounds((int)(startX + 3 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
     reverbEnableToggle.setBounds((int)(startX + 4 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
+
 
     auto layoutCol = [&](int colIdx, juce::Slider& s1, juce::Label& l1, juce::Slider& s2, juce::Label& l2, juce::Slider& s3, juce::Label& l3) {
         float x = startX + colIdx * (colW + colGap);
@@ -490,5 +554,12 @@ void UndergroundAudioProcessorEditor::resized()
     mixGlobalSlider.setBounds(145, (int)deckY - 4, 40, 40);
     mixGlobalLabel.setBounds(145, (int)deckY + 34, 40, 9);
 
-    oversamplingButton.setBounds(225, (int)deckY + 6, 95, 22);
+    airMidSlider.setBounds(210, (int)deckY - 4, 40, 40);
+    airMidLabel.setBounds(205, (int)deckY + 34, 50, 9);
+
+    airTopSlider.setBounds(275, (int)deckY - 4, 40, 40);
+    airTopLabel.setBounds(270, (int)deckY + 34, 50, 9);
+
+    oversamplingButton.setBounds(345, (int)deckY + 6, 95, 22);
 }
+
