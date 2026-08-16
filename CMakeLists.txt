@@ -53,7 +53,12 @@ target_sources(UNDERGROUND
         Source/DSP/SpaceProcessor.cpp
         Source/DSP/DeviceProcessor.cpp
         Source/DSP/EQEngine.cpp
+        Source/DSP/VocalCompressor.cpp
+        Source/DSP/DeEsserProcessor.cpp
+        Source/DSP/AirExciterProcessor.cpp
         Source/DSP/SignalChain.cpp
+
+
         Source/Utils/PluggedINAutoUpdater.cpp
         Source/Presets/PresetManager.cpp
         Source/UI/UndergroundLookAndFeel.cpp
