@@ -7,8 +7,14 @@
 #include "DSP/WidthProcessor.h"
 #include "DSP/SpaceProcessor.h"
 #include "DSP/DeviceProcessor.h"
+#include "DSP/EQEngine.h"
+#include "DSP/VocalCompressor.h"
+#include "DSP/DeEsserProcessor.h"
+#include "DSP/AirExciterProcessor.h"
 #include "DSP/SignalChain.h"
+
 #include "Presets/PresetManager.h"
+
 #include "Utils/ParameterIDs.h"
 #include "Utils/PluggedINAutoUpdater.h"
 
@@ -47,6 +53,9 @@ public:
     juce::AudioProcessorValueTreeState& getAPVTS() noexcept { return apvts; }
     SignalChain& getSignalChain() noexcept { return signalChain; }
     PluggedINAutoUpdater& getAutoUpdater() noexcept { return autoUpdater; }
+    VocalCompressor& getVocalCompressor() noexcept { return vocalCompressor; }
+    DeEsserProcessor& getDeEsser() noexcept { return deEsserProcessor; }
+    AirExciterProcessor& getAirExciter() noexcept { return airExciterProcessor; }
 
 private:
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -60,6 +69,9 @@ private:
     WidthProcessor widthProcessor;
     SpaceProcessor spaceProcessor;
     DeviceProcessor deviceProcessor;
+    VocalCompressor vocalCompressor;
+    DeEsserProcessor deEsserProcessor;
+    AirExciterProcessor airExciterProcessor;
 
     // Fast atomic parameter listeners
     std::atomic<float>* degenerateParam   { nullptr };
@@ -67,6 +79,16 @@ private:
     std::atomic<float>* inputGainParam    { nullptr };
     std::atomic<float>* outputGainParam   { nullptr };
     std::atomic<float>* mixGlobalParam    { nullptr };
+
+    // Dynamics & Taming params
+    std::atomic<float>* compSqueezeParam  { nullptr };
+    std::atomic<float>* compCharParam     { nullptr };
+    std::atomic<float>* deEssAmountParam  { nullptr };
+    std::atomic<float>* deEssFreqParam    { nullptr };
+
+    // Psychoacoustic Fresh Air params
+    std::atomic<float>* airMidParam       { nullptr };
+    std::atomic<float>* airTopParam       { nullptr };
 
     // Macro Matrix params
     std::atomic<float>* macroDepthParam   { nullptr };
@@ -90,11 +112,16 @@ private:
     std::atomic<float>* crushCharParam    { nullptr };
     std::atomic<float>* crushToneParam    { nullptr };
     std::atomic<float>* crushMixParam     { nullptr };
+    std::atomic<float>* crushPunishParam  { nullptr };
 
     std::atomic<float>* widthAmountParam  { nullptr };
+
     std::atomic<float>* spaceReverbParam  { nullptr };
     std::atomic<float>* spaceDelayParam   { nullptr };
+    std::atomic<float>* spaceDuckingParam { nullptr };
     std::atomic<float>* deviceTypeParam   { nullptr };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UndergroundAudioProcessor)
 };
+
+
