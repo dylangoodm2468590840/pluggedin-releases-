@@ -40,12 +40,25 @@ UndergroundAudioProcessor::UndergroundAudioProcessor()
     crushCharParam    = apvts.getRawParameterValue(ParameterIDs::CRUSH_CHARACTER);
     crushToneParam    = apvts.getRawParameterValue(ParameterIDs::CRUSH_TONE);
     crushMixParam     = apvts.getRawParameterValue(ParameterIDs::CRUSH_MIX);
+    crushPunishParam  = apvts.getRawParameterValue(ParameterIDs::CRUSH_PUNISH);
+
 
     widthAmountParam  = apvts.getRawParameterValue(ParameterIDs::WIDTH_AMOUNT);
     spaceReverbParam  = apvts.getRawParameterValue(ParameterIDs::SPACE_REVERB);
     spaceDelayParam   = apvts.getRawParameterValue(ParameterIDs::SPACE_DELAY);
     deviceTypeParam   = apvts.getRawParameterValue(ParameterIDs::DEVICE_TYPE);
+
+    compSqueezeParam  = apvts.getRawParameterValue(ParameterIDs::COMP_SQUEEZE);
+    compCharParam     = apvts.getRawParameterValue(ParameterIDs::COMP_CHARACTER);
+    deEssAmountParam  = apvts.getRawParameterValue(ParameterIDs::DEESS_AMOUNT);
+    deEssFreqParam    = apvts.getRawParameterValue(ParameterIDs::DEESS_FREQ);
+
+    airMidParam       = apvts.getRawParameterValue(ParameterIDs::AIR_MID);
+    airTopParam       = apvts.getRawParameterValue(ParameterIDs::AIR_TOP);
+    spaceDuckingParam = apvts.getRawParameterValue(ParameterIDs::SPACE_DUCKING);
 }
+
+
 
 UndergroundAudioProcessor::~UndergroundAudioProcessor() = default;
 
@@ -201,12 +214,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DARKNESS, 1 }, "Shadow Darkness", 0.0f, 1.0f, 0.5f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DRIVE, 1 }, "Shadow Drive", 0.0f, 1.0f, 0.2f));
 
-    // CRUSH Module Parameters
+    // CRUSH Module Parameters (5-Circuit Analog Suite)
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::CRUSH_AMOUNT, 1 }, "Crush Amount", 0.0f, 1.0f, 0.60f));
-    juce::StringArray crushCharChoices { "SOFT CLIP", "BITCRUSHER", "OVERDRIVE", "PARALLEL FUZZ" };
+    juce::StringArray crushCharChoices { "12AX7 TUBE", "EL34 PENTODE", "AMPEX TAPE", "GERMANIUM", "CYBER FUZZ" };
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID { ParameterIDs::CRUSH_CHARACTER, 1 }, "Crush Character", crushCharChoices, 0));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::CRUSH_TONE, 1 }, "Crush Tone", 0.0f, 1.0f, 0.65f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::CRUSH_MIX, 1 }, "Crush Mix", 0.0f, 1.0f, 1.0f));
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID { ParameterIDs::CRUSH_PUNISH, 1 }, "PUNISH Mode (+20dB)", false));
+
 
     // WIDTH Module Parameters
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::WIDTH_AMOUNT, 1 }, "Width Amount", 0.0f, 1.0f, 0.50f));
@@ -214,13 +229,55 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
     // SPACE Module Parameters
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_REVERB, 1 }, "Space Reverb", 0.0f, 1.0f, 0.30f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_DELAY, 1 }, "Space Delay", 0.0f, 1.0f, 0.25f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_DUCKING, 1 }, "Space Ducking", 0.0f, 1.0f, 0.50f));
 
     // DEVICE Module Parameters
     juce::StringArray deviceChoices { "OFF", "CELL PHONE", "WEBCAM", "EARBUDS", "LAPTOP", "VOICE MEMO" };
     layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID { ParameterIDs::DEVICE_TYPE, 1 }, "Device Type", deviceChoices, 0));
 
+    // DYNAMICS & TAMING CORE (Vocal Compressor & De-Esser)
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::COMP_SQUEEZE, 1 },
+        "Vocal Squeeze",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
+        0.0f));
+
+    juce::StringArray compCharChoices { "MODERN FET", "VINTAGE OPTO", "PUNCHY BLEND" };
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID { ParameterIDs::COMP_CHARACTER, 1 },
+        "Comp Character",
+        compCharChoices,
+        2));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::DEESS_AMOUNT, 1 },
+        "De-Ess Amount",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
+        0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::DEESS_FREQ, 1 },
+        "De-Ess Frequency",
+        juce::NormalisableRange<float>(4000.0f, 10000.0f, 10.0f, 0.5f),
+        6500.0f));
+
+    // PSYCHOACOUSTIC FRESH AIR EXCITER (Mid-Air & Top-Air Sheen)
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::AIR_MID, 1 },
+        "Mid-Air Presence",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
+        0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::AIR_TOP, 1 },
+        "Top-Air Sheen",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f),
+        0.0f));
+
     return layout;
 }
+
+
 
 bool UndergroundAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
@@ -246,10 +303,13 @@ void UndergroundAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     widthProcessor.prepare(spec);
     spaceProcessor.prepare(spec);
     deviceProcessor.prepare(spec);
+    vocalCompressor.prepare(spec);
+    deEsserProcessor.prepare(spec);
+    airExciterProcessor.prepare(spec);
     signalChain.prepare(spec);
 
     // Trigger non-blocking cloud update check
-    autoUpdater.checkForUpdatesAsync("2.1.0");
+    autoUpdater.checkForUpdatesAsync("2.7.0");
 }
 
 void UndergroundAudioProcessor::releaseResources()
@@ -259,6 +319,9 @@ void UndergroundAudioProcessor::releaseResources()
     widthProcessor.reset();
     spaceProcessor.reset();
     deviceProcessor.reset();
+    vocalCompressor.reset();
+    deEsserProcessor.reset();
+    airExciterProcessor.reset();
     signalChain.reset();
 }
 
@@ -283,6 +346,19 @@ void UndergroundAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     float mGhost  = macroGhostParam ? macroGhostParam->load() : 0.0f;
     float mTone   = macroToneParam ? macroToneParam->load() : 0.5f;
 
+    // Dynamics & Taming params
+    float compSq   = compSqueezeParam ? compSqueezeParam->load() : 0.0f;
+    int compCh     = compCharParam ? juce::roundToInt(compCharParam->load()) : 2;
+    vocalCompressor.setCharacter(compCh);
+
+    float deEssAmt = deEssAmountParam ? deEssAmountParam->load() : 0.0f;
+    float deEssFrq = deEssFreqParam ? deEssFreqParam->load() : 6500.0f;
+
+    // Fresh Air & Space Ducking params
+    float aMid     = airMidParam ? airMidParam->load() : 0.0f;
+    float aTop     = airTopParam ? airTopParam->load() : 0.0f;
+    float sDuck    = spaceDuckingParam ? spaceDuckingParam->load() : 0.50f;
+
     // Update Shadow Settings
     shadowProcessor.setEnabled(shadowEnableParam ? (shadowEnableParam->load() > 0.5f) : true);
     shadowProcessor.setMix(shadowMixParam ? shadowMixParam->load() : 0.0f);
@@ -292,12 +368,13 @@ void UndergroundAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     shadowProcessor.setDarkness(shadowDarkParam ? shadowDarkParam->load() : 0.5f);
     shadowProcessor.setDrive(shadowDriveParam ? shadowDriveParam->load() : 0.2f);
 
-    // Update Crush Settings
+    // Update Crush Settings (5 Analog Topologies & PUNISH Mode)
     int charIdx = crushCharParam ? juce::roundToInt(crushCharParam->load()) : 0;
     crushProcessor.setCharacter(static_cast<CrushProcessor::Character>(charIdx));
     crushProcessor.setAmount(crushAmountParam ? crushAmountParam->load() : 0.6f);
     crushProcessor.setTone(crushToneParam ? crushToneParam->load() : 0.65f);
     crushProcessor.setMix(crushMixParam ? crushMixParam->load() : 1.0f);
+    crushProcessor.setPunish(crushPunishParam ? (crushPunishParam->load() > 0.5f) : false);
 
     // Update Width Settings
     widthProcessor.setAmount(widthAmountParam ? widthAmountParam->load() : 0.5f);
@@ -335,8 +412,13 @@ void UndergroundAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
                         juce::roundToInt(apvts.getRawParameterValue(ParameterIDs::EQ_LOW_CUT_SLOPE)->load()),
                         juce::roundToInt(apvts.getRawParameterValue(ParameterIDs::EQ_HIGH_CUT_SLOPE)->load()),
                         mDepth, mDark, mMotion, mChaos, mAge, mGhost, mTone,
-                        shadowProcessor, crushProcessor, widthProcessor, spaceProcessor, deviceProcessor);
+                        compSq, deEssAmt, deEssFrq,
+                        aMid, aTop, sDuck,
+                        shadowProcessor, crushProcessor, widthProcessor, spaceProcessor, deviceProcessor,
+                        vocalCompressor, deEsserProcessor, airExciterProcessor);
 }
+
+
 
 juce::AudioProcessorEditor* UndergroundAudioProcessor::createEditor()
 {
