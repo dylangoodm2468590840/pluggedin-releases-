@@ -4,8 +4,9 @@
 
 CrushProcessor::CrushProcessor()
 {
+    // 2-Stage Cascade = 4x Polyphase Minimum-Phase Oversampling
     oversampler = std::make_unique<juce::dsp::Oversampling<float>>(
-        2, 1, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true);
+        2, 2, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true);
 }
 
 CrushProcessor::~CrushProcessor() = default;
@@ -17,35 +18,32 @@ void CrushProcessor::prepare(const juce::dsp::ProcessSpec& spec)
     amountSmoother.reset(sampleRate, 0.02);
     toneSmoother.reset(sampleRate, 0.02);
     mixSmoother.reset(sampleRate, 0.02);
+    punishGainSmoother.reset(sampleRate, 0.02);
 
     if (oversampler)
         oversampler->initProcessing(spec.maximumBlockSize);
 
+    // 4x Oversampled processing rate for internal analog modeling filters
     juce::dsp::ProcessSpec filterSpec = spec;
     if (oversamplingEnabled.load() && oversampler)
-        filterSpec.sampleRate = sampleRate * 2.0;
+        filterSpec.sampleRate = sampleRate * 4.0;
 
     for (int ch = 0; ch < 2; ++ch)
     {
         preEmphasisFilter[ch].prepare(filterSpec);
         preEmphasisFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
-        preEmphasisFilter[ch].setCutoffFrequency(2500.0f);
+        preEmphasisFilter[ch].setCutoffFrequency(2400.0f);
         preEmphasisFilter[ch].setResonance(0.707f);
 
         deEmphasisFilter[ch].prepare(filterSpec);
         deEmphasisFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-        deEmphasisFilter[ch].setCutoffFrequency(6000.0f);
+        deEmphasisFilter[ch].setCutoffFrequency(5500.0f);
         deEmphasisFilter[ch].setResonance(0.707f);
 
         tapeHeadBumpFilter[ch].prepare(filterSpec);
         tapeHeadBumpFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        tapeHeadBumpFilter[ch].setCutoffFrequency(65.0f);
-        tapeHeadBumpFilter[ch].setResonance(1.4f);
-
-        airExciterFilter[ch].prepare(filterSpec);
-        airExciterFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
-        airExciterFilter[ch].setCutoffFrequency(8500.0f);
-        airExciterFilter[ch].setResonance(0.707f);
+        tapeHeadBumpFilter[ch].setCutoffFrequency(60.0f);
+        tapeHeadBumpFilter[ch].setResonance(1.8f);
 
         lowpassFilter[ch].prepare(filterSpec);
         lowpassFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
@@ -54,6 +52,8 @@ void CrushProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         highpassFilter[ch].prepare(filterSpec);
         highpassFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
         highpassFilter[ch].setResonance(0.707f);
+
+        dcBlocker[ch].reset();
     }
 
     reset();
@@ -63,14 +63,14 @@ void CrushProcessor::reset()
 {
     for (int ch = 0; ch < 2; ++ch)
     {
-        holdSample[ch] = 0.0f;
-        sampleCounter[ch] = 0.0f;
+        tubeBiasSag[ch] = 0.0f;
+        tapeHysteresis[ch] = 0.0f;
         preEmphasisFilter[ch].reset();
         deEmphasisFilter[ch].reset();
         tapeHeadBumpFilter[ch].reset();
-        airExciterFilter[ch].reset();
         lowpassFilter[ch].reset();
         highpassFilter[ch].reset();
+        dcBlocker[ch].reset();
     }
     if (oversampler)
         oversampler->reset();
@@ -78,167 +78,160 @@ void CrushProcessor::reset()
     amountSmoother.setCurrentAndTargetValue(amountSmoother.getTargetValue());
     toneSmoother.setCurrentAndTargetValue(toneSmoother.getTargetValue());
     mixSmoother.setCurrentAndTargetValue(mixSmoother.getTargetValue());
+    punishGainSmoother.setCurrentAndTargetValue(0.0f);
 }
 
-float CrushProcessor::processSample(float inputSample, int channel, float currentAmount, float currentTone)
+float CrushProcessor::processSample(float inputSample, int channel, float currentAmount, float currentTone, bool isPunished)
 {
     float sample = AudioUtils::sanitize(inputSample);
     
-    if (currentAmount <= 0.0001f || std::abs(sample) < 1.0e-9f)
+    if (currentAmount <= 0.0001f && !isPunished)
         return sample;
 
     int ch = std::min(channel, 1);
     float processed = sample;
     Character currentCharacter = character.load();
 
+    // PUNISH Mode: +20dB Analog Input Blast (10x Drive multiplier)
+    float driveBoost = isPunished ? 10.0f : 1.0f;
+    float postPad    = isPunished ? 0.12f : 1.0f;
+
     switch (currentCharacter)
     {
-        case Character::SoftClip:
+        case Character::Tube12AX7:
         {
-            // 1. 12AX7 Triode Tube Warmth & Asymmetric Even-Order Harmonics
-            float drive = 1.0f + currentAmount * 10.0f;
+            // 1. 12AX7 Class-A Triode Tube: Asymmetrical 2nd-Order Warmth + Dynamic Cathode Bias Sag
+            float drive = (1.0f + currentAmount * 12.0f) * driveBoost;
             float x = sample * drive;
-            
-            // Asymmetric triode transfer function with soft saturation curve
-            float tubeSat = (x + 0.22f * x * x) / (1.0f + 0.22f * x * x + std::abs(x * 0.8f));
-            
-            // Dynamic Auto-Gain Compensation
-            float autoGainComp = 1.0f / std::sqrt(1.0f + 1.2f * currentAmount * currentAmount);
-            processed = tubeSat * autoGainComp;
+
+            // Dynamic Cathode Bias Sag tracking input energy
+            tubeBiasSag[ch] += 0.0005f * (std::abs(x) - tubeBiasSag[ch]);
+            float bias = 0.25f - 0.15f * std::clamp(tubeBiasSag[ch], 0.0f, 1.0f);
+            float x_biased = x + bias;
+
+            // Asymmetrical Triode Transfer Function
+            if (x_biased >= 0.0f)
+                processed = x_biased / (1.0f + x_biased * 0.85f);
+            else
+                processed = std::tanh(x_biased * 1.35f);
+
+            // Remove DC offset produced by asymmetric saturation
+            processed = dcBlocker[ch].process(processed);
+
+            // Dynamic Tube Output Normalization
+            float autoGain = (1.0f / std::sqrt(1.0f + drive * 0.45f)) * postPad;
+            processed *= autoGain;
             break;
         }
 
-        case Character::Bitcrusher:
+        case Character::PentodeEL34:
         {
-            // 2. Vintage Digital Sampler (E-mu SP-1200 / Akai MPC60 Style Decimation)
-            float bits = 16.0f - currentAmount * 10.5f;
-            float steps = std::pow(2.0f, std::max(bits, 4.0f));
-            float quantized = std::round(sample * steps) / steps;
+            // 2. EL34 Push-Pull Pentode Tube: Symmetrical Aggressive 3rd & 5th Order Harmonics
+            float drive = (1.0f + currentAmount * 14.0f) * driveBoost;
+            float x = sample * drive;
 
-            float holdPeriod = 1.0f + currentAmount * 10.0f;
-            sampleCounter[ch] += 1.0f;
-            if (sampleCounter[ch] >= holdPeriod)
-            {
-                sampleCounter[ch] -= holdPeriod;
-                holdSample[ch] = quantized;
-            }
+            // Pentode Polynomial Transfer Curve
+            float x_clamped = std::clamp(x * 0.75f, -3.0f, 3.0f);
+            processed = std::tanh(x_clamped) - 0.08f * std::tanh(x_clamped * x_clamped * x_clamped);
 
-            float alpha = std::clamp(sampleCounter[ch] / holdPeriod, 0.0f, 1.0f);
-            processed = holdSample[ch] * (1.0f - alpha * 0.12f);
+            float autoGain = (1.0f / std::sqrt(1.0f + drive * 0.50f)) * postPad;
+            processed *= autoGain;
             break;
         }
 
-        case Character::Overdrive:
+        case Character::TapeAmpex:
         {
-            // 3. Studer A800 Magnetic Tape Saturation & Low-End Head Bump
-            float drive = 1.0f + currentAmount * 12.0f;
-            float x = sample * drive;
+            // 3. Ampex 350 Magnetic Tape: Hysteresis + 60Hz Head Bump + High-End Soft Compression
+            float drive = (1.0f + currentAmount * 9.0f) * driveBoost;
+            
+            // Add 60Hz Head-Bump resonance
+            float bump = tapeHeadBumpFilter[ch].processSample(ch, sample) * (0.35f * currentAmount);
+            float x = (sample + bump) * drive;
 
-            // Tape hysteresis S-curve
-            float tapeSat = std::tanh(x * 0.85f) + 0.15f * std::sin(x * 1.5f);
-            
-            // Add analog 60Hz magnetic head bump resonance for fat vocal body
-            float headBump = tapeHeadBumpFilter[ch].processSample(ch, sample) * (currentAmount * 0.45f);
-            
-            float autoGainComp = 1.0f / std::sqrt(1.0f + 1.4f * currentAmount * currentAmount);
-            processed = (tapeSat + headBump) * autoGainComp;
+            // Magnetic Tape Hysteresis Approximation
+            float delta = x - tapeHysteresis[ch];
+            tapeHysteresis[ch] += 0.40f * delta * (1.0f - 0.45f * std::tanh(delta * delta));
+
+            processed = std::tanh(tapeHysteresis[ch] * 1.45f) * 0.92f;
+
+            float autoGain = (1.0f / std::sqrt(1.0f + drive * 0.38f)) * postPad;
+            processed *= autoGain;
             break;
         }
 
-        case Character::ParallelFuzz:
+        case Character::Germanium:
         {
-            // 4. Studio Germanium Diode Fuzz with Intact Dry Vocal Dynamics
-            float drive = 1.0f + currentAmount * 15.0f;
+            // 4. Germanium Transistor: Vintage Neve 1057 Console Preamp Overdrive
+            float drive = (1.0f + currentAmount * 11.0f) * driveBoost;
             float x = sample * drive;
-            
-            // Germanium hard-soft diode conduction
-            float diodeFuzz = (x > 0.0f) ? std::tanh(x * 1.2f) : -std::tanh(std::abs(x) * 0.9f);
-            
-            float autoGainComp = 1.0f / std::sqrt(1.0f + 1.8f * currentAmount * currentAmount);
-            processed = (sample * 0.35f + diodeFuzz * 0.65f) * autoGainComp;
+
+            // Asymmetric Germanium Diode Knee
+            if (x > 0.0f)
+                processed = 1.0f - std::exp(-x * 0.95f);
+            else
+                processed = -(1.0f - std::exp(x * 0.70f)) * 1.15f;
+
+            processed = dcBlocker[ch].process(processed);
+
+            float autoGain = (1.0f / std::sqrt(1.0f + drive * 0.42f)) * postPad;
+            processed *= autoGain;
+            break;
+        }
+
+        case Character::CyberFuzz:
+        {
+            // 5. Cyber Fuzz: Full-Wave Rectified Octave Fuzz with Dry Fundamental Mix
+            float drive = (1.0f + currentAmount * 18.0f) * driveBoost;
+            float x = sample * drive;
+
+            float fuzz = std::tanh(x + 0.35f * std::tanh(x * 2.2f));
+            float octave = 0.20f * std::sin(std::clamp(x * 1.57f, -3.14f, 3.14f));
+            processed = 0.75f * fuzz + 0.25f * octave;
+
+            float autoGain = (1.0f / std::sqrt(1.0f + drive * 0.60f)) * postPad;
+            processed *= autoGain;
             break;
         }
     }
 
-    // 5. Slate Fresh Air Style Dynamic Air Exciter
-    // When tone > 0.65, dynamically adds high-frequency harmonic sheen (10kHz - 18kHz)
-    if (currentTone > 0.65f)
-    {
-        float airAmount = (currentTone - 0.65f) / 0.35f; // 0.0 to 1.0
-        float airHighs = airExciterFilter[ch].processSample(ch, sample);
-        // Generate pure 2nd & 3rd harmonics in the ultra-highs
-        float exciterHarmonics = (airHighs * airHighs * 2.0f) - 0.05f;
-        processed += exciterHarmonics * (airAmount * 0.28f);
-    }
+    // Dynamic Tone Sculpting
+    float lpCutoff = 1500.0f + currentTone * 16500.0f;
+    lowpassFilter[ch].setCutoffFrequency(std::clamp(lpCutoff, 200.0f, 20000.0f));
+    processed = lowpassFilter[ch].processSample(ch, processed);
 
     return AudioUtils::sanitize(processed);
 }
 
 void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
 {
-    const int numChannels = buffer.getNumChannels();
+    const int numChannels = std::min(buffer.getNumChannels(), 2);
     const int numSamples = buffer.getNumSamples();
 
-    if (numChannels == 0 || numSamples == 0)
+    if (numSamples == 0 || numChannels == 0)
         return;
 
-    float currentAmount = amountSmoother.getNextValue();
-    float currentTone = toneSmoother.getNextValue();
-    float currentMix = mixSmoother.getNextValue();
+    bool isOversampled = oversamplingEnabled.load() && (oversampler != nullptr);
+    bool punished = punishEnabled.load();
 
-    if (currentAmount <= 0.0001f && amountSmoother.getTargetValue() <= 0.0001f)
-        return;
-
-    Character currentCharacter = character.load();
-    bool useOversampling = oversamplingEnabled.load() && oversampler && (currentCharacter != Character::Bitcrusher);
-    double targetRate = useOversampling ? (sampleRate * 2.0) : sampleRate;
-    float maxNyquist = static_cast<float>(targetRate * 0.49);
-
-    float lpCutoff = maxNyquist;
-    float hpCutoff = 20.0f;
-
-    if (currentTone < 0.5f)
-    {
-        float normTone = currentTone * 2.0f;
-        lpCutoff = 400.0f + normTone * normTone * (maxNyquist - 400.0f);
-        hpCutoff = 20.0f;
-    }
-    else
-    {
-        float normTone = (currentTone - 0.5f) * 2.0f;
-        hpCutoff = 20.0f + normTone * normTone * 1200.0f;
-        lpCutoff = maxNyquist;
-    }
-
-    for (int ch = 0; ch < 2; ++ch)
-    {
-        lowpassFilter[ch].setCutoffFrequency(std::clamp(lpCutoff, 20.0f, maxNyquist));
-        highpassFilter[ch].setCutoffFrequency(std::clamp(hpCutoff, 20.0f, maxNyquist));
-    }
-
-    if (useOversampling)
+    if (isOversampled)
     {
         juce::dsp::AudioBlock<float> block(buffer);
         juce::dsp::AudioBlock<float> oversampledBlock = oversampler->processSamplesUp(block);
 
-        const size_t osChannels = oversampledBlock.getNumChannels();
-        const size_t osSamples = oversampledBlock.getNumSamples();
+        const int osSamples = (int)oversampledBlock.getNumSamples();
 
-        for (size_t ch = 0; ch < osChannels; ++ch)
+        for (int i = 0; i < osSamples; ++i)
         {
-            float* channelData = oversampledBlock.getChannelPointer(ch);
-            int stateCh = std::min((int)ch, 1);
+            float amt = amountSmoother.getNextValue();
+            float tone = toneSmoother.getNextValue();
+            float mix = mixSmoother.getNextValue();
 
-            for (size_t i = 0; i < osSamples; ++i)
+            for (int ch = 0; ch < numChannels; ++ch)
             {
+                float* channelData = oversampledBlock.getChannelPointer(ch);
                 float drySample = channelData[i];
-                float wetSample = processSample(drySample, stateCh, currentAmount, currentTone);
-
-                wetSample = lowpassFilter[stateCh].processSample(stateCh, wetSample);
-                wetSample = highpassFilter[stateCh].processSample(stateCh, wetSample);
-
-                float outputSample = drySample * (1.0f - currentMix) + wetSample * currentMix;
-                channelData[i] = AudioUtils::sanitize(outputSample);
+                float wetSample = processSample(drySample, ch, amt, tone, punished);
+                channelData[i] = drySample * (1.0f - mix) + wetSample * mix;
             }
         }
 
@@ -246,32 +239,18 @@ void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
     }
     else
     {
-        for (int ch = 0; ch < numChannels; ++ch)
-        {
-            float* channelData = buffer.getWritePointer(ch);
-            int stateCh = std::min(ch, 1);
-
-            for (int i = 0; i < numSamples; ++i)
-            {
-                float drySample = channelData[i];
-                float wetSample = processSample(drySample, stateCh, currentAmount, currentTone);
-
-                wetSample = lowpassFilter[stateCh].processSample(stateCh, wetSample);
-                wetSample = highpassFilter[stateCh].processSample(stateCh, wetSample);
-
-                float outputSample = drySample * (1.0f - currentMix) + wetSample * currentMix;
-                channelData[i] = AudioUtils::sanitize(outputSample);
-            }
-        }
-    }
-
-    // Final output sanitization sweep
-    for (int ch = 0; ch < numChannels; ++ch)
-    {
-        float* channelData = buffer.getWritePointer(ch);
         for (int i = 0; i < numSamples; ++i)
         {
-            channelData[i] = AudioUtils::sanitize(channelData[i]);
+            float amt = amountSmoother.getNextValue();
+            float tone = toneSmoother.getNextValue();
+            float mix = mixSmoother.getNextValue();
+
+            for (int ch = 0; ch < numChannels; ++ch)
+            {
+                float drySample = buffer.getSample(ch, i);
+                float wetSample = processSample(drySample, ch, amt, tone, punished);
+                buffer.setSample(ch, i, drySample * (1.0f - mix) + wetSample * mix);
+            }
         }
     }
 }
