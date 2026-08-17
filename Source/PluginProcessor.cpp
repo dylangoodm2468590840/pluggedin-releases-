@@ -74,16 +74,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
         0.65f));
 
     juce::StringArray presetChoices { 
-        "DEGENERATE RAGE", "SLUDGE PLUGG", "CYBER AD-LIB", "GLITCH MONSTER", "UNDERGROUND TUBE",
-        "DEMON BELOW", "UNDERWORLD", "POSSESSED", "DEEP SHADOW", "HELL LAYER",
-        "WIDE LEAD", "FLOATING HOOK", "HEADPHONE WIDE", "CYBER DOUBLE", "STEREO AURA",
-        "DEEP CHEST", "GOBLIN", "TINY VOICE", "FORMANT SHIFTER", "OCTAVE STACK",
-        "CATHEDRAL", "SLAP ROOM", "FLOATING ECHO", "DARK VOID", "WASHED VOCAL",
-        "TAPE WARMTH", "CELL PHONE", "FRIED MIC", "BROKEN INTERCOM", "RADIO STATIC",
-        "CYBER CHORUS", "UNSTABLE PITCH", "UNDERWATER", "SPINNING VOCAL", "PULSING GATE",
-        "DARK SLAP", "THROW ECHO", "PING PONG SPACE", "FILTERED TAPE DELAY", "PITCH ECHO",
-        "MODERN RAP LEAD", "RAGE VOCAL", "DARK PLUGG LEAD", "INTIMATE TRAP", "RAW UNDERGROUND",
-        "MONSTER ADLIB", "TELEPHONE SHOUT", "DISTANCE ADLIB", "GHOST LAYER", "SPECTRAL GHOST",
+        "01. POLISHED / CRISP",
+        "02. DARK / UNDERGROUND",
+        "03. DEMON / DEEP",
+        "04. WIDE / FLOATING",
+        "05. DESTROYED / CRUSHED",
+        "06. TELEPHONE / DEVICE",
+        "07. FUTURISTIC / ALIEN",
         "CUSTOM"
     };
 
@@ -92,6 +89,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
         "Preset Mode",
         presetChoices,
         0));
+
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         juce::ParameterID { ParameterIDs::INPUT_GAIN, 1 },
@@ -291,6 +289,27 @@ bool UndergroundAudioProcessor::isBusesLayoutSupported(const BusesLayout& layout
     return true;
 }
 
+void UndergroundAudioProcessor::toggleABState()
+{
+    // Save current active state into XML memory snapshot
+    auto currentXml = apvts.copyState().createXml();
+    if (activeStateSlot == 0)
+        stateSlotA = std::move(currentXml);
+    else
+        stateSlotB = std::move(currentXml);
+
+    // Toggle slot: 0 -> 1 (B) or 1 -> 0 (A)
+    activeStateSlot = 1 - activeStateSlot;
+
+    // Restore state from newly active slot if available
+    auto& targetXml = (activeStateSlot == 0) ? stateSlotA : stateSlotB;
+    if (targetXml != nullptr)
+    {
+        apvts.replaceState(juce::ValueTree::fromXml(*targetXml));
+    }
+}
+
+
 void UndergroundAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec;
@@ -309,8 +328,9 @@ void UndergroundAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     signalChain.prepare(spec);
 
     // Trigger non-blocking cloud update check
-    autoUpdater.checkForUpdatesAsync("2.7.0");
+    autoUpdater.checkForUpdatesAsync("3.0.0");
 }
+
 
 void UndergroundAudioProcessor::releaseResources()
 {
