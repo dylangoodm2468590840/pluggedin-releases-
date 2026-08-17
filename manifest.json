@@ -28,7 +28,7 @@
       "latest_version": "3.5.0",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.5.0/UNDERGROUND_v3.5.0_Win64_VST3.zip",
       "download_url_mac": "https://files.catbox.moe/404iri.zip",
-      "changelog": "Official UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel Architecture, 7 Re-Voiced Reference Presets, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), Dynamic Transformer Core & Tube Saturation with 4x Polyphase Oversampling.",
+      "changelog": "Official UNDERGROUND v3.5.0 Master Studio DSP: Real-Time PSOLA Glottal Pitch Tracker, 12th-Order LPC Formant Warping, Minimum-Phase Dynamic Resonance Suppressor (Anti-Mud -3.5dB @ 350Hz), Murda Melodies Effect 4 3D Spatial Aura (0.90 Side/Mid ratio), and Consonant Transient Bleed Protection.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
