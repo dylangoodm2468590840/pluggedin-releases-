@@ -26,15 +26,15 @@
                         "plugin_id":  "pluggedin_underground",
                         "name":  "UNDERGROUND V3.6.0 (Master Studio Suite)",
                         "latest_version":  "3.6.0",
-                        "download_url_win":  "https://files.catbox.moe/befqgz.zip",
+                        "download_url_win":  "https://files.catbox.moe/8j8va3.zip",
                         "download_url_mac":  "https://files.catbox.moe/404iri.zip",
                         "changelog":  "Official UNDERGROUND v3.6.0 Master Studio DSP: Real-Time PSOLA Glottal Pitch Tracker, 12th-Order LPC Formant Warping, Minimum-Phase Dynamic Resonance Suppressor (Anti-Mud -3.5dB @ 350Hz), Murda Melodies Effect 4 3D Spatial Aura (0.90 Side/Mid ratio), and Consonant Transient Bleed Protection.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/befqgz.zip",
-                                                             "sha256":  "a5801c6e8a64d0c13acc0918392fecbc17c4559f838c0b78dc79155a530e1ace",
-                                                             "size_bytes":  4887978
+                                                             "url":  "https://files.catbox.moe/8j8va3.zip",
+                                                             "sha256":  "3155945ff56d612b332402af1c5d8949692d4b19719c4a683fb8dbd0113004ff",
+                                                             "size_bytes":  4888993
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
