@@ -6,68 +6,133 @@
 #include "ManagerSelfUpdater.h"
 #include <functional>
 #include <atomic>
+#if JUCE_WINDOWS || defined(_WIN32)
 #include <windows.h>
+#include <tlhelp32.h>
+#endif
 
 /**
  * @class CloudDownloader
- * @brief Thread-safe background cloud binary downloader & hot-swap installer for PluggedIN plugins.
- * Equipped with DAW file-lock detection, SHA-256 verification, and atomic staging.
+ * @brief Commercial-grade Transactional Plugin Installer & On-Disk Verification Engine.
+ * Features:
+ * - Pre-flight DAW process & file lock detection
+ * - SHA-256 cryptographic verification
+ * - Isolated temporary sandbox extraction
+ * - Atomic rollback snapshot creation
+ * - Elevated multi-directory installation
+ * - Strict post-install physical on-disk binary inspection
  */
 class CloudDownloader : private juce::Thread
 {
 public:
-    std::function<void(float)> onProgress;
+    enum class InstallState
+    {
+        Idle,
+        CheckingLocks,
+        Downloading,
+        VerifyingChecksum,
+        Extracting,
+        BackingUp,
+        Installing,
+        VerifyingOnDisk,
+        Complete,
+        Failed
+    };
+
+    std::function<void(float, const juce::String&)> onProgressState;
     std::function<void(bool, const juce::String&)> onComplete;
 
     CloudDownloader()
-        : juce::Thread("PluggedINCloudDownloaderThread")
+        : juce::Thread("PluggedINPluginTransactionThread")
     {
     }
 
     ~CloudDownloader() override
     {
-        stopThread(3000);
+        stopThread(4000);
+    }
+
+    static bool isKnownDawRunning(juce::String& outDawName)
+    {
+#if JUCE_WINDOWS || defined(_WIN32)
+        const char* knownDaws[] = {
+            "FL64.exe", "FL.exe", "Ableton Live 11 Suite.exe", "Ableton Live 12 Suite.exe",
+            "Ableton Live 11 Standard.exe", "Ableton Live 12 Standard.exe", "Ableton Live.exe",
+            "reaper.exe", "reaper_host64.exe", "Studio One.exe", "Cubase12.exe", "Cubase13.exe",
+            "ProTools.exe", "Bitwig Studio.exe", "Cakewalk.exe"
+        };
+
+        HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+        if (snapshot != INVALID_HANDLE_VALUE)
+        {
+            PROCESSENTRY32W pe;
+            pe.dwSize = sizeof(pe);
+            if (Process32FirstW(snapshot, &pe))
+            {
+                do
+                {
+                    juce::String processName(pe.szExeFile);
+                    for (const auto* daw : knownDaws)
+                    {
+                        if (processName.equalsIgnoreCase(daw))
+                        {
+                            CloseHandle(snapshot);
+                            outDawName = processName;
+                            return true;
+                        }
+                    }
+                } while (Process32NextW(snapshot, &pe));
+            }
+            CloseHandle(snapshot);
+        }
+#endif
+        return false;
     }
 
     static bool isVst3FileLocked(const juce::File& vst3Dir)
     {
         if (!vst3Dir.exists()) return false;
+
+#if JUCE_WINDOWS || defined(_WIN32)
         juce::File binary = vst3Dir.getChildFile("Contents\\x86_64-win\\UNDERGROUND.vst3");
-        if (!binary.existsAsFile()) return false;
+        if (!binary.existsAsFile())
+            binary = vst3Dir.getChildFile("UNDERGROUND.vst3");
 
-        HANDLE hFile = CreateFileA(binary.getFullPathName().toRawUTF8(),
-                                   GENERIC_WRITE,
-                                   0, // Exclusive access test
-                                   NULL,
-                                   OPEN_EXISTING,
-                                   FILE_ATTRIBUTE_NORMAL,
-                                   NULL);
-
-        if (hFile == INVALID_HANDLE_VALUE)
+        if (binary.existsAsFile())
         {
-            DWORD err = GetLastError();
-            if (err == ERROR_SHARING_VIOLATION || err == ERROR_LOCK_VIOLATION)
-                return true;
-        }
-        else
-        {
-            CloseHandle(hFile);
-        }
+            HANDLE hFile = CreateFileA(binary.getFullPathName().toRawUTF8(),
+                                       GENERIC_WRITE,
+                                       0, // Exclusive lock probe
+                                       NULL,
+                                       OPEN_EXISTING,
+                                       FILE_ATTRIBUTE_NORMAL,
+                                       NULL);
 
+            if (hFile == INVALID_HANDLE_VALUE)
+            {
+                DWORD err = GetLastError();
+                if (err == ERROR_SHARING_VIOLATION || err == ERROR_LOCK_VIOLATION || err == ERROR_ACCESS_DENIED)
+                    return true;
+            }
+            else
+            {
+                CloseHandle(hFile);
+            }
+        }
+#endif
         return false;
     }
 
     static bool uninstallPlugin(const juce::String& pluginId)
     {
-        juce::File targetVst3Dir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                                      .getChildFile("Local\\Programs\\Common\\VST3\\UNDERGROUND.vst3");
-        if (targetVst3Dir.exists())
-            targetVst3Dir.deleteRecursively();
-
-        juce::File sysTarget("C:\\Program Files\\Common Files\\VST3\\UNDERGROUND.vst3");
-        if (sysTarget.exists())
-            sysTarget.deleteRecursively();
-
+        auto candidates = InstalledRegistry::getCandidateDirectories(pluginId);
+        for (auto& cand : candidates)
+        {
+            if (cand.exists())
+            {
+                try { cand.deleteRecursively(); } catch (...) {}
+            }
+        }
         InstalledRegistry::removeInstalledVersion(pluginId);
         return true;
     }
@@ -91,13 +156,21 @@ private:
         bool success = false;
         juce::String errorMsg = "";
 
-        juce::File targetVst3Dir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                                      .getChildFile("Local\\Programs\\Common\\VST3\\UNDERGROUND.vst3");
+        juce::String pluginFolder = (pluginId == "pluggedin_crush") ? "CRUSH.vst3" : "UNDERGROUND.vst3";
+        juce::File userVst3Dir = InstalledRegistry::getUserVst3Directory().getChildFile(pluginFolder);
+        juce::File sysVst3Dir  = InstalledRegistry::getSystemVst3Directory().getChildFile(pluginFolder);
 
-        // 1. Proactive DAW File-Lock Detection
-        if (isVst3FileLocked(targetVst3Dir))
+        auto allOldLocations = InstalledRegistry::getCandidateDirectories(pluginId);
+
+        // -------------------------------------------------------------
+        // TRANSACTION STEP 1: Pre-Flight Lock & DAW Process Verification
+        // -------------------------------------------------------------
+        updateState(0.05f, "Checking DAW processes & file locks...");
+
+        juce::String runningDaw = "";
+        if (isKnownDawRunning(runningDaw))
         {
-            errorMsg = "UNDERGROUND.vst3 is currently in use! Please close FL Studio / your DAW before updating.";
+            errorMsg = "DAW Active (" + runningDaw + "). Please close your DAW before updating.";
             isDownloading.store(false);
             juce::MessageManager::callAsync([this, errorMsg] {
                 if (onComplete) onComplete(false, errorMsg);
@@ -105,41 +178,11 @@ private:
             return;
         }
 
-        juce::File tempDir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                                  .getChildFile("PluggedIN\\temp\\plugin_staging");
-        juce::String pluginFolder = (pluginId == "pluggedin_crush") ? "CRUSH.vst3" : "UNDERGROUND.vst3";
-        juce::String macAuFolder   = (pluginId == "pluggedin_crush") ? "CRUSH.component" : "UNDERGROUND.component";
-
-#if JUCE_MAC
-        juce::File userVst3Dir = juce::File::getSpecialLocation(juce::File::userHomeDirectory)
-                                    .getChildFile("Library/Audio/Plug-Ins/VST3").getChildFile(pluginFolder);
-        juce::File sysVst3Dir("/Library/Audio/Plug-Ins/VST3/" + pluginFolder);
-        juce::File userAuDir   = juce::File::getSpecialLocation(juce::File::userHomeDirectory)
-                                    .getChildFile("Library/Audio/Plug-Ins/Components").getChildFile(macAuFolder);
-        juce::File sysAuDir("/Library/Audio/Plug-Ins/Components/" + macAuFolder);
-
-        std::vector<juce::File> allOldLocations = {
-            userVst3Dir, sysVst3Dir, userAuDir, sysAuDir
-        };
-#else
-        juce::File userVst3Dir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                                    .getChildFile("Local\\Programs\\Common\\VST3\\" + pluginFolder);
-        juce::File sysVst3Dir("C:\\Program Files\\Common Files\\VST3\\" + pluginFolder);
-        juce::File x86Vst3Dir("C:\\Program Files (x86)\\Common Files\\VST3\\" + pluginFolder);
-        juce::File steinbergVst3Dir("C:\\Program Files\\Steinberg\\VSTPlugins\\" + pluginFolder);
-        juce::File generalVst3Dir("C:\\Program Files\\VSTPlugins\\" + pluginFolder);
-
-        std::vector<juce::File> allOldLocations = {
-            userVst3Dir, sysVst3Dir, x86Vst3Dir, steinbergVst3Dir, generalVst3Dir
-        };
-#endif
-
-        // 1. Proactive DAW File-Lock Detection
         for (const auto& loc : allOldLocations)
         {
             if (isVst3FileLocked(loc))
             {
-                errorMsg = "UNDERGROUND.vst3 is currently in use! Please close FL Studio / your DAW before updating.";
+                errorMsg = "Plugin binary is locked in memory. Please close FL Studio / DAW.";
                 isDownloading.store(false);
                 juce::MessageManager::callAsync([this, errorMsg] {
                     if (onComplete) onComplete(false, errorMsg);
@@ -148,16 +191,22 @@ private:
             }
         }
 
+        juce::File tempDir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
+                                  .getChildFile("PluggedIN\\temp\\plugin_staging");
         if (!tempDir.exists())
             tempDir.createDirectory();
 
+        // -------------------------------------------------------------
+        // TRANSACTION STEP 2: Isolated Sandbox Download
+        // -------------------------------------------------------------
         if (downloadUrl.isNotEmpty())
         {
-            // 2. HTTPS Cloud Download Stream
             juce::URL url(downloadUrl);
             juce::File downloadedFile = tempDir.getChildFile("downloaded_plugin.zip");
             if (downloadedFile.existsAsFile())
                 downloadedFile.deleteFile();
+
+            updateState(0.10f, "Connecting to Cloud CDN...");
 
             auto stream = url.createInputStream(juce::URL::InputStreamOptions(juce::URL::ParameterHandling::inAddress)
                                                 .withConnectionTimeoutMs(10000)
@@ -181,24 +230,26 @@ private:
                             fileOut.write(buffer, static_cast<size_t>(bytesRead));
                             bytesWritten += bytesRead;
 
-                            if (totalBytes > 0 && onProgress)
+                            if (totalBytes > 0)
                             {
-                                float fraction = static_cast<float>(bytesWritten) / static_cast<float>(totalBytes);
-                                juce::MessageManager::callAsync([this, fraction] {
-                                    if (onProgress) onProgress(fraction);
-                                });
+                                float fraction = 0.10f + (static_cast<float>(bytesWritten) / static_cast<float>(totalBytes)) * 0.60f;
+                                int pct = static_cast<int>((static_cast<float>(bytesWritten) / static_cast<float>(totalBytes)) * 100.0f);
+                                updateState(fraction, "DOWNLOADING " + juce::String(pct) + "%");
                             }
                         }
                     }
                     fileOut.flush();
 
-                    // 3. SHA-256 Checksum Validation
+                    // -------------------------------------------------------------
+                    // TRANSACTION STEP 3: Cryptographic SHA-256 Checksum Validation
+                    // -------------------------------------------------------------
+                    updateState(0.75f, "Verifying SHA-256 checksum...");
                     if (targetSha256.isNotEmpty())
                     {
                         juce::String actualHash = ManagerSelfUpdater::computeSHA256(downloadedFile);
                         if (actualHash != targetSha256)
                         {
-                            errorMsg = "Plugin package SHA-256 verification failed!";
+                            errorMsg = "Package SHA-256 checksum mismatch. Download may be corrupted.";
                             downloadedFile.deleteFile();
                             isDownloading.store(false);
                             juce::MessageManager::callAsync([this, errorMsg] {
@@ -208,16 +259,10 @@ private:
                         }
                     }
 
-                    // 4. Clean purge of ALL old VST3 installations
-                    for (auto& loc : allOldLocations)
-                    {
-                        if (loc.exists())
-                        {
-                            try { loc.deleteRecursively(); } catch (...) {}
-                        }
-                    }
-
-                    // 5. Unpack fresh package to staging folder
+                    // -------------------------------------------------------------
+                    // TRANSACTION STEP 4: Sandbox Extraction & Package Discovery
+                    // -------------------------------------------------------------
+                    updateState(0.80f, "Extracting payload in staging sandbox...");
                     juce::File stageExtract = tempDir.getChildFile("extracted_vst3");
                     if (stageExtract.exists())
                         stageExtract.deleteRecursively();
@@ -228,32 +273,117 @@ private:
                     {
                         zip.uncompressTo(stageExtract);
 
-                        // Locate UNDERGROUND.vst3 within extracted structure
                         juce::File unpackedVst3 = stageExtract.getChildFile("UNDERGROUND.vst3");
                         if (!unpackedVst3.exists())
                         {
-                            // If zip was packaged without top folder
-                            unpackedVst3 = stageExtract;
+                            juce::Array<juce::File> found;
+                            stageExtract.findChildFiles(found, juce::File::findDirectories, true, "UNDERGROUND.vst3");
+                            if (found.size() > 0)
+                                unpackedVst3 = found[0];
+                            else
+                                unpackedVst3 = stageExtract;
                         }
 
-                        // Install to User LocalAppData VST3 folder
+                        // -------------------------------------------------------------
+                        // TRANSACTION STEP 5: Create Rollback Snapshot of Existing VST3
+                        // -------------------------------------------------------------
+                        updateState(0.85f, "Creating rollback snapshot...");
+                        juce::File rollbackDir = tempDir.getChildFile("rollback_backup");
+                        if (rollbackDir.exists()) rollbackDir.deleteRecursively();
+                        rollbackDir.createDirectory();
+
+                        bool hadExistingSys = sysVst3Dir.exists();
+                        if (hadExistingSys)
+                        {
+                            try { sysVst3Dir.copyDirectoryTo(rollbackDir.getChildFile("sys_backup.vst3")); } catch (...) {}
+                        }
+
+                        // -------------------------------------------------------------
+                        // TRANSACTION STEP 6: Multi-Directory Elevated Deployment
+                        // -------------------------------------------------------------
+                        updateState(0.90f, "Installing to System VST3 Directory...");
+
+                        // Elevated PowerShell install for C:\Program Files\Common Files\VST3
+                        juce::String psScript =
+                            "if (Test-Path '" + sysVst3Dir.getFullPathName() + "') { "
+                            "  Remove-Item -Recurse -Force '" + sysVst3Dir.getFullPathName() + "' "
+                            "}; "
+                            "Copy-Item -Recurse -Force '" + unpackedVst3.getFullPathName() + "' "
+                            "'" + sysVst3Dir.getParentDirectory().getFullPathName() + "'";
+
+                        juce::MemoryOutputStream encoded;
+                        for (int ci = 0; ci < psScript.length(); ++ci)
+                        {
+                            juce::juce_wchar wc = psScript[ci];
+                            encoded.writeByte((char)(wc & 0xFF));
+                            encoded.writeByte((char)((wc >> 8) & 0xFF));
+                        }
+                        juce::String b64Script = juce::Base64::toBase64(encoded.getData(), encoded.getDataSize());
+
+                        bool systemInstallOk = false;
+#if JUCE_WINDOWS || defined(_WIN32)
+                        juce::String psArgs = "-NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand " + b64Script;
+                        HINSTANCE result = ShellExecuteA(
+                            nullptr,
+                            "runas",
+                            "powershell.exe",
+                            psArgs.toRawUTF8(),
+                            nullptr,
+                            SW_HIDE
+                        );
+                        systemInstallOk = ((INT_PTR)result > 32);
+                        if (systemInstallOk)
+                            juce::Thread::sleep(2500);
+#endif
+
+                        // Fallback / User Directory Mirror
                         userVst3Dir.getParentDirectory().createDirectory();
+                        if (userVst3Dir.exists()) userVst3Dir.deleteRecursively();
                         unpackedVst3.copyDirectoryTo(userVst3Dir);
 
-                        // Also install to System-wide VST3 folder
-                        try {
-                            if (sysVst3Dir.getParentDirectory().exists())
+                        if (!systemInstallOk)
+                        {
+                            try {
+                                sysVst3Dir.getParentDirectory().createDirectory();
+                                if (sysVst3Dir.exists()) sysVst3Dir.deleteRecursively();
                                 unpackedVst3.copyDirectoryTo(sysVst3Dir);
-                        } catch (...) {}
+                                systemInstallOk = true;
+                            } catch (...) {}
+                        }
 
-                        InstalledRegistry::setInstalledVersion(pluginId, version, userVst3Dir.getFullPathName());
-                        success = true;
+                        // -------------------------------------------------------------
+                        // TRANSACTION STEP 7: STRICT PHYSICAL ON-DISK VERIFICATION
+                        // -------------------------------------------------------------
+                        updateState(0.95f, "Verifying on-disk binary metadata...");
+                        juce::String verifiedOnDiskPath = "";
+                        bool verified = InstalledRegistry::verifyOnDiskInstallation(pluginId, version, verifiedOnDiskPath);
+
+                        if (verified)
+                        {
+                            // TRANSACTION COMMIT
+                            updateState(1.0f, "Installation Verified: v" + version);
+                            success = true;
+                            if (rollbackDir.exists()) rollbackDir.deleteRecursively();
+                        }
+                        else
+                        {
+                            // TRANSACTION ROLLBACK
+                            updateState(1.0f, "Verification failed! Rolling back...");
+                            if (hadExistingSys && rollbackDir.getChildFile("sys_backup.vst3").exists())
+                            {
+                                try {
+                                    rollbackDir.getChildFile("sys_backup.vst3").copyDirectoryTo(sysVst3Dir);
+                                } catch (...) {}
+                            }
+                            errorMsg = "On-disk version verification failed after installation!";
+                            success = false;
+                        }
                     }
                 }
             }
             else
             {
-                errorMsg = "Unable to connect to cloud download server.";
+                errorMsg = "Unable to connect to release CDN server.";
             }
         }
         else
@@ -269,10 +399,17 @@ private:
         });
     }
 
+    void updateState(float frac, const juce::String& label)
+    {
+        juce::MessageManager::callAsync([this, frac, label] {
+            if (onProgressState) onProgressState(frac, label);
+        });
+    }
+
     std::atomic<bool> isDownloading { false };
     juce::String downloadUrl { "" };
     juce::String pluginId { "pluggedin_underground" };
-    juce::String version { "1.0.0" };
+    juce::String version { "3.3.0" };
     juce::String targetSha256 { "" };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CloudDownloader)
