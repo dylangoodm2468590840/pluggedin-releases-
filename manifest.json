@@ -24,17 +24,17 @@
     {
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND V3.3.0 (Boutique Vocal Suite)",
-      "latest_version": "3.3.0",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.3.0/UNDERGROUND_v3.3.0_Win64_VST3.zip",
+      "name": "UNDERGROUND V3.4.0 (Boutique Vocal Suite)",
+      "latest_version": "3.4.0",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.4.0/UNDERGROUND_v3.4.0_Win64_VST3.zip",
       "download_url_mac": "https://files.catbox.moe/404iri.zip",
       "changelog": "Official UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel Architecture, 7 Re-Voiced Reference Presets, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), Dynamic Transformer Core & Tube Saturation with 4x Polyphase Oversampling.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.3.0/UNDERGROUND_v3.3.0_Win64_VST3.zip",
-          "sha256": "515ff2bd0b21771f9ec2326b84048f045d101e7f8a1ca463f81fe4fb5b06711a",
-          "size_bytes": 4887575
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.4.0/UNDERGROUND_v3.4.0_Win64_VST3.zip",
+          "sha256": "ad6b93f0792ee54ae4c8ed85c35570e5d6bd943641019e5c9093c79c3ade5420",
+          "size_bytes": 4887576
         },
         "macos_universal": {
           "format": "vst3",
