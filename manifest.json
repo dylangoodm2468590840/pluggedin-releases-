@@ -1,17 +1,22 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "1.1.0",
+  "hub_version": "2.0.0",
   "manager": {
-    "version": "1.1.0",
+    "version": "2.0.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Redesigned Split-Bus Direct/Parallel DSP Engine, Reference Audio Forensic Re-voicing of 7 Core Presets, 100% Mono-Safe 3D Spatial Aura with 180Hz Side-Cut Isolation, Envelope-Reactive Analog Tube/Tape Saturation with 4x Polyphase Oversampling, and Synchronous Formant Sub-Harmonic Resonator.",
+    "release_notes": "Official PluggedIN Central v2.0.0 Native Studio Manager & UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel DSP, 7 Re-Voiced Reference Presets with 4x Polyphase Oversampling, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), and Universal Cross-Platform Auto-Updates.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/8awe60.zip",
-        "sha256": "3bfd67784d8a34258359461bd546bfb2abcc24e20122461e26d4a60d151b6758",
-        "size_bytes": 32484036
+        "url": "https://files.catbox.moe/sxdu8t.zip",
+        "sha256": "9d2e1aab6fbf01ce0f82e3111d2fcface5e33d36be3b4b60825f6a074f222887",
+        "size_bytes": 32501463
+      },
+      "macos_universal": {
+        "url": "https://files.catbox.moe/znz8ax.zip",
+        "sha256": "9d2e1aab6fbf01ce0f82e3111d2fcface5e33d36be3b4b60825f6a074f222887",
+        "size_bytes": 32501463
       }
     }
   },
@@ -19,23 +24,23 @@
     {
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND V3.2.0 (Boutique Vocal Suite)",
-      "latest_version": "3.2.0",
-      "download_url_win": "https://files.catbox.moe/ku1avm.zip",
-      "download_url_mac": "https://files.catbox.moe/ku1avm.zip",
-      "changelog": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Redesigned Split-Bus Direct/Parallel DSP Engine, Reference Audio Forensic Re-voicing of 7 Core Presets, 100% Mono-Safe 3D Spatial Aura with 180Hz Side-Cut Isolation, Envelope-Reactive Analog Tube/Tape Saturation with 4x Polyphase Oversampling, and Synchronous Formant Sub-Harmonic Resonator.",
+      "name": "UNDERGROUND V3.3.0 (Boutique Vocal Suite)",
+      "latest_version": "3.3.0",
+      "download_url_win": "https://files.catbox.moe/vihdnr.zip",
+      "download_url_mac": "https://files.catbox.moe/vihdnr.zip",
+      "changelog": "Official UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel Architecture, 7 Re-Voiced Reference Presets, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), Dynamic Transformer Core & Tube Saturation with 4x Polyphase Oversampling.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/ku1avm.zip",
-          "sha256": "e3fd506aed98cd187f25bc4f2f8e86b43094b392fe5e9c0c4b33a3ae96c506b3",
-          "size_bytes": 4888759
+          "url": "https://files.catbox.moe/vihdnr.zip",
+          "sha256": "f41e8bb99b332296f91b610cb093707842aaf3b81a38fdfd440c47c719bb0eb3",
+          "size_bytes": 4890163
         },
         "macos_universal": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/ku1avm.zip",
-          "sha256": "e3fd506aed98cd187f25bc4f2f8e86b43094b392fe5e9c0c4b33a3ae96c506b3",
-          "size_bytes": 4888759
+          "url": "https://files.catbox.moe/vihdnr.zip",
+          "sha256": "f41e8bb99b332296f91b610cb093707842aaf3b81a38fdfd440c47c719bb0eb3",
+          "size_bytes": 4890163
         }
       }
     }
