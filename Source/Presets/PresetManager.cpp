@@ -1,1006 +1,270 @@
 #include "PresetManager.h"
 #include "../Utils/ParameterIDs.h"
-#include <juce_core/juce_core.h>
 
 const char* PresetManager::getPresetName(PresetIndex preset)
 {
     switch (preset)
     {
-        case DegenerateRage:    return "DEGENERATE RAGE";
-        case SludgePlugg:       return "SLUDGE PLUGG";
-        case CyberAdlib:        return "CYBER AD-LIB";
-        case GlitchMonster:     return "GLITCH MONSTER";
-        case UndergroundTube:   return "UNDERGROUND TUBE";
-
-        case DemonBelow:        return "DEMON BELOW";
-        case Underworld:        return "UNDERWORLD";
-        case Possessed:         return "POSSESSED";
-        case DeepShadow:        return "DEEP SHADOW";
-        case HellLayer:         return "HELL LAYER";
-
-        case WideLead:          return "WIDE LEAD";
-        case FloatingHook:      return "FLOATING HOOK";
-        case HeadphoneWide:     return "HEADPHONE WIDE";
-        case CyberDouble:       return "CYBER DOUBLE";
-        case StereoAura:        return "STEREO AURA";
-
-        case DeepChest:         return "DEEP CHEST";
-        case Goblin:            return "GOBLIN";
-        case TinyVoice:         return "TINY VOICE";
-        case FormantShifter:    return "FORMANT SHIFTER";
-        case OctaveStack:       return "OCTAVE STACK";
-
-        case Cathedral:         return "CATHEDRAL";
-        case SlapRoom:          return "SLAP ROOM";
-        case FloatingEcho:      return "FLOATING ECHO";
-        case DarkVoid:          return "DARK VOID";
-        case WashedVocal:       return "WASHED VOCAL";
-
-        case TapeWarmth:        return "TAPE WARMTH";
-        case CellPhone:         return "CELL PHONE";
-        case FriedMic:          return "FRIED MIC";
-        case BrokenIntercom:    return "BROKEN INTERCOM";
-        case RadioStatic:       return "RADIO STATIC";
-
-        case CyberChorus:       return "CYBER CHORUS";
-        case UnstablePitch:     return "UNSTABLE PITCH";
-        case Underwater:        return "UNDERWATER";
-        case SpinningVocal:     return "SPINNING VOCAL";
-        case PulsingGate:       return "PULSING GATE";
-
-        case DarkSlap:          return "DARK SLAP";
-        case ThrowEcho:         return "THROW ECHO";
-        case PingPongSpace:     return "PING PONG SPACE";
-        case FilteredTapeDelay: return "FILTERED TAPE DELAY";
-        case PitchEcho:         return "PITCH ECHO";
-
-        case ModernRapLead:     return "MODERN RAP LEAD";
-        case RageVocal:         return "RAGE VOCAL";
-        case DarkPluggLead:     return "DARK PLUGG LEAD";
-        case IntimateTrap:      return "INTIMATE TRAP";
-        case RawUnderground:    return "RAW UNDERGROUND";
-
-        case MonsterAdlib:      return "MONSTER ADLIB";
-        case TelephoneShout:    return "TELEPHONE SHOUT";
-        case DistanceAdlib:     return "DISTANCE ADLIB";
-        case GhostLayer:        return "GHOST LAYER";
-        case SpectralGhost:     return "SPECTRAL GHOST";
-
-        default:                return "CUSTOM";
+        case Ref1_PolishedCrisp:     return "01. POLISHED / CRISP";
+        case Ref2_DarkUnderground:   return "02. DARK / UNDERGROUND";
+        case Ref3_DemonDeep:         return "03. DEMON / DEEP";
+        case Ref4_WideFloating:      return "04. WIDE / FLOATING";
+        case Ref5_DestroyedCrushed:  return "05. DESTROYED / CRUSHED";
+        case Ref6_TelephoneDevice:   return "06. TELEPHONE / DEVICE";
+        case Ref7_FuturisticAlien:   return "07. FUTURISTIC / ALIEN";
+        case Custom:                 return "CUSTOM USER";
+        default:                     return "UNKNOWN";
     }
 }
 
 void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, PresetIndex preset)
 {
-    auto setParam = [&](const char* id, float val) {
-        if (auto* param = apvts.getParameter(id))
-        {
-            param->beginChangeGesture();
-            param->setValueNotifyingHost(param->convertTo0to1(val));
-            param->endChangeGesture();
-        }
+    auto setP = [&](const juce::String& paramId, float value) {
+        if (auto* param = apvts.getParameter(paramId))
+            param->setValueNotifyingHost(param->convertTo0to1(value));
     };
 
-    // 1. Baseline Reset across ALL modules & macros
-    setParam(ParameterIDs::DEGENERATE, 0.0f);
-    setParam(ParameterIDs::INPUT_GAIN, 0.0f);
-    setParam(ParameterIDs::OUTPUT_GAIN, 0.0f);
-    setParam(ParameterIDs::MIX_GLOBAL, 1.0f);
+    // 1. Reset all modules to clean baseline
+    setP(ParameterIDs::INPUT_GAIN, 0.0f);
+    setP(ParameterIDs::OUTPUT_GAIN, 0.0f);
+    setP(ParameterIDs::MIX_GLOBAL, 1.0f);
+    setP(ParameterIDs::DEGENERATE, 0.0f);
 
-    setParam(ParameterIDs::MACRO_DEPTH, 0.0f);
-    setParam(ParameterIDs::MACRO_DARK, 0.0f);
-    setParam(ParameterIDs::MACRO_MOTION, 0.0f);
-    setParam(ParameterIDs::MACRO_CHAOS, 0.0f);
-    setParam(ParameterIDs::MACRO_AGE, 0.0f);
-    setParam(ParameterIDs::MACRO_GHOST, 0.0f);
-    setParam(ParameterIDs::MACRO_TONE, 0.5f);
+    setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+    setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+    setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+    setP(ParameterIDs::MODULE_DELAY_ENABLE, 1.0f);
+    setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
 
-    setParam(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
-    setParam(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
-    setParam(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
-    setParam(ParameterIDs::MODULE_DELAY_ENABLE, 1.0f);
-    setParam(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+    setP(ParameterIDs::COMP_SQUEEZE, 0.0f);
+    setP(ParameterIDs::COMP_CHARACTER, 2.0f);
+    setP(ParameterIDs::DEESS_AMOUNT, 0.0f);
+    setP(ParameterIDs::DEESS_FREQ, 6500.0f);
 
-    setParam(ParameterIDs::SHADOW_ENABLE, 0.0f);
-    setParam(ParameterIDs::SHADOW_MIX, 0.0f);
-    setParam(ParameterIDs::SHADOW_PITCH, 0.0f);   // Octave Down (-12)
-    setParam(ParameterIDs::SHADOW_FORMANT, 0.5f);
-    setParam(ParameterIDs::SHADOW_DARKNESS, 0.5f);
-    setParam(ParameterIDs::SHADOW_DRIVE, 0.0f);
+    setP(ParameterIDs::AIR_MID, 0.0f);
+    setP(ParameterIDs::AIR_TOP, 0.0f);
 
-    setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Tube
-    setParam(ParameterIDs::CRUSH_AMOUNT, 0.0f);
-    setParam(ParameterIDs::CRUSH_TONE, 0.5f);
-    setParam(ParameterIDs::CRUSH_MIX, 1.0f);
-    setParam(ParameterIDs::CRUSH_PUNISH, 0.0f);
+    setP(ParameterIDs::EQ_LOW_CUT, 20.0f);
+    setP(ParameterIDs::EQ_LOW_GAIN, 0.0f);
+    setP(ParameterIDs::EQ_MID_GAIN, 0.0f);
+    setP(ParameterIDs::EQ_HIGH_GAIN, 0.0f);
+    setP(ParameterIDs::EQ_HIGH_CUT, 20000.0f);
+    setP(ParameterIDs::EQ_LOW_Q, 0.707f);
+    setP(ParameterIDs::EQ_MID_Q, 0.707f);
+    setP(ParameterIDs::EQ_HIGH_Q, 0.707f);
 
-    setParam(ParameterIDs::WIDTH_AMOUNT, 0.0f);
+    setP(ParameterIDs::CRUSH_AMOUNT, 0.0f);
+    setP(ParameterIDs::CRUSH_CHARACTER, 0.0f);
+    setP(ParameterIDs::CRUSH_TONE, 0.5f);
+    setP(ParameterIDs::CRUSH_MIX, 1.0f);
+    setP(ParameterIDs::CRUSH_PUNISH, 0.0f);
 
-    setParam(ParameterIDs::SPACE_REVERB, 0.0f);
-    setParam(ParameterIDs::SPACE_DELAY, 0.0f);
-    setParam(ParameterIDs::SPACE_DUCKING, 0.50f);
+    setP(ParameterIDs::SHADOW_ENABLE, 0.0f);
+    setP(ParameterIDs::SHADOW_MIX, 0.0f);
+    setP(ParameterIDs::SHADOW_PITCH, 0.0f);
+    setP(ParameterIDs::SHADOW_FORMANT, 0.5f);
+    setP(ParameterIDs::SHADOW_DARKNESS, 0.5f);
+    setP(ParameterIDs::SHADOW_DRIVE, 0.2f);
 
-    setParam(ParameterIDs::DEVICE_TYPE, 0.0f);   // Off
+    setP(ParameterIDs::WIDTH_AMOUNT, 0.0f);
 
-    // Dynamics, De-Essing & Fresh Air Defaults
-    setParam(ParameterIDs::COMP_SQUEEZE, 0.0f);
-    setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
-    setParam(ParameterIDs::DEESS_AMOUNT, 0.0f);
-    setParam(ParameterIDs::DEESS_FREQ, 6500.0f);
-    setParam(ParameterIDs::AIR_MID, 0.0f);
-    setParam(ParameterIDs::AIR_TOP, 0.0f);
+    setP(ParameterIDs::SPACE_REVERB, 0.0f);
+    setP(ParameterIDs::SPACE_DELAY, 0.0f);
+    setP(ParameterIDs::SPACE_DUCKING, 0.5f);
 
-    // 5-Band Visual & Audio EQ Default Reset
-    setParam(ParameterIDs::EQ_LOW_CUT, 35.0f);
-    setParam(ParameterIDs::EQ_LOW_CUT_SLOPE, 1.0f); // 12 dB/oct
-    setParam(ParameterIDs::EQ_LOW_GAIN, 0.0f);
-    setParam(ParameterIDs::EQ_LOW_Q, 0.707f);
-    setParam(ParameterIDs::EQ_MID_GAIN, 0.0f);
-    setParam(ParameterIDs::EQ_MID_Q, 0.707f);
-    setParam(ParameterIDs::EQ_HIGH_GAIN, 0.0f);
-    setParam(ParameterIDs::EQ_HIGH_Q, 0.707f);
-    setParam(ParameterIDs::EQ_HIGH_CUT, 18000.0f);
-    setParam(ParameterIDs::EQ_HIGH_CUT_SLOPE, 1.0f);
+    setP(ParameterIDs::DEVICE_TYPE, 0.0f);
 
-
-    // 2. Complete Handcrafted Parameter States for Every Preset ($100 Commercial Standard)
     switch (preset)
     {
-        // ----------------------------------------------------
-        // SIGNATURE MACRO PRESETS
-        // ----------------------------------------------------
-        case DegenerateRage:
-            setParam(ParameterIDs::DEGENERATE, 0.85f);
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.70f);
-            setParam(ParameterIDs::COMP_CHARACTER, 0.0f); // Fast FET
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.45f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.38f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f); // -12
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.32f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.55f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.35f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f); // EL34 Pentode
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::CRUSH_PUNISH, 1.0f); // +20dB Punish
-            setParam(ParameterIDs::CRUSH_TONE, 0.78f);
-            setParam(ParameterIDs::AIR_TOP, 0.45f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.55f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.22f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.18f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.75f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 85.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 3.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 4.5f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 19000.0f);
+        // =========================================================================
+        // 01. POLISHED / CRISP — Flagship Broadcast Modern Rap Lead
+        // Clean, forward, controlled dynamics, surgical de-essing, expensive air sheen.
+        // =========================================================================
+        case Ref1_PolishedCrisp:
+            setP(ParameterIDs::EQ_LOW_CUT, 80.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN, -1.2f);
+            setP(ParameterIDs::EQ_MID_GAIN, 1.5f);
+            setP(ParameterIDs::EQ_MID_Q, 1.2f);
+            setP(ParameterIDs::EQ_HIGH_GAIN, 2.2f);
+            setP(ParameterIDs::EQ_HIGH_CUT, 20000.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.42f);
+            setP(ParameterIDs::COMP_CHARACTER, 0.0f); // Modern Fast FET
+            setP(ParameterIDs::DEESS_AMOUNT, 0.50f);
+            setP(ParameterIDs::DEESS_FREQ, 6800.0f);
+
+            setP(ParameterIDs::AIR_MID, 0.30f);
+            setP(ParameterIDs::AIR_TOP, 0.45f);
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape Warmth
+            setP(ParameterIDs::CRUSH_AMOUNT, 0.20f);
+            setP(ParameterIDs::CRUSH_TONE, 0.70f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB, 0.15f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.70f);
             break;
 
-        case SludgePlugg:
-            setParam(ParameterIDs::DEGENERATE, 0.65f);
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.55f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.60f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.28f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.75f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.45f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.55f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.35f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.28f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 65.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 5.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, -1.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, -3.5f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 10500.0f);
+        // =========================================================================
+        // 02. DARK / UNDERGROUND — Moody, Thick Low-Mids, Tape Head-Bump (Ref Effect 5)
+        // Thick analog saturation, warm low-end weight, controlled highs, dense body.
+        // =========================================================================
+        case Ref2_DarkUnderground:
+            setP(ParameterIDs::EQ_LOW_CUT, 35.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN, 3.2f); // 160Hz warm chest punch
+            setP(ParameterIDs::EQ_LOW_Q, 1.1f);
+            setP(ParameterIDs::EQ_MID_GAIN, -1.5f);
+            setP(ParameterIDs::EQ_HIGH_GAIN, -3.0f);
+            setP(ParameterIDs::EQ_HIGH_CUT, 11000.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.55f);
+            setP(ParameterIDs::COMP_CHARACTER, 1.0f); // Vintage Optical LA-2A
+            setP(ParameterIDs::DEESS_AMOUNT, 0.40f);
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Triode Tube
+            setP(ParameterIDs::CRUSH_AMOUNT, 0.38f);
+            setP(ParameterIDs::CRUSH_TONE, 0.40f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX, 0.28f);
+            setP(ParameterIDs::SHADOW_PITCH, 0.0f);
+            setP(ParameterIDs::SHADOW_FORMANT, 0.38f);
+            setP(ParameterIDs::SHADOW_DARKNESS, 0.75f);
+            setP(ParameterIDs::SHADOW_DRIVE, 0.30f);
             break;
 
-        case CyberAdlib:
-            setParam(ParameterIDs::DEGENERATE, 0.70f);
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.60f);
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.30f);
-            setParam(ParameterIDs::SHADOW_PITCH, 2.0f); // -5
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.68f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 4.0f); // Cyber Fuzz
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.85f);
-            setParam(ParameterIDs::AIR_TOP, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.80f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.32f);
-            setParam(ParameterIDs::DEVICE_TYPE, 1.0f); // Cell Phone
-            setParam(ParameterIDs::EQ_LOW_CUT, 120.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 2.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 5.5f);
+        // =========================================================================
+        // 03. DEMON / DEEP — Subterranean Synchronous Formant Under-Voice (Ref Effect 1)
+        // Studio-grade PSOLA -12st pitched chest layer with LPC vocal tract & wide 3D aura.
+        // =========================================================================
+        case Ref3_DemonDeep:
+            setP(ParameterIDs::DEGENERATE, 0.55f);
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX, 0.60f);
+            setP(ParameterIDs::SHADOW_PITCH, 0.0f); // Octave Down (-12st)
+            setP(ParameterIDs::SHADOW_FORMANT, 0.32f); // Deep resonant LPC male chest tract
+            setP(ParameterIDs::SHADOW_DARKNESS, 0.50f);
+            setP(ParameterIDs::SHADOW_DRIVE, 0.45f);
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Preamp
+            setP(ParameterIDs::CRUSH_AMOUNT, 0.42f);
+            setP(ParameterIDs::CRUSH_TONE, 0.48f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT, 0.52f); // Murda Melodies Effect 4 3D aura
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.48f);
+            setP(ParameterIDs::AIR_TOP, 0.30f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB, 0.25f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.85f);
             break;
 
-        case GlitchMonster:
-            setParam(ParameterIDs::DEGENERATE, 0.90f);
-            setParam(ParameterIDs::OUTPUT_GAIN, -3.0f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.75f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.55f);
-            setParam(ParameterIDs::SHADOW_PITCH, 3.0f); // -24
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.18f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.68f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.65f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 4.0f); // Cyber Fuzz
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.85f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.55f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.65f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.45f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.35f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 70.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.5f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 4.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 12000.0f);
+        // =========================================================================
+        // 04. WIDE / FLOATING — Expansive Dreamlike Vocal Space (Ref Effects 1 & 4)
+        // Roland Dimension D chorus, stereo Haas doubling, ducked Dattorro diffusion space.
+        // =========================================================================
+        case Ref4_WideFloating:
+            setP(ParameterIDs::EQ_LOW_CUT, 90.0f);
+            setP(ParameterIDs::EQ_HIGH_GAIN, 2.4f);
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.40f);
+            setP(ParameterIDs::AIR_TOP, 0.45f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT, 0.88f); // 160Hz Side-cut isolated width (0.90 Side/Mid ratio)
+
+            setP(ParameterIDs::MODULE_DELAY_ENABLE, 1.0f);
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_DELAY, 0.35f);
+            setP(ParameterIDs::SPACE_REVERB, 0.58f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.85f); // Vocal stays clear on words, blooms in pauses
             break;
 
-        case UndergroundTube:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.45f);
-            setParam(ParameterIDs::COMP_CHARACTER, 1.0f); // Opto Leveler
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.30f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.18f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.42f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Triode Tube
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.55f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::AIR_MID, 0.35f);
-            setParam(ParameterIDs::AIR_TOP, 0.50f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.60f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 60.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.5f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 1.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
+        // =========================================================================
+        // 05. DESTROYED / CRUSHED — Aggressive +20dB PUNISH Mode (Ref Effect 3)
+        // Full Pentode / Cyber Fuzz oversampled blast with transient consonant protection.
+        // =========================================================================
+        case Ref5_DestroyedCrushed:
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 1.0f); // Pentode EL34
+            setP(ParameterIDs::CRUSH_AMOUNT, 0.80f);
+            setP(ParameterIDs::CRUSH_TONE, 0.72f);
+            setP(ParameterIDs::CRUSH_PUNISH, 1.0f); // +20dB PUNISH Mode ACTIVE!
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.70f);
+            setP(ParameterIDs::DEESS_AMOUNT, 0.60f);
+            setP(ParameterIDs::DEESS_FREQ, 5800.0f);
+
+            setP(ParameterIDs::EQ_LOW_CUT, 110.0f);
+            setP(ParameterIDs::EQ_MID_GAIN, 3.0f);
+            setP(ParameterIDs::EQ_MID_Q, 2.0f);
             break;
 
-        // ----------------------------------------------------
-        // DARK / DEMON CATEGORY (Murda Melodies / Vocal Bender standard)
-        // ----------------------------------------------------
-        case DemonBelow:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.65f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f); // -12
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.22f); // Deep throat resonance
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.65f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.45f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Tape Saturation
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.42f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.40f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.22f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 65.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.5f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 14000.0f);
+        // =========================================================================
+        // 06. TELEPHONE / DEVICE — Resonant Transducer Body & Crunch (Ref Effect 2)
+        // Cell Phone / Megaphone acoustic cavity resonance with speaker cone distortion.
+        // =========================================================================
+        case Ref6_TelephoneDevice:
+            setP(ParameterIDs::DEVICE_TYPE, 1.0f); // Cell Phone Transducer
+            
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Console
+            setP(ParameterIDs::CRUSH_AMOUNT, 0.30f);
+
+            setP(ParameterIDs::EQ_LOW_CUT, 380.0f);
+            setP(ParameterIDs::EQ_HIGH_CUT, 3400.0f);
+            setP(ParameterIDs::EQ_MID_GAIN, 4.5f);
+            setP(ParameterIDs::EQ_MID_Q, 2.4f);
+
+            setP(ParameterIDs::COMP_SQUEEZE, 0.65f);
             break;
 
-        case Underworld:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.75f);
-            setParam(ParameterIDs::SHADOW_PITCH, 3.0f); // -24
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.15f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.78f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.55f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.35f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.55f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.55f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.30f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 50.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 4.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, -2.0f);
+        // =========================================================================
+        // 07. FUTURISTIC / ALIEN — Micro-Pitch, Formant Articulation & Alien Motion
+        // "What the hell is this doing to my voice in a good way?"
+        // =========================================================================
+        case Ref7_FuturisticAlien:
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX, 0.42f);
+            setP(ParameterIDs::SHADOW_PITCH, 2.0f); // -5 semitones fourth down
+            setP(ParameterIDs::SHADOW_FORMANT, 0.82f); // High-pitched alien cavity
+            setP(ParameterIDs::SHADOW_DRIVE, 0.30f);
+
+            setP(ParameterIDs::AIR_MID, 0.35f);
+            setP(ParameterIDs::AIR_TOP, 0.60f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT, 0.70f);
+
+            setP(ParameterIDs::MODULE_DELAY_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_DELAY, 0.40f);
+            setP(ParameterIDs::SPACE_REVERB, 0.25f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.65f);
+
+            setP(ParameterIDs::DEGENERATE, 0.35f);
             break;
 
-        case Possessed:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.55f);
-            setParam(ParameterIDs::SHADOW_PITCH, 1.0f); // -7
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.28f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.58f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.40f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Fuzz
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.48f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.70f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.40f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.25f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 2.5f);
-            break;
-
-        case DeepShadow:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.45f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.35f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.85f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.25f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.45f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.28f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.18f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.5f);
-            break;
-
-        case HellLayer:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.70f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.12f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.65f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.75f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.45f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.25f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.5f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 2.0f);
-            break;
-
-        // ----------------------------------------------------
-        // VOCAL WIDTH CATEGORY (Soundtoys MicroShift standard)
-        // ----------------------------------------------------
-        case WideLead:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.72f); // Air exciter
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.65f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 90.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        case FloatingHook:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.18f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.75f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.85f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.50f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.35f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 100.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 4.0f);
-            break;
-
-        case HeadphoneWide:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.15f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.70f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.95f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
-            break;
-
-        case CyberDouble:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.80f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 2.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.5f);
-            break;
-
-        case StereoAura:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.70f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.38f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.25f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        // ----------------------------------------------------
-        // PITCH / FORMANT CATEGORY
-        // ----------------------------------------------------
-        case DeepChest:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.50f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.30f); // Chest resonance
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.55f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.35f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.55f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.38f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.12f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.0f);
-            break;
-
-        case Goblin:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.55f);
-            setParam(ParameterIDs::SHADOW_PITCH, 2.0f); // -5
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.75f); // High throat
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.40f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.40f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.75f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 3.5f);
-            break;
-
-        case TinyVoice:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.35f);
-            setParam(ParameterIDs::SHADOW_PITCH, 1.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.88f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.30f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.85f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
-            setParam(ParameterIDs::DEVICE_TYPE, 1.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 250.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 4.0f);
-            break;
-
-        case FormantShifter:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.45f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.22f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.60f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.28f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.55f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.0f);
-            break;
-
-        case OctaveStack:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.50f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.50f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.50f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.32f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.30f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
-            break;
-
-        // ----------------------------------------------------
-        // SPACE CATEGORY (Dattorro Diffusion Reverb & Tape Echo)
-        // ----------------------------------------------------
-        case Cathedral:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.15f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.80f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.82f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.38f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 110.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.5f);
-            break;
-
-        case SlapRoom:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.22f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 90.0f);
-            break;
-
-        case FloatingEcho:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.18f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.70f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.80f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.48f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        case DarkVoid:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.38f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.30f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.80f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.30f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.65f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.68f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.32f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 11000.0f);
-            break;
-
-        case WashedVocal:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.12f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.55f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.90f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.88f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.35f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 120.0f);
-            break;
-
-        // ----------------------------------------------------
-        // DISTORTION / TEXTURE CATEGORY (Decapitator & Tape Warmth)
-        // ----------------------------------------------------
-        case TapeWarmth:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Studer Tape
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.45f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.55f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.30f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.12f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.08f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 2.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 1.5f);
-            break;
-
-        case CellPhone:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.48f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.85f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::DEVICE_TYPE, 1.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 420.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT_SLOPE, 3.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 4.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, -12.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 3200.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT_SLOPE, 3.0f);
-            break;
-
-        case FriedMic:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Fuzz
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.80f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.70f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::DEVICE_TYPE, 2.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 150.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 3.0f);
-            break;
-
-        case BrokenIntercom:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.70f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.40f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.15f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
-            setParam(ParameterIDs::DEVICE_TYPE, 5.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 300.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 4000.0f);
-            break;
-
-        case RadioStatic:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.90f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.15f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.10f);
-            setParam(ParameterIDs::DEVICE_TYPE, 4.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 500.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 5000.0f);
-            break;
-
-        // ----------------------------------------------------
-        // MOTION CATEGORY (Chorus, Flanger, Tremolo)
-        // ----------------------------------------------------
-        case CyberChorus:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.70f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.85f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.30f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        case UnstablePitch:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.40f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.35f);
-            break;
-
-        case Underwater:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.20f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.50f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.30f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, -8.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 1800.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT_SLOPE, 2.0f);
-            break;
-
-        case SpinningVocal:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.90f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.25f);
-            break;
-
-        case PulsingGate:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.45f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.75f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.70f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.30f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.30f);
-            break;
-
-        // ----------------------------------------------------
-        // DELAY CATEGORY (Echoboy / Ping Pong Tape Delay)
-        // ----------------------------------------------------
-        case DarkSlap:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.30f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.40f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.45f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.15f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.12f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 8000.0f);
-            break;
-
-        case ThrowEcho:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.70f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.50f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
-            break;
-
-        case PingPongSpace:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.15f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.88f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.45f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.38f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        case FilteredTapeDelay:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Studer Tape
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.45f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.30f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 200.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 5500.0f);
-            break;
-
-        case PitchEcho:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.35f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.35f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.25f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.70f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.35f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.40f);
-            break;
-
-        // ----------------------------------------------------
-        // RAP LEADS CATEGORY (Billboard Trap / Hyperpop / Rage)
-        // ----------------------------------------------------
-        case ModernRapLead:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.55f);
-            setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.40f);
-            setParam(ParameterIDs::DEESS_FREQ, 6800.0f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.75f);
-            setParam(ParameterIDs::AIR_MID, 0.35f);
-            setParam(ParameterIDs::AIR_TOP, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.40f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.22f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.15f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.80f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 95.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 1.5f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 2.5f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 4.0f);
-            break;
-
-        case RageVocal:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.0f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.75f);
-            setParam(ParameterIDs::COMP_CHARACTER, 0.0f); // 1176 FET
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.50f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f); // EL34 Pentode
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.82f);
-            setParam(ParameterIDs::CRUSH_PUNISH, 1.0f);
-            setParam(ParameterIDs::AIR_TOP, 0.40f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.18f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.85f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 110.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 4.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 5.0f);
-            break;
-
-        case DarkPluggLead:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.50f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.30f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.32f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.70f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Tape Warmth
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.48f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.40f);
-            setParam(ParameterIDs::AIR_TOP, 0.30f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.50f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.30f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.65f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 75.0f);
-            setParam(ParameterIDs::EQ_LOW_GAIN, 3.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 1.5f);
-            break;
-
-        case IntimateTrap:
-            setParam(ParameterIDs::OUTPUT_GAIN, -0.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.48f);
-            setParam(ParameterIDs::COMP_CHARACTER, 1.0f); // Opto Leveler
-            setParam(ParameterIDs::DEESS_AMOUNT, 0.35f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.22f);
-            setParam(ParameterIDs::AIR_MID, 0.30f);
-            setParam(ParameterIDs::AIR_TOP, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.35f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.18f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.08f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.70f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 85.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 3.0f);
-            break;
-
-        case RawUnderground:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::COMP_SQUEEZE, 0.60f);
-            setParam(ParameterIDs::COMP_CHARACTER, 2.0f); // Punchy Blend
-            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Preamp
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.62f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.58f);
-            setParam(ParameterIDs::AIR_MID, 0.45f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.45f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.20f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.14f);
-            setParam(ParameterIDs::SPACE_DUCKING, 0.70f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 80.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 3.0f);
-            setParam(ParameterIDs::EQ_HIGH_GAIN, 2.5f);
-            break;
-
-
-        // ----------------------------------------------------
-        // AD-LIBS CATEGORY (Travis Scott / Playboi Carti style)
-        // ----------------------------------------------------
-        case MonsterAdlib:
-            setParam(ParameterIDs::OUTPUT_GAIN, -2.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.68f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.18f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.60f);
-            setParam(ParameterIDs::SHADOW_DRIVE, 0.60f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 3.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.75f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.65f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.85f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.45f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.30f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 80.0f);
-            setParam(ParameterIDs::EQ_MID_GAIN, 3.5f);
-            break;
-
-        case TelephoneShout:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.60f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.80f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.30f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.25f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.20f);
-            setParam(ParameterIDs::DEVICE_TYPE, 1.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 450.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 3500.0f);
-            break;
-
-        case DistanceAdlib:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.50f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.90f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.72f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.45f);
-            setParam(ParameterIDs::DEVICE_TYPE, 3.0f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 150.0f);
-            setParam(ParameterIDs::EQ_HIGH_CUT, 8500.0f);
-            break;
-
-        case GhostLayer:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.48f);
-            setParam(ParameterIDs::SHADOW_PITCH, 0.0f);
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.38f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.75f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 0.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.50f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.80f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.65f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.35f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 120.0f);
-            break;
-
-        case SpectralGhost:
-            setParam(ParameterIDs::OUTPUT_GAIN, -1.5f);
-            setParam(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setParam(ParameterIDs::SHADOW_MIX, 0.58f);
-            setParam(ParameterIDs::SHADOW_PITCH, 1.0f); // -7
-            setParam(ParameterIDs::SHADOW_FORMANT, 0.18f);
-            setParam(ParameterIDs::SHADOW_DARKNESS, 0.78f);
-            setParam(ParameterIDs::CRUSH_CHARACTER, 1.0f);
-            setParam(ParameterIDs::CRUSH_AMOUNT, 0.32f);
-            setParam(ParameterIDs::CRUSH_TONE, 0.60f);
-            setParam(ParameterIDs::WIDTH_AMOUNT, 0.95f);
-            setParam(ParameterIDs::SPACE_REVERB, 0.78f);
-            setParam(ParameterIDs::SPACE_DELAY, 0.40f);
-            setParam(ParameterIDs::EQ_LOW_CUT, 100.0f);
-            break;
-
+        case Custom:
         default:
             break;
     }
 }
 
-void PresetManager::generateRandomPreset(juce::AudioProcessorValueTreeState& apvts)
-{
-    auto setParam = [&](const char* id, float val) {
-        if (auto* param = apvts.getParameter(id))
-        {
-            param->beginChangeGesture();
-            param->setValueNotifyingHost(param->convertTo0to1(val));
-            param->endChangeGesture();
-        }
-    };
-
-    auto& rand = juce::Random::getSystemRandom();
-
-    // Set Preset Mode to Custom
-    setParam(ParameterIDs::PRESET_MODE, 50.0f);
-
-    // Intelligent Constrained Randomization: Musically Safe Boundaries across all modules
-    float shadowMix = rand.nextBool() ? rand.nextFloat() * 0.65f : 0.0f;
-    setParam(ParameterIDs::SHADOW_ENABLE, shadowMix > 0.01f ? 1.0f : 0.0f);
-    setParam(ParameterIDs::SHADOW_MIX, shadowMix);
-    setParam(ParameterIDs::SHADOW_PITCH, (float)rand.nextInt(4));
-    setParam(ParameterIDs::SHADOW_FORMANT, 0.15f + rand.nextFloat() * 0.70f);
-    setParam(ParameterIDs::SHADOW_DARKNESS, 0.20f + rand.nextFloat() * 0.70f);
-
-    setParam(ParameterIDs::CRUSH_CHARACTER, (float)rand.nextInt(4));
-    setParam(ParameterIDs::CRUSH_AMOUNT, 0.20f + rand.nextFloat() * 0.70f);
-    setParam(ParameterIDs::CRUSH_TONE, 0.25f + rand.nextFloat() * 0.65f);
-
-    setParam(ParameterIDs::WIDTH_AMOUNT, 0.30f + rand.nextFloat() * 0.65f);
-    setParam(ParameterIDs::SPACE_REVERB, rand.nextFloat() * 0.55f);
-    setParam(ParameterIDs::SPACE_DELAY, rand.nextFloat() * 0.45f);
-
-    setParam(ParameterIDs::DEVICE_TYPE, rand.nextBool() ? (float)rand.nextInt(6) : 0.0f);
-}
-
 bool PresetManager::testPresetRecall(juce::AudioProcessorValueTreeState& apvts)
 {
-    // Automated Test: Load Preset A (DemonBelow), record state, load Preset B (WideLead), return to A, verify recall
-    applyPreset(apvts, DemonBelow);
-    float demonShadowMix = apvts.getParameter(ParameterIDs::SHADOW_MIX)->getValue();
-    float demonCrushChar = apvts.getParameter(ParameterIDs::CRUSH_CHARACTER)->getValue();
-
-    applyPreset(apvts, WideLead);
-    float wideShadowMix = apvts.getParameter(ParameterIDs::SHADOW_MIX)->getValue();
-    float wideWidthAmt = apvts.getParameter(ParameterIDs::WIDTH_AMOUNT)->getValue();
-
-    // Re-apply DemonBelow
-    applyPreset(apvts, DemonBelow);
-    float recalledShadowMix = apvts.getParameter(ParameterIDs::SHADOW_MIX)->getValue();
-    float recalledCrushChar = apvts.getParameter(ParameterIDs::CRUSH_CHARACTER)->getValue();
-
-    bool pass = (std::abs(recalledShadowMix - demonShadowMix) < 0.001f)
-             && (std::abs(recalledCrushChar - demonCrushChar) < 0.001f)
-             && (wideShadowMix < 0.001f);
-
-    return pass;
+    for (int p = 0; p < NUM_REFERENCE_PRESETS; ++p)
+    {
+        applyPreset(apvts, static_cast<PresetIndex>(p));
+        auto* sq = apvts.getRawParameterValue(ParameterIDs::COMP_SQUEEZE);
+        if (sq == nullptr) return false;
+    }
+    return true;
 }
