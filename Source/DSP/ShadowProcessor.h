@@ -39,9 +39,13 @@ public:
     void setMix(float newMix) noexcept { mix = std::clamp(newMix, 0.0f, 1.0f); }
     float getMix() const noexcept { return mix; }
     void setPitchInterval(PitchInterval interval) noexcept { pitchInterval = interval; }
+    PitchInterval getPitchInterval() const noexcept { return pitchInterval; }
     void setFormantShift(float newFormant) noexcept { formantShift = std::clamp(newFormant, 0.0f, 1.0f); }
+    float getFormantShift() const noexcept { return formantShift; }
     void setDarkness(float newDarkness) noexcept { darkness = std::clamp(newDarkness, 0.0f, 1.0f); }
+    float getDarkness() const noexcept { return darkness; }
     void setDrive(float newDrive) noexcept { drive = std::clamp(newDrive, 0.0f, 1.0f); }
+    float getDrive() const noexcept { return drive; }
 
     void process(juce::AudioBuffer<float>& buffer);
 
