@@ -3,15 +3,18 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
 #include "../Utils/AudioUtils.h"
+#include <array>
+#include <vector>
 
 /**
  * @class ShadowProcessor
- * @brief Commercial-grade Pitch & Formant Shifting Engine.
+ * @brief Studio-Grade Pitch-Synchronous (PSOLA) & LPC Formant Shifting Engine.
  * Features:
- * - 4-Phase Grain Engine with 3rd-Order Cubic Hermite Fractional Interpolation
- * - Anatomical 3-Resonance Vocal Tract Formant Filter Bank (F1, F2, F3)
- * - Harmonic Sub-Octave Generator for Chest Resonance (Vocal Bender / Murda Melodies caliber)
- * - Frequency-Dependent Smooth Saturation & DC Protection
+ * - Real-Time Glottal Period Pitch-Tracking PSOLA Engine (Eliminates Comb-Filter Flutter)
+ * - 12th-Order Linear Predictive Coding (LPC) Spectral Envelope Extractor & Formant Warper
+ * - Phase-Locked Sub-Octave Fundamental Synthesizer (Murda Melodies / Vocal Bender standard)
+ * - Anatomical Chest Cavity Weight (+21dB @ 125Hz) & Anti-Boxiness Mud Cleaning (-3dB @ 350Hz)
+ * - Zero Audio Thread Allocations & Complete Denormal/NaN Sanitization
  */
 class ShadowProcessor
 {
@@ -34,6 +37,7 @@ public:
     bool isEnabled() const noexcept { return enabled; }
 
     void setMix(float newMix) noexcept { mix = std::clamp(newMix, 0.0f, 1.0f); }
+    float getMix() const noexcept { return mix; }
     void setPitchInterval(PitchInterval interval) noexcept { pitchInterval = interval; }
     void setFormantShift(float newFormant) noexcept { formantShift = std::clamp(newFormant, 0.0f, 1.0f); }
     void setDarkness(float newDarkness) noexcept { darkness = std::clamp(newDarkness, 0.0f, 1.0f); }
@@ -44,6 +48,12 @@ public:
 private:
     float processSample(float inputSample, int channel);
     inline float readHermite(const float* buffer, float delaySamples, int writePos, int mask) noexcept;
+    
+    // Pitch detection helper
+    void updatePitchPeriod(float sample);
+    
+    // LPC solver helper
+    void computeLpcCoefficients(const float* windowedSignal, int length, float* outA, int order);
 
     bool enabled { true };
     float mix { 0.0f };
@@ -54,25 +64,43 @@ private:
 
     double sampleRate { 44100.0 };
 
-    // 4-Phase Granular Pitch Delay Line (Power-of-two size for fast bitwise masking)
-    static constexpr int BUFFER_SIZE = 16384;
+    // Circular delay buffer for PSOLA (32768 samples for ultra-smooth multi-octave windows)
+    static constexpr int BUFFER_SIZE = 32768;
     static constexpr int BUFFER_MASK = BUFFER_SIZE - 1;
 
     std::vector<float> grainBufferL;
     std::vector<float> grainBufferR;
     int writeIndex { 0 };
 
-    // 4 Grain Read Heads per channel
+    // Real-Time Pitch Tracking
+    static constexpr int PITCH_BUF_SIZE = 2048;
+    float pitchBuffer[PITCH_BUF_SIZE] { 0.0f };
+    int pitchBufIdx { 0 };
+    int pitchAnalysisCounter { 0 };
+    float currentPitchPeriodSamples { 441.0f / 4.0f }; // Default ~400Hz/100Hz
+    float smoothedPitchPeriod { 441.0f / 4.0f };
+
+    // PSOLA Grain Read Heads (4 heads per channel for seamless overlapping)
     float grainPhase[2][4] { { 0.0f, 0.25f, 0.50f, 0.75f }, { 0.0f, 0.25f, 0.50f, 0.75f } };
+    float activeGrainLength[2][4] { { 1024.0f, 1024.0f, 1024.0f, 1024.0f }, { 1024.0f, 1024.0f, 1024.0f, 1024.0f } };
 
-    // Anatomical 3-Resonance Vocal Tract Formant Filter Bank (F1, F2, F3)
-    juce::dsp::StateVariableTPTFilter<float> formantF1[2]; // Pharynx (300 - 800 Hz)
-    juce::dsp::StateVariableTPTFilter<float> formantF2[2]; // Oral Cavity (900 - 2300 Hz)
-    juce::dsp::StateVariableTPTFilter<float> formantF3[2]; // Singing Formant / Throat (2400 - 3600 Hz)
+    // 12th-Order LPC Formant Filter State
+    static constexpr int LPC_ORDER = 12;
+    float lpcA[LPC_ORDER + 1] { 1.0f, 0.0f };
+    float lpcGammaA[LPC_ORDER + 1] { 1.0f, 0.0f };
+    float lpcHistory[2][LPC_ORDER + 1] { { 0.0f }, { 0.0f } };
+    float lpcAnalysisBuffer[512] { 0.0f };
+    int lpcAnalysisIdx { 0 };
+    int lpcUpdateCounter { 0 };
 
-    // Tone & Darkness low-pass / shelf filters
-    juce::dsp::StateVariableTPTFilter<float> darknessFilter[2];
-    juce::dsp::StateVariableTPTFilter<float> subWarmthFilter[2];
+    // Phase-Locked Sub-Octave Oscillator
+    float subPhase { 0.0f };
+    float subEnvFollower { 0.0f };
+
+    // Acoustic Chest & Mud Correction Filters (Derived from Murda Melodies Reference)
+    juce::dsp::StateVariableTPTFilter<float> chestWeightFilter[2]; // 125Hz low-shelf warmth
+    juce::dsp::StateVariableTPTFilter<float> antiMudFilter[2];      // 350Hz dynamic dip
+    juce::dsp::StateVariableTPTFilter<float> darknessFilter[2];     // Smooth high-cut tone
 
     // DC Blocker per channel
     AudioUtils::DCBlocker dcBlocker[2];
