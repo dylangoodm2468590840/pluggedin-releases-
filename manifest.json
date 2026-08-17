@@ -21,20 +21,20 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V3.2.0 (Boutique Vocal Suite)",
       "latest_version": "3.2.0",
-      "download_url_win": "https://files.catbox.moe/2e40uj.zip",
-      "download_url_mac": "https://files.catbox.moe/2e40uj.zip",
+      "download_url_win": "https://files.catbox.moe/d30lf5.zip",
+      "download_url_mac": "https://files.catbox.moe/d30lf5.zip",
       "changelog": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Redesigned Split-Bus Direct/Parallel DSP Engine, Reference Audio Forensic Re-voicing of 7 Core Presets, 100% Mono-Safe 3D Spatial Aura with 180Hz Side-Cut Isolation, Envelope-Reactive Analog Tube/Tape Saturation with 4x Polyphase Oversampling, and Synchronous Formant Sub-Harmonic Resonator.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/2e40uj.zip",
-          "sha256": "344ebf13b46f7357b8157e6137e72bb43858f2370c6c407afd34976cffb5f964",
+          "url": "https://files.catbox.moe/d30lf5.zip",
+          "sha256": "7865c712a8a8a802937cc393d7b8dfdf3bc3178780517d4112c93746cd6348c5",
           "size_bytes": 4888759
         },
         "macos_universal": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/2e40uj.zip",
-          "sha256": "344ebf13b46f7357b8157e6137e72bb43858f2370c6c407afd34976cffb5f964",
+          "url": "https://files.catbox.moe/d30lf5.zip",
+          "sha256": "7865c712a8a8a802937cc393d7b8dfdf3bc3178780517d4112c93746cd6348c5",
           "size_bytes": 4888759
         }
       }
