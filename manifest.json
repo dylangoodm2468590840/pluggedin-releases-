@@ -33,8 +33,8 @@
         "windows_x64": {
           "format": "vst3",
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.3.0/UNDERGROUND_v3.3.0_Win64_VST3.zip",
-          "sha256": "02c61cda17da2b10d499a96670fde305ed02e7cd42c0546b9fbf8d57f2c887fe",
-          "size_bytes": 4889978
+          "sha256": "515ff2bd0b21771f9ec2326b84048f045d101e7f8a1ca463f81fe4fb5b06711a",
+          "size_bytes": 4887575
         },
         "macos_universal": {
           "format": "vst3",
