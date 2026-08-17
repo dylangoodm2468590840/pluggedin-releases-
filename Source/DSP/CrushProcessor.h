@@ -9,18 +9,12 @@
  * @class CrushProcessor
  * @brief Commercial-grade 5-Circuit Analog Saturation Suite with PUNISH Mode & 4x Polyphase Oversampling.
  * 
- * Modeled Analog Topologies (Soundtoys Decapitator & Abbey Road caliber):
- * 1. [T] 12AX7 Triode Tube: Warm 2nd-order even harmonics with dynamic cathode bias sag.
- * 2. [P] EL34 Pentode Tube: Symmetrical 3rd/5th-order odd harmonics for aggressive modern vocal bite.
- * 3. [A] Ampex 350 Tape: Magnetic hysteresis, tape compression & 60Hz head-bump resonance.
- * 4. [G] Germanium Transistor: Vintage console preamp saturation with dynamic transient crunch.
- * 5. [F] Cyber Fuzz: Full-wave rectified parallel fuzz for extreme underground distortion.
- * 
  * Features:
- * - PUNISH Mode (+20dB analog input blast with automatic output gain compensation).
- * - 4x Minimum-Phase Polyphase Oversampling for -100 dBFS aliasing suppression.
- * - Dynamic Pre-Emphasis and Post-Tone tilt filtering.
- * - Zero memory allocations in audio thread, denormal & NaN safe.
+ * - Frequency-Aware Clean Low-End Split (<150Hz) eliminates intermodulation mud.
+ * - Dynamic Consonant & Transient Attack Protection preserves vocal articulation.
+ * - 5 Topologies: 12AX7 Tube, EL34 Pentode, Ampex Tape, Germanium, Cyber Fuzz.
+ * - PUNISH Mode (+20dB analog input blast with automatic compensation).
+ * - 4x Polyphase Minimum-Phase Oversampling.
  */
 class CrushProcessor
 {
@@ -52,12 +46,14 @@ public:
     void setPunish(bool enabled) noexcept { punishEnabled.store(enabled); }
     bool isPunishEnabled() const noexcept { return punishEnabled.load(); }
 
+    void setTransientProtection(float protection) noexcept { transientProtection.store(std::clamp(protection, 0.0f, 1.0f)); }
+
     void setOversamplingEnabled(bool enabled) noexcept { oversamplingEnabled.store(enabled); }
 
     void process(juce::AudioBuffer<float>& buffer);
 
 private:
-    float processSample(float inputSample, int channel, float currentAmount, float currentTone, bool isPunished);
+    float processSample(float inputSample, int channel, float currentAmount, float currentTone, bool isPunished, float transProt);
 
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> amountSmoother;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> toneSmoother;
@@ -67,12 +63,17 @@ private:
     std::atomic<Character> character { Character::Tube12AX7 };
     std::atomic<bool> punishEnabled { false };
     std::atomic<bool> oversamplingEnabled { true };
+    std::atomic<float> transientProtection { 0.0f };
 
     double sampleRate { 44100.0 };
 
     // Dynamic physical model state registers
     float tubeBiasSag[2] { 0.0f, 0.0f };
     float tapeHysteresis[2] { 0.0f, 0.0f };
+
+    // Low-end clean crossover filters
+    juce::dsp::StateVariableTPTFilter<float> lowCrossoverFilter[2];
+    juce::dsp::StateVariableTPTFilter<float> highCrossoverFilter[2];
 
     // Pre-emphasis & De-emphasis analog filters
     juce::dsp::StateVariableTPTFilter<float> preEmphasisFilter[2];
