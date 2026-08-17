@@ -10,8 +10,8 @@
     "packages": {
       "windows_x64": {
         "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.0.0/PluggedIN_Central_v2.0.0_Windows.zip",
-        "sha256": "cbec8c631aab319c3900634c1b8091240c604fe4b3a0cb9b2424da7cf325eaea",
-        "size_bytes": 4643144
+        "sha256": "f9bf0fce1c5cce70294cb730a08f772f418c5585a747beb93fcc0c2676a089d6",
+        "size_bytes": 4643141
       },
       "macos_universal": {
         "url": "https://files.catbox.moe/dfbudg.zip",
