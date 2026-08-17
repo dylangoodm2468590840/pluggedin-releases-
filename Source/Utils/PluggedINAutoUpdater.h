@@ -39,16 +39,16 @@ private:
     void run() override;
     void parseManifestJson(const juce::String& jsonText);
 
-    juce::String currentVersion { "1.1.0" };
+    juce::String currentVersion { "2.0.0" };
     std::atomic<bool> updateAvailable { false };
 
-    juce::String latestVersion { "1.1.0" };
+    juce::String latestVersion { "2.0.0" };
     juce::String managerSha256 { "" };
     juce::String changelog { "" };
     juce::String downloadUrl { "" };
 
     // Plugin Catalog Cache
-    juce::String undergroundLatestVersion { "3.0.0" };
+    juce::String undergroundLatestVersion { "" }; // Empty until cloud manifest loads — prevents false update badge on startup
     juce::String undergroundDownloadUrl { "" };
     juce::String undergroundSha256 { "" };
     std::atomic<bool> undergroundUpdateAvailable { false };
