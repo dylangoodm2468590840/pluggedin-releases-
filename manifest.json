@@ -24,15 +24,15 @@
     {
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND V3.5.0 (Boutique Vocal Suite)",
-      "latest_version": "3.5.0",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.5.0/UNDERGROUND_v3.5.0_Win64_VST3.zip",
+      "name": "UNDERGROUND V3.6.0 (Master Studio Suite)",
+      "latest_version": "3.6.0",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.6.0/UNDERGROUND_v3.6.0_Win64_VST3.zip",
       "download_url_mac": "https://files.catbox.moe/404iri.zip",
-      "changelog": "Official UNDERGROUND v3.5.0 Master Studio DSP: Real-Time PSOLA Glottal Pitch Tracker, 12th-Order LPC Formant Warping, Minimum-Phase Dynamic Resonance Suppressor (Anti-Mud -3.5dB @ 350Hz), Murda Melodies Effect 4 3D Spatial Aura (0.90 Side/Mid ratio), and Consonant Transient Bleed Protection.",
+      "changelog": "Official UNDERGROUND v3.6.0 Master Studio DSP: Real-Time PSOLA Glottal Pitch Tracker, 12th-Order LPC Formant Warping, Minimum-Phase Dynamic Resonance Suppressor (Anti-Mud -3.5dB @ 350Hz), Murda Melodies Effect 4 3D Spatial Aura (0.90 Side/Mid ratio), and Consonant Transient Bleed Protection.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.5.0/UNDERGROUND_v3.5.0_Win64_VST3.zip",
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v3.6.0/UNDERGROUND_v3.6.0_Win64_VST3.zip",
           "sha256": "6bc843e13ca97bb970809330ab3b92347d84204ec744dc8a72e5782dfb29797b",
           "size_bytes": 4884584
         },
