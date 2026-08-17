@@ -11,16 +11,20 @@
 #include "VocalCompressor.h"
 #include "DeEsserProcessor.h"
 #include "AirExciterProcessor.h"
-
-
+#include "VocalResonanceProcessor.h"
+#include "TransientPreserver.h"
+#include "InputConditioner.h"
+#include "AutoLevelCompensator.h"
+#include "StudioMicroDetuner.h"
+#include "AnalogTransformerCore.h"
 
 struct AudioDynamicNode
 {
     float freqHz { 1000.0f };
     float gainDb { 0.0f };
     float qFactor { 0.707f };
-    int filterType { 0 };  // 0: Bell, 1: Low Cut, 2: High Cut, 3: Low Shelf, 4: High Shelf, 5: Notch
-    int stereoMode { 0 };  // 0: Stereo (L+R), 1: Mid (M), 2: Side (S), 3: Left, 4: Right
+    int filterType { 0 };
+    int stereoMode { 0 };
     bool active { true };
 };
 
@@ -81,12 +85,15 @@ public:
                  DeEsserProcessor& deEssModule,
                  AirExciterProcessor& airModule);
 
-
-
     float getInputLevel() const noexcept { return inputLevelPeak.load(); }
     float getOutputLevel() const noexcept { return outputLevelPeak.load(); }
 
-    // Lock-free spectrum getter for VisualEQDisplay
+    VocalResonanceProcessor& getResonanceProcessor() noexcept { return vocalResonanceProcessor; }
+    AutoLevelCompensator& getAutoLevelCompensator() noexcept { return autoLevelCompensator; }
+    TransientPreserver& getTransientPreserver() noexcept { return transientPreserver; }
+    StudioMicroDetuner& getMicroDetuner() noexcept { return studioMicroDetuner; }
+    AnalogTransformerCore& getTransformerCore() noexcept { return analogTransformerCore; }
+
     void getSpectrumData(float* dest64Bars) const noexcept;
 
 private:
@@ -98,36 +105,32 @@ private:
     std::atomic<float> inputLevelPeak { 0.0f };
     std::atomic<float> outputLevelPeak { 0.0f };
 
-    // Pre-allocated dry buffer to eliminate audio thread heap allocations
     juce::AudioBuffer<float> dryBuffer;
+    juce::AudioBuffer<float> parallelSatBuffer;
+    juce::AudioBuffer<float> parallelShadowBuffer;
+    juce::AudioBuffer<float> parallelWidthBuffer;
+    juce::AudioBuffer<float> parallelSpaceBuffer;
 
-    // Smoothed parameters for zipper-free control
+    // Advanced $200 Boutique Vocal Processing Engines
+    InputConditioner inputConditioner;
+
+    AnalogTransformerCore analogTransformerCore;
+    VocalResonanceProcessor vocalResonanceProcessor;
+    TransientPreserver transientPreserver;
+    StudioMicroDetuner studioMicroDetuner;
+    AutoLevelCompensator autoLevelCompensator;
+
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> inputGainSmoother;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> outputGainSmoother;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> globalMixSmoother;
     juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> degenerateSmoother;
 
-    // 64-Bit Transposed Direct Form II Master EQ Engine with Nyquist De-cramping
     EQEngine masterEQEngine;
-
-    // Output protection brickwall limiter
     juce::dsp::Limiter<float> outputLimiter;
 
-    // 5-Band Parametric Audio Biquad Filters (Cascaded for steep slopes)
-    juce::dsp::IIR::Filter<float> eqLowCutFilter1;
-    juce::dsp::IIR::Filter<float> eqLowCutFilter2;
-    juce::dsp::IIR::Filter<float> eqLowBellFilter;
-    juce::dsp::IIR::Filter<float> eqMidBellFilter;
-    juce::dsp::IIR::Filter<float> eqHighShelfFilter;
-    juce::dsp::IIR::Filter<float> eqHighCutFilter1;
-    juce::dsp::IIR::Filter<float> eqHighCutFilter2;
+    static constexpr int maxDynamicNodes = 10;
 
-    // Dynamic Biquad Audio Filter Cascade
-    static constexpr int maxDynamicNodes = 8;
-    juce::dsp::IIR::Filter<float> dynamicBiquads[maxDynamicNodes];
-
-    // Real-Time 2048-Point FFT Spectrum Analyzer Engine
-    static constexpr int fftOrder = 11; // 2048 points
+    static constexpr int fftOrder = 11;
     static constexpr int fftSize  = 1 << fftOrder;
 
     juce::dsp::FFT fftEngine { fftOrder };
