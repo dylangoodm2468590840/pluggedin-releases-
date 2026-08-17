@@ -36,10 +36,17 @@ public:
         setupNavButton(navUpdates,    "UPDATES");
         setupNavButton(navSettings,   "STUDIO TOOLS");
 
-        navMyProducts.onClick = [this] { currentSection = NavSection::MyProducts; repaint(); };
-        navAllPlugins.onClick = [this] { currentSection = NavSection::AllPlugins; repaint(); };
-        navUpdates.onClick    = [this] { currentSection = NavSection::Updates; repaint(); };
-        navSettings.onClick   = [this] { currentSection = NavSection::Diagnostics; repaint(); };
+        auto refreshCloud = [this] {
+            juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
+                ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
+                : autoUpdater.getCurrentVersion();
+            autoUpdater.checkForUpdatesAsync(appVer);
+        };
+
+        navMyProducts.onClick = [this, refreshCloud] { currentSection = NavSection::MyProducts; refreshCloud(); repaint(); };
+        navAllPlugins.onClick = [this, refreshCloud] { currentSection = NavSection::AllPlugins; refreshCloud(); repaint(); };
+        navUpdates.onClick    = [this, refreshCloud] { currentSection = NavSection::Updates; refreshCloud(); repaint(); };
+        navSettings.onClick   = [this, refreshCloud] { currentSection = NavSection::Diagnostics; refreshCloud(); repaint(); };
 
         // 2. Search Box
         addAndMakeVisible(searchInput);
@@ -122,6 +129,17 @@ public:
             ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
             : autoUpdater.getCurrentVersion();
         autoUpdater.checkForUpdatesAsync(appVer);
+
+        // Self-healing boot scan: runs in background on every launch on every computer.
+        // Finds the highest installed VST3 version, deletes stale ghost copies in all
+        // lower-priority directories (including C:\Program Files\Common Files\VST3),
+        // and registers the correct authoritative version before the first UI paint.
+        juce::Thread::launch([]
+        {
+            InstalledRegistry::selfHealInstallations("pluggedin_underground");
+            InstalledRegistry::selfHealInstallations("pluggedin_crush");
+        });
+
         checkInstallationStatus();
 
         setSize(920, 600);
@@ -304,8 +322,7 @@ public:
                                }
                                else if (result == 3)
                                {
-                                   juce::File userVst3Dir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory)
-                                                               .getChildFile("Local\\Programs\\Common\\VST3");
+                                   juce::File userVst3Dir = InstalledRegistry::getUserVst3Directory();
                                    if (!userVst3Dir.exists()) userVst3Dir.createDirectory();
                                    userVst3Dir.startAsProcess();
                                }
@@ -313,12 +330,12 @@ public:
                                {
                                    juce::AlertWindow::showMessageBoxAsync(
                                        juce::AlertWindow::InfoIcon,
-                                       "UNDERGROUND V2 Changelog",
-                                       "• Upgraded 12AX7 Asymmetric Tube Triode Saturation.\n"
-                                       "• Added 4-Tap BBD Analog Chorus Engine.\n"
-                                       "• Transposed Direct Form II 64-Bit Visual EQ.\n"
-                                       "• Zero-latency analog tape delay with wow/flutter.\n"
-                                       "• Dark / Light mode UI customization system.",
+                                       "UNDERGROUND V3.3.0 Changelog",
+                                       "• Split-Bus Direct/Parallel Boutique DSP Architecture.\n"
+                                       "• 7 Re-Voiced Reference Presets with 4x Polyphase Oversampling.\n"
+                                       "• 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut).\n"
+                                       "• Dynamic Transformer Core & Non-Linear Tube Saturation.\n"
+                                       "• Real-Time 4-Band Dynamic Resonance & Harshness Suppression.",
                                        "CLOSE"
                                    );
                                }
@@ -433,7 +450,7 @@ public:
 
         startY += 32.0f;
 
-        // 5. Card 1: UNDERGROUND V2
+        // 5. Card 1: UNDERGROUND V3.3.0
         auto card1 = juce::Rectangle<float>(mainX, startY, mainWidth, 130.0f);
         juce::ColourGradient card1Grad(card1Top, card1.getX(), card1.getY(), card1Bot, card1.getX(), card1.getBottom(), false);
         g.setGradientFill(card1Grad);
@@ -451,11 +468,11 @@ public:
         // Card 1 Text
         g.setColour(textPrimary);
         g.setFont(juce::Font(16.0f, juce::Font::bold));
-        g.drawText("PluggedIN -- UNDERGROUND V2", (int)mainX + 20, (int)startY + 16, (int)mainWidth - 280, 22, juce::Justification::left);
+        g.drawText("PluggedIN -- UNDERGROUND V3.3.0 (Boutique Vocal Suite)", (int)mainX + 20, (int)startY + 16, (int)mainWidth - 280, 22, juce::Justification::left);
 
         g.setColour(textMuted);
         g.setFont(juce::Font(11.5f, juce::Font::plain));
-        g.drawText("64-Bit Multi-FX Vocal & Synth Rack with 64-Bit Transposed Direct Form II EQ", (int)mainX + 20, (int)startY + 42, (int)mainWidth - 280, 18, juce::Justification::left);
+        g.drawText("Boutique Multi-FX Vocal Suite with Split-Bus DSP & 7 Re-Voiced Core Presets", (int)mainX + 20, (int)startY + 42, (int)mainWidth - 280, 18, juce::Justification::left);
 
         g.setColour(isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
         g.setFont(juce::Font(9.5f, juce::Font::bold));
@@ -554,8 +571,20 @@ private:
         btn.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff8a99ad));
     }
 
+    int pollCloudCounter { 0 };
+
     void timerCallback() override
     {
+        // Re-poll cloud manifest every 15 seconds so Central reflects live releases without restart
+        if (++pollCloudCounter >= 150)
+        {
+            pollCloudCounter = 0;
+            juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
+                ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
+                : autoUpdater.getCurrentVersion();
+            autoUpdater.checkForUpdatesAsync(appVer);
+        }
+
         checkInstallationStatus();
         repaint();
     }
@@ -571,7 +600,8 @@ private:
         {
             isUndergroundInstalled = true;
 
-            if (InstalledRegistry::compareVersions(installedVersion, cloudVersion) < 0)
+            // Only compare if the cloud manifest has actually loaded (non-empty)
+            if (cloudVersion.isNotEmpty() && InstalledRegistry::compareVersions(installedVersion, cloudVersion) < 0)
             {
                 hasUpdate = true;
                 undergroundInstallButton.setButtonText("UPDATE (" + cloudVersion + ")");
@@ -627,15 +657,14 @@ private:
         if (cloudDownloader.isBusy())
             return;
 
-        undergroundInstallButton.setButtonText("DOWNLOADING...");
+        undergroundInstallButton.setButtonText("INITIALIZING...");
         undergroundInstallButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.3f));
         undergroundInstallButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
         repaint();
 
-        cloudDownloader.onProgress = [this](float fraction)
+        cloudDownloader.onProgressState = [this](float fraction, const juce::String& stateLabel)
         {
-            int pct = static_cast<int>(fraction * 100.0f);
-            undergroundInstallButton.setButtonText("DOWNLOADING " + juce::String(pct) + "%");
+            undergroundInstallButton.setButtonText(stateLabel.toUpperCase());
             repaint();
         };
 
@@ -643,8 +672,21 @@ private:
         {
             if (success)
             {
-                autoUpdater.clearUpdateState();
-                checkInstallationStatus();
+                // Re-run self-heal after install: this cleans up any stale ghost copies
+                // in other directories so the registry reflects the real new version.
+                juce::Thread::launch([]
+                {
+                    InstalledRegistry::selfHealInstallations("pluggedin_underground");
+                });
+
+                // Small delay so the self-heal thread has time to update the registry
+                // before we re-read it for the UI status check
+                juce::Timer::callAfterDelay(2200, [this]
+                {
+                    autoUpdater.clearUpdateState();
+                    checkInstallationStatus();
+                    repaint();
+                });
             }
             else
             {
@@ -677,15 +719,14 @@ private:
         if (cloudDownloader.isBusy())
             return;
 
-        crushButton.setButtonText("DOWNLOADING...");
+        crushButton.setButtonText("INITIALIZING...");
         crushButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.3f));
         crushButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
         repaint();
 
-        cloudDownloader.onProgress = [this](float fraction)
+        cloudDownloader.onProgressState = [this](float fraction, const juce::String& stateLabel)
         {
-            int pct = static_cast<int>(fraction * 100.0f);
-            crushButton.setButtonText("DOWNLOADING " + juce::String(pct) + "%");
+            crushButton.setButtonText(stateLabel.toUpperCase());
             repaint();
         };
 
