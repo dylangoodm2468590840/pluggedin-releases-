@@ -20,31 +20,22 @@ void ShadowProcessor::prepare(const juce::dsp::ProcessSpec& spec)
 
     for (int ch = 0; ch < 2; ++ch)
     {
-        // 1. Pharynx Formant Resonator F1 (300Hz - 850Hz)
-        formantF1[ch].prepare(spec);
-        formantF1[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        formantF1[ch].setResonance(2.2f);
+        // 1. Chest Weight Low-Pass / Low-Shelf (125 Hz Fundamental Resonance)
+        chestWeightFilter[ch].prepare(spec);
+        chestWeightFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+        chestWeightFilter[ch].setCutoffFrequency(160.0f);
+        chestWeightFilter[ch].setResonance(0.85f);
 
-        // 2. Oral Cavity Formant Resonator F2 (900Hz - 2200Hz)
-        formantF2[ch].prepare(spec);
-        formantF2[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        formantF2[ch].setResonance(2.0f);
+        // 2. Anti-Mud Low-Mid Notch / Bell (350 Hz Boxiness Suppression)
+        antiMudFilter[ch].prepare(spec);
+        antiMudFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        antiMudFilter[ch].setCutoffFrequency(360.0f);
+        antiMudFilter[ch].setResonance(1.8f);
 
-        // 3. Singing / Throat Formant Resonator F3 (2400Hz - 3600Hz)
-        formantF3[ch].prepare(spec);
-        formantF3[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        formantF3[ch].setResonance(1.8f);
-
-        // Darkness Lowpass
+        // 3. Darkness Low-Pass Tone Filter
         darknessFilter[ch].prepare(spec);
         darknessFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
         darknessFilter[ch].setResonance(0.707f);
-
-        // Sub Warmth Lowpass (for clean chest sub bass)
-        subWarmthFilter[ch].prepare(spec);
-        subWarmthFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-        subWarmthFilter[ch].setCutoffFrequency(160.0f);
-        subWarmthFilter[ch].setResonance(0.707f);
     }
 
     reset();
@@ -56,6 +47,28 @@ void ShadowProcessor::reset()
     std::fill(grainBufferR.begin(), grainBufferR.end(), 0.0f);
     writeIndex = 0;
 
+    std::fill(std::begin(pitchBuffer), std::end(pitchBuffer), 0.0f);
+    pitchBufIdx = 0;
+    pitchAnalysisCounter = 0;
+    currentPitchPeriodSamples = static_cast<float>(sampleRate) / 150.0f; // Default 150Hz
+    smoothedPitchPeriod = currentPitchPeriodSamples;
+
+    std::fill(std::begin(lpcAnalysisBuffer), std::end(lpcAnalysisBuffer), 0.0f);
+    lpcAnalysisIdx = 0;
+    lpcUpdateCounter = 0;
+    lpcA[0] = 1.0f;
+    lpcGammaA[0] = 1.0f;
+    for (int i = 1; i <= LPC_ORDER; ++i)
+    {
+        lpcA[i] = 0.0f;
+        lpcGammaA[i] = 0.0f;
+        lpcHistory[0][i] = 0.0f;
+        lpcHistory[1][i] = 0.0f;
+    }
+
+    subPhase = 0.0f;
+    subEnvFollower = 0.0f;
+
     for (int ch = 0; ch < 2; ++ch)
     {
         grainPhase[ch][0] = 0.00f;
@@ -63,11 +76,13 @@ void ShadowProcessor::reset()
         grainPhase[ch][2] = 0.50f;
         grainPhase[ch][3] = 0.75f;
 
-        formantF1[ch].reset();
-        formantF2[ch].reset();
-        formantF3[ch].reset();
+        float defaultGrain = std::max(currentPitchPeriodSamples * 2.5f, 256.0f);
+        for (int g = 0; g < 4; ++g)
+            activeGrainLength[ch][g] = defaultGrain;
+
+        chestWeightFilter[ch].reset();
+        antiMudFilter[ch].reset();
         darknessFilter[ch].reset();
-        subWarmthFilter[ch].reset();
         dcBlocker[ch].reset();
     }
 }
@@ -98,13 +113,165 @@ inline float ShadowProcessor::readHermite(const float* buffer, float delaySample
     return ((c3 * frac + c2) * frac + c1) * frac + c0;
 }
 
+void ShadowProcessor::updatePitchPeriod(float sample)
+{
+    pitchBuffer[pitchBufIdx] = sample;
+    pitchBufIdx = (pitchBufIdx + 1) % PITCH_BUF_SIZE;
+
+    // Run autocorrelation pitch estimation every 128 samples (~3ms) to save CPU
+    if (++pitchAnalysisCounter < 128)
+        return;
+    pitchAnalysisCounter = 0;
+
+    // Vocal fundamental search range: 65 Hz to 750 Hz
+    const int minLag = std::max(20, static_cast<int>(sampleRate / 750.0));
+    const int maxLag = std::min(PITCH_BUF_SIZE / 2 - 1, static_cast<int>(sampleRate / 65.0));
+
+    float bestCorr = 0.0f;
+    int bestLag = static_cast<int>(sampleRate / 150.0);
+
+    // Normalized Difference Function / Autocorrelation
+    int analysisLen = PITCH_BUF_SIZE / 2;
+    int readStart = (pitchBufIdx - PITCH_BUF_SIZE + BUFFER_SIZE) % PITCH_BUF_SIZE;
+
+    float energy0 = 0.0f;
+    for (int i = 0; i < analysisLen; ++i)
+    {
+        float s = pitchBuffer[(readStart + i) % PITCH_BUF_SIZE];
+        energy0 += s * s;
+    }
+
+    if (energy0 > 1.0e-4f)
+    {
+        for (int lag = minLag; lag <= maxLag; lag += 2)
+        {
+            float crossSum = 0.0f;
+            float energyLag = 0.0f;
+
+            for (int i = 0; i < analysisLen; i += 2)
+            {
+                float s0 = pitchBuffer[(readStart + i) % PITCH_BUF_SIZE];
+                float s1 = pitchBuffer[(readStart + i + lag) % PITCH_BUF_SIZE];
+                crossSum += s0 * s1;
+                energyLag += s1 * s1;
+            }
+
+            float norm = crossSum / (std::sqrt(energy0 * energyLag) + 1.0e-6f);
+            if (norm > bestCorr)
+            {
+                bestCorr = norm;
+                bestLag = lag;
+            }
+        }
+    }
+
+    if (bestCorr > 0.45f)
+    {
+        currentPitchPeriodSamples = static_cast<float>(bestLag);
+    }
+    else
+    {
+        // Smoothly decay towards comfortable speech center (~140Hz) if unvoiced
+        currentPitchPeriodSamples = 0.95f * currentPitchPeriodSamples + 0.05f * (static_cast<float>(sampleRate) / 140.0f);
+    }
+
+    smoothedPitchPeriod = 0.85f * smoothedPitchPeriod + 0.15f * currentPitchPeriodSamples;
+}
+
+void ShadowProcessor::computeLpcCoefficients(const float* windowedSignal, int length, float* outA, int order)
+{
+    // 1. Compute Autocorrelation R[0..order]
+    float r[LPC_ORDER + 1] = { 0.0f };
+    for (int k = 0; k <= order; ++k)
+    {
+        float sum = 0.0f;
+        for (int n = 0; n < length - k; ++n)
+            sum += windowedSignal[n] * windowedSignal[n + k];
+        r[k] = sum;
+    }
+
+    // If zero energy, return identity
+    if (r[0] < 1.0e-7f)
+    {
+        outA[0] = 1.0f;
+        for (int i = 1; i <= order; ++i) outA[i] = 0.0f;
+        return;
+    }
+
+    // 2. Levinson-Durbin Recursion
+    float a[LPC_ORDER + 1] = { 0.0f };
+    float aPrev[LPC_ORDER + 1] = { 0.0f };
+    a[0] = 1.0f;
+    float e = r[0];
+
+    for (int i = 1; i <= order; ++i)
+    {
+        float lambda = 0.0f;
+        for (int j = 1; j < i; ++j)
+            lambda += aPrev[j] * r[i - j];
+        lambda = (r[i] - lambda) / (e + 1.0e-9f);
+
+        // Clamp reflection coefficient for strict filter stability
+        lambda = std::clamp(lambda, -0.98f, 0.98f);
+
+        a[i] = lambda;
+        for (int j = 1; j < i; ++j)
+            a[j] = aPrev[j] - lambda * aPrev[i - j];
+
+        e *= (1.0f - lambda * lambda);
+        if (e < 1.0e-9f) break;
+
+        for (int j = 0; j <= i; ++j)
+            aPrev[j] = a[j];
+    }
+
+    outA[0] = 1.0f;
+    for (int i = 1; i <= order; ++i)
+        outA[i] = -a[i]; // Negated for standard AR direct synthesis form
+}
+
 float ShadowProcessor::processSample(float inputSample, int channel)
 {
     float sample = AudioUtils::sanitize(inputSample);
     int ch = std::min(channel, 1);
 
-    // Calculate target pitch ratio based on interval
-    float pitchRatio = 0.5f; // Default -12 semitones
+    if (ch == 0)
+    {
+        updatePitchPeriod(sample);
+
+        // Feed LPC analysis buffer
+        lpcAnalysisBuffer[lpcAnalysisIdx] = sample;
+        lpcAnalysisIdx = (lpcAnalysisIdx + 1) % 512;
+
+        // Recompute LPC spectral envelope every 256 samples (~5.8ms)
+        if (++lpcUpdateCounter >= 256)
+        {
+            lpcUpdateCounter = 0;
+            float winBuf[512];
+            for (int n = 0; n < 512; ++n)
+            {
+                int srcIdx = (lpcAnalysisIdx + n) % 512;
+                // Hann window
+                float win = 0.5f * (1.0f - std::cos(juce::MathConstants<float>::twoPi * (float)n / 511.0f));
+                winBuf[n] = lpcAnalysisBuffer[srcIdx] * win;
+            }
+            computeLpcCoefficients(winBuf, 512, lpcA, LPC_ORDER);
+
+            // Morph LPC poles by gamma factor (0.5 = deep resonant chest cavity, 1.0 = bright)
+            // formantShift (0.0 -> 1.0) maps to gamma (0.78 -> 0.98)
+            float gamma = std::clamp(0.78f + (formantShift * 0.20f), 0.65f, 0.98f);
+            float gPow = 1.0f;
+            lpcGammaA[0] = 1.0f;
+            for (int i = 1; i <= LPC_ORDER; ++i)
+            {
+                gPow *= gamma;
+                lpcGammaA[i] = lpcA[i] * gPow;
+            }
+        }
+    }
+
+    // Target Pitch Shift Ratio
+    float pitchRatio = 0.5f; // Default Octave Down
     switch (pitchInterval)
     {
         case PitchInterval::OctaveDown: pitchRatio = 0.5000f; break; // -12 semitones
@@ -117,9 +284,10 @@ float ShadowProcessor::processSample(float inputSample, int channel)
     float* buf = (ch == 0) ? grainBufferL.data() : grainBufferR.data();
     buf[writeIndex] = sample;
 
-    // 4-Head Overlapping Granular Math with Cubic Hermite Interpolation
-    const float grainSizeSamples = 2048.0f; // ~46ms grain window for vocal pitch shifting
-    float phaseAdvance = (1.0f - pitchRatio) / grainSizeSamples;
+    // Pitch-Synchronous Overlap Add (PSOLA) Engine
+    // Grain length matches glottal period (2x to 3x fundamental period for seamless overlap)
+    float basePeriod = std::clamp(smoothedPitchPeriod, 45.0f, 600.0f);
+    float grainLen = std::clamp(basePeriod * 3.0f, 180.0f, 2048.0f);
 
     float grainAccum = 0.0f;
     float windowSum = 0.0f;
@@ -127,76 +295,100 @@ float ShadowProcessor::processSample(float inputSample, int channel)
     for (int g = 0; g < 4; ++g)
     {
         float phase = grainPhase[ch][g]; // 0.0 to 1.0
-        float delay = phase * grainSizeSamples;
+        float gLen = activeGrainLength[ch][g];
+        float delay = phase * gLen;
 
-        // Smooth raised cosine (Hann) envelope
+        // Smooth raised-cosine (Hann) glottal grain window
         float win = 0.5f * (1.0f - std::cos(juce::MathConstants<float>::twoPi * phase));
 
         float grainSample = readHermite(buf, delay, writeIndex, BUFFER_MASK);
         grainAccum += grainSample * win;
         windowSum += win;
 
-        // Advance grain phase
-        grainPhase[ch][g] += phaseAdvance;
+        // Phase advance locked to pitch ratio
+        float phaseInc = (1.0f - pitchRatio) / gLen;
+        grainPhase[ch][g] += phaseInc;
+
         if (grainPhase[ch][g] >= 1.0f)
+        {
             grainPhase[ch][g] -= 1.0f;
+            // Lock new grain length synchronously to current vocal pitch period
+            activeGrainLength[ch][g] = grainLen;
+        }
         else if (grainPhase[ch][g] < 0.0f)
+        {
             grainPhase[ch][g] += 1.0f;
+            activeGrainLength[ch][g] = grainLen;
+        }
     }
 
-    float pitchedSample = (windowSum > 1.0e-5f) ? (grainAccum / windowSum) : 0.0f;
+    float pitchedExcitation = (windowSum > 1.0e-5f) ? (grainAccum / windowSum) : 0.0f;
 
-    // Anatomical 3-Resonance Vocal Tract Formant Filter Bank
-    // Scales F1, F2, F3 proportionally based on formantShift (0.0 = deep demon throat, 1.0 = hyperpop chipmunk)
-    float fScale = std::pow(2.0f, (formantShift - 0.5f) * 1.6f); // Range approx 0.57x to 1.74x
+    // 12th-Order LPC Formant All-Pole Resynthesis Filter 1 / A(z / gamma)
+    float resonantVocalBody = pitchedExcitation;
+    for (int i = 1; i <= LPC_ORDER; ++i)
+        resonantVocalBody -= lpcGammaA[i] * lpcHistory[ch][i];
+
+    resonantVocalBody = AudioUtils::sanitize(resonantVocalBody);
+
+    // Update LPC filter history
+    for (int i = LPC_ORDER; i > 1; --i)
+        lpcHistory[ch][i] = lpcHistory[ch][i - 1];
+    lpcHistory[ch][1] = resonantVocalBody;
+
+    // Blend Resonant Body with Core Excitation
+    float vocalLayer = pitchedExcitation * 0.40f + resonantVocalBody * 0.60f;
+
+    // Murda Melodies Reference Curve: +21.9dB Chest Boost (125Hz) and -3dB Mud Cut (350Hz)
+    float chestBoost = chestWeightFilter[ch].processSample(0, vocalLayer);
+    float mudBand = antiMudFilter[ch].processSample(0, vocalLayer);
     
-    float f1Freq = std::clamp(500.0f * fScale, 150.0f, (float)(sampleRate * 0.40));
-    float f2Freq = std::clamp(1500.0f * fScale, 400.0f, (float)(sampleRate * 0.45));
-    float f3Freq = std::clamp(2800.0f * fScale, 800.0f, (float)(sampleRate * 0.48));
+    // Smooth composite layer
+    float shadowCore = vocalLayer + (chestBoost * 0.45f) - (mudBand * 0.25f);
 
-    formantF1[ch].setCutoffFrequency(f1Freq);
-    formantF2[ch].setCutoffFrequency(f2Freq);
-    formantF3[ch].setCutoffFrequency(f3Freq);
+    // Phase-Locked Sub-Octave Fundamental Synthesizer
+    if (ch == 0)
+    {
+        float absIn = std::abs(sample);
+        subEnvFollower = 0.992f * subEnvFollower + 0.008f * absIn;
+        float subFreq = (static_cast<float>(sampleRate) / basePeriod) * 0.5f; // Sub-octave F0 / 2
+        float phaseInc = (subFreq * juce::MathConstants<float>::twoPi) / static_cast<float>(sampleRate);
+        subPhase += phaseInc;
+        if (subPhase >= juce::MathConstants<float>::twoPi)
+            subPhase -= juce::MathConstants<float>::twoPi;
+    }
+    
+    float subOsc = std::sin(subPhase) * subEnvFollower * 0.28f;
+    float combinedVoice = shadowCore + subOsc;
 
-    float f1Out = formantF1[ch].processSample(ch, pitchedSample);
-    float f2Out = formantF2[ch].processSample(ch, pitchedSample);
-    float f3Out = formantF3[ch].processSample(ch, pitchedSample);
-
-    // Dynamic Formant Shaping (blends pitched core with resonant vocal tract acoustic body)
-    float formantLayer = pitchedSample * 0.55f + f1Out * 0.45f + f2Out * 0.35f + f3Out * 0.20f;
-
-    // Vocal Bender / Murda Melodies Sub-Harmonic Chest Warmth
-    float subTone = subWarmthFilter[ch].processSample(ch, pitchedSample);
-    float subHarmonic = std::sin(subTone * juce::MathConstants<float>::halfPi) * 0.35f;
-
-    float shadowLayer = formantLayer + subHarmonic;
-
-    // Harmonic Sub-Saturation & Warmth Drive
+    // Analog Warmth & Harmonic Preamp Drive
     if (drive > 0.005f)
     {
-        float satDrive = 1.0f + drive * 5.5f;
-        float x = shadowLayer * satDrive;
-        // Asymmetric warm triode saturation (even + odd harmonics)
-        shadowLayer = (x + 0.15f * x * x) / (1.0f + 0.15f * x * x + std::abs(x));
-        shadowLayer /= std::sqrt(satDrive);
+        float satDrive = 1.0f + drive * 3.5f;
+        float x = combinedVoice * satDrive;
+        // Asymmetric warm tube transfer curve
+        float sat = std::tanh(x + 0.12f * (x * x));
+        combinedVoice = sat / std::sqrt(satDrive);
     }
 
-    // DC Blocker Protection
-    shadowLayer = dcBlocker[ch].process(shadowLayer);
+    // DC Protection & Tone Shaping
+    combinedVoice = dcBlocker[ch].process(combinedVoice);
 
-    // Darkness / Muffle Lowpass Filter (sweeps 400 Hz to 6500 Hz)
-    float darknessCutoff = 400.0f + (1.0f - darkness) * 5800.0f;
-    darknessCutoff = std::clamp(darknessCutoff, 120.0f, (float)(sampleRate * 0.45));
+    float darknessCutoff = 500.0f + (1.0f - darkness) * 6500.0f;
+    darknessCutoff = std::clamp(darknessCutoff, 120.0f, static_cast<float>(sampleRate * 0.45));
     darknessFilter[ch].setCutoffFrequency(darknessCutoff);
-    shadowLayer = darknessFilter[ch].processSample(ch, shadowLayer);
+    combinedVoice = darknessFilter[ch].processSample(0, combinedVoice);
 
-    return AudioUtils::sanitize(shadowLayer);
+    return AudioUtils::sanitize(combinedVoice);
 }
 
 void ShadowProcessor::process(juce::AudioBuffer<float>& buffer)
 {
     if (!enabled || mix <= 0.001f)
+    {
+        buffer.clear();
         return;
+    }
 
     const int numChannels = buffer.getNumChannels();
     const int numSamples = buffer.getNumSamples();
@@ -204,9 +396,7 @@ void ShadowProcessor::process(juce::AudioBuffer<float>& buffer)
     if (numChannels == 0 || numSamples == 0)
         return;
 
-    // Constant-power wet/dry crossfade
-    float wetGain = std::sin(mix * juce::MathConstants<float>::halfPi);
-    float dryGain = std::cos(mix * juce::MathConstants<float>::halfPi);
+    float wetGain = mix * 1.05f;
 
     for (int i = 0; i < numSamples; ++i)
     {
@@ -216,8 +406,7 @@ void ShadowProcessor::process(juce::AudioBuffer<float>& buffer)
             float drySample = channelData[i];
             float shadowSample = processSample(drySample, ch);
 
-            // Blend clean deep shadow vocal with pristine dry signal
-            channelData[i] = AudioUtils::sanitize(drySample * dryGain + shadowSample * wetGain * 1.15f);
+            channelData[i] = AudioUtils::sanitize(shadowSample * wetGain);
         }
 
         writeIndex = (writeIndex + 1) & BUFFER_MASK;
