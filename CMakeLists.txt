@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(UNDERGROUND VERSION 1.0.0 LANGUAGES C CXX)
+project(UNDERGROUND VERSION 3.5.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,7 +40,7 @@ juce_add_plugin(UNDERGROUND
     PLUGIN_CODE Undg
     FORMATS VST3 AU Standalone
     PRODUCT_NAME "UNDERGROUND"
-    VERSION "2.5.0"
+    VERSION "3.5.0"
 )
 
 target_sources(UNDERGROUND
@@ -56,8 +56,10 @@ target_sources(UNDERGROUND
         Source/DSP/VocalCompressor.cpp
         Source/DSP/DeEsserProcessor.cpp
         Source/DSP/AirExciterProcessor.cpp
+        Source/DSP/VocalResonanceProcessor.cpp
+        Source/DSP/StudioMicroDetuner.cpp
+        Source/DSP/AnalogTransformerCore.cpp
         Source/DSP/SignalChain.cpp
-
 
         Source/Utils/PluggedINAutoUpdater.cpp
         Source/Presets/PresetManager.cpp
@@ -86,7 +88,7 @@ juce_add_gui_app(PluggedIN_Central
     PRODUCT_NAME "PluggedIN Central"
     COMPANY_NAME "PluggedIN Audio Systems"
     BUNDLE_ID "com.pluggedin.central"
-    VERSION "1.0.7"
+    VERSION "2.0.0"
 )
 
 target_sources(PluggedIN_Central
@@ -104,3 +106,73 @@ target_link_libraries(PluggedIN_Central
         juce::juce_core
         juce::juce_events
 )
+
+# Automated Test Harness Executable
+add_executable(TestAdversarial
+    Source/TestAdversarial.cpp
+    Source/DSP/ShadowProcessor.cpp
+    Source/DSP/CrushProcessor.cpp
+    Source/DSP/WidthProcessor.cpp
+    Source/DSP/SpaceProcessor.cpp
+    Source/DSP/DeviceProcessor.cpp
+    Source/DSP/EQEngine.cpp
+    Source/DSP/VocalCompressor.cpp
+    Source/DSP/DeEsserProcessor.cpp
+    Source/DSP/AirExciterProcessor.cpp
+    Source/DSP/VocalResonanceProcessor.cpp
+    Source/DSP/StudioMicroDetuner.cpp
+    Source/DSP/AnalogTransformerCore.cpp
+    Source/DSP/SignalChain.cpp
+    Source/Presets/PresetManager.cpp
+)
+
+target_compile_definitions(TestAdversarial
+    PUBLIC
+        JUCE_STANDALONE_APPLICATION=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+
+target_link_libraries(TestAdversarial
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_core
+)
+
+# Diagnostic Audit Runner
+add_executable(DiagnosticRunner
+    tools/diagnostic_runner.cpp
+    Source/DSP/ShadowProcessor.cpp
+    Source/DSP/CrushProcessor.cpp
+    Source/DSP/WidthProcessor.cpp
+    Source/DSP/SpaceProcessor.cpp
+    Source/DSP/DeviceProcessor.cpp
+    Source/DSP/EQEngine.cpp
+    Source/DSP/VocalCompressor.cpp
+    Source/DSP/DeEsserProcessor.cpp
+    Source/DSP/AirExciterProcessor.cpp
+    Source/DSP/VocalResonanceProcessor.cpp
+    Source/DSP/StudioMicroDetuner.cpp
+    Source/DSP/AnalogTransformerCore.cpp
+    Source/DSP/SignalChain.cpp
+    Source/Presets/PresetManager.cpp
+)
+
+target_compile_definitions(DiagnosticRunner
+    PUBLIC
+        JUCE_STANDALONE_APPLICATION=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+)
+
+target_link_libraries(DiagnosticRunner
+    PRIVATE
+        juce::juce_audio_utils
+        juce::juce_dsp
+        juce::juce_gui_extra
+        juce::juce_gui_basics
+        juce::juce_core
+)
+
+
