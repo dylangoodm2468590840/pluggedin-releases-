@@ -9,14 +9,14 @@
     "release_notes": "Official PluggedIN Central v2.0.0 Native Studio Manager & UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel DSP, 7 Re-Voiced Reference Presets with 4x Polyphase Oversampling, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), and Universal Cross-Platform Auto-Updates.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/sxdu8t.zip",
-        "sha256": "9d2e1aab6fbf01ce0f82e3111d2fcface5e33d36be3b4b60825f6a074f222887",
-        "size_bytes": 32501463
+        "url": "https://files.catbox.moe/axs0wz.zip",
+        "sha256": "9fe813a518be0001e3b1ee78ef7f9889a7f32649d1300185dbfbd163479d0308",
+        "size_bytes": 32501451
       },
       "macos_universal": {
-        "url": "https://files.catbox.moe/znz8ax.zip",
-        "sha256": "9d2e1aab6fbf01ce0f82e3111d2fcface5e33d36be3b4b60825f6a074f222887",
-        "size_bytes": 32501463
+        "url": "https://files.catbox.moe/ld2bqr.zip",
+        "sha256": "9fe813a518be0001e3b1ee78ef7f9889a7f32649d1300185dbfbd163479d0308",
+        "size_bytes": 32501451
       }
     }
   },
@@ -26,20 +26,20 @@
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V3.3.0 (Boutique Vocal Suite)",
       "latest_version": "3.3.0",
-      "download_url_win": "https://files.catbox.moe/vihdnr.zip",
-      "download_url_mac": "https://files.catbox.moe/vihdnr.zip",
+      "download_url_win": "https://files.catbox.moe/anrbb7.zip",
+      "download_url_mac": "https://files.catbox.moe/anrbb7.zip",
       "changelog": "Official UNDERGROUND v3.3.0 Boutique Vocal Suite: Split-Bus Direct/Parallel Architecture, 7 Re-Voiced Reference Presets, 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut), Dynamic Transformer Core & Tube Saturation with 4x Polyphase Oversampling.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/vihdnr.zip",
-          "sha256": "f41e8bb99b332296f91b610cb093707842aaf3b81a38fdfd440c47c719bb0eb3",
+          "url": "https://files.catbox.moe/anrbb7.zip",
+          "sha256": "fd555275f34a8ae6cfc3ba5de69ba460b87c7bb7237577788707c965cf04140c",
           "size_bytes": 4890163
         },
         "macos_universal": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/vihdnr.zip",
-          "sha256": "f41e8bb99b332296f91b610cb093707842aaf3b81a38fdfd440c47c719bb0eb3",
+          "url": "https://files.catbox.moe/anrbb7.zip",
+          "sha256": "fd555275f34a8ae6cfc3ba5de69ba460b87c7bb7237577788707c965cf04140c",
           "size_bytes": 4890163
         }
       }
