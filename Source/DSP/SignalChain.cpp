@@ -249,19 +249,19 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
 
     if (degenVal > 0.01f)
     {
-        // Parabolic curves for smooth warmth at low values and intense power at high values
         float degenCurve = degenVal * degenVal;
-        float formantDrop = 0.20f + 0.65f * std::sqrt(degenVal);
 
-        shadowModule.setFormantShift(formantDrop);
-        shadowModule.setDrive(0.20f + 0.60f * degenCurve);
-        shadowModule.setMix(0.30f + 0.50f * degenVal);
+        // Smoothly pull formant down into the deep resonant chest cavity without flipping phase
+        float currentFormant = shadowModule.getFormantShift();
+        float deeperFormant = std::clamp(currentFormant - 0.28f * degenVal, 0.12f, 1.0f);
+        shadowModule.setFormantShift(deeperFormant);
 
-        crushModule.setAmount(std::clamp(crushModule.getAmount() + 0.45f * degenCurve, 0.0f, 1.0f));
-        crushModule.setTone(std::clamp(0.60f + 0.30f * degenVal, 0.0f, 1.0f));
+        shadowModule.setDrive(std::clamp(shadowModule.getDrive() + 0.35f * degenCurve, 0.0f, 1.0f));
+        shadowModule.setMix(std::clamp(shadowModule.getMix() + 0.30f * degenVal, 0.0f, 1.0f));
 
-        widthModule.setAmount(std::clamp(widthModule.getAmount() + 0.40f * degenVal, 0.0f, 1.0f));
-        studioMicroDetuner.setAmount(std::clamp(0.25f + 0.55f * degenVal, 0.0f, 1.0f));
+        crushModule.setAmount(std::clamp(crushModule.getAmount() + 0.30f * degenCurve, 0.0f, 1.0f));
+        widthModule.setAmount(std::clamp(widthModule.getAmount() + 0.35f * degenVal, 0.0f, 1.0f));
+        studioMicroDetuner.setAmount(std::clamp(studioMicroDetuner.getAmount() + 0.40f * degenVal, 0.0f, 1.0f));
     }
 
     // 12. Parallel Texture Processing (Shadow sub-harmonics & Crush analog saturation)
