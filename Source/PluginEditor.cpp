@@ -24,16 +24,13 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
 
     // 0. Top Preset Selector & Navigation Buttons
     juce::StringArray presetChoices { 
-        "DEGENERATE RAGE", "SLUDGE PLUGG", "CYBER AD-LIB", "GLITCH MONSTER", "UNDERGROUND TUBE",
-        "DEMON BELOW", "UNDERWORLD", "POSSESSED", "DEEP SHADOW", "HELL LAYER",
-        "WIDE LEAD", "FLOATING HOOK", "HEADPHONE WIDE", "CYBER DOUBLE", "STEREO AURA",
-        "DEEP CHEST", "GOBLIN", "TINY VOICE", "FORMANT SHIFTER", "OCTAVE STACK",
-        "CATHEDRAL", "SLAP ROOM", "FLOATING ECHO", "DARK VOID", "WASHED VOCAL",
-        "TAPE WARMTH", "CELL PHONE", "FRIED MIC", "BROKEN INTERCOM", "RADIO STATIC",
-        "CYBER CHORUS", "UNSTABLE PITCH", "UNDERWATER", "SPINNING VOCAL", "PULSING GATE",
-        "DARK SLAP", "THROW ECHO", "PING PONG SPACE", "FILTERED TAPE DELAY", "PITCH ECHO",
-        "MODERN RAP LEAD", "RAGE VOCAL", "DARK PLUGG LEAD", "INTIMATE TRAP", "RAW UNDERGROUND",
-        "MONSTER ADLIB", "TELEPHONE SHOUT", "DISTANCE ADLIB", "GHOST LAYER", "SPECTRAL GHOST",
+        "01. POLISHED / CRISP",
+        "02. DARK / UNDERGROUND",
+        "03. DEMON / DEEP",
+        "04. WIDE / FLOATING",
+        "05. DESTROYED / CRUSHED",
+        "06. TELEPHONE / DEVICE",
+        "07. FUTURISTIC / ALIEN",
         "CUSTOM"
     };
 
@@ -45,7 +42,7 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
 
     presetModeBox.onChange = [this]() {
         int idx = presetModeBox.getSelectedId() - 1;
-        if (idx >= 0 && idx < 50)
+        if (idx >= 0 && idx < PresetManager::NUM_REFERENCE_PRESETS)
         {
             PresetManager::applyPreset(audioProcessor.getAPVTS(), static_cast<PresetManager::PresetIndex>(idx));
         }
@@ -60,13 +57,18 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     addAndMakeVisible(nextPresetButton);
     nextPresetButton.onClick = [this]() {
         int current = presetModeBox.getSelectedId();
-        if (current < 50) presetModeBox.setSelectedId(current + 1, juce::sendNotificationSync);
+        if (current < PresetManager::NUM_REFERENCE_PRESETS) presetModeBox.setSelectedId(current + 1, juce::sendNotificationSync);
     };
 
+
     addAndMakeVisible(abButton);
+    abButton.setButtonText("STATE: A");
+    abButton.onClick = [this]() { audioProcessor.toggleABState(); };
+
     addAndMakeVisible(bypassButton);
     addAndMakeVisible(setupButton);
     addAndMakeVisible(oversamplingButton);
+
 
     // 1. DEGENERATE Signature Macro (Top Crown Hero)
     addAndMakeVisible(degenerateKnob);
@@ -226,10 +228,20 @@ void UndergroundAudioProcessorEditor::timerCallback()
     currentCompGr   = currentCompGr * 0.7f   + audioProcessor.getVocalCompressor().getGainReductionDb() * 0.3f;
     currentDeEssGr  = currentDeEssGr * 0.7f  + audioProcessor.getDeEsser().getGainReductionDb() * 0.3f;
 
+    for (int b = 0; b < 4; ++b)
+    {
+        float target = chain.getResonanceProcessor().getBandReductionDb(b);
+        currentResReduction[b] = currentResReduction[b] * 0.7f + target * 0.3f;
+    }
+
+    int activeSlot = audioProcessor.getActiveStateSlot();
+    abButton.setButtonText(activeSlot == 0 ? "STATE: A" : "STATE: B");
+    abButton.setColour(juce::TextButton::textColourOffId, activeSlot == 0 ? juce::Colour(0xff00f0ff) : juce::Colour(0xffffaa00));
 
     // Fetch real FFT spectrum bars from audio DSP chain
     float fftBars[64];
     chain.getSpectrumData(fftBars);
+
 
     // Fetch 5-band EQ parameter values from APVTS
     auto& apvts = audioProcessor.getAPVTS();
@@ -299,7 +311,7 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour(juce::Colour(0xff00ff66));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("PluggedIN AUDIO  |  v2.5.0 VST3 64-BIT", 28, 34, 250, 14, juce::Justification::left, true);
+    g.drawText("PluggedIN AUDIO  |  v" JucePlugin_VersionString " VST3 64-BIT", 28, 34, 250, 14, juce::Justification::left, true);
 
     // SQUEEZE & DE-ESS Mini Gain Reduction (GR) Meters
     auto drawMiniGrMeter = [&](float meterX, float meterY, float grDb) {
@@ -322,11 +334,30 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
     drawMiniGrMeter(262.0f, 28.0f, currentCompGr);
     drawMiniGrMeter(522.0f, 28.0f, currentDeEssGr);
 
+    // 4 Dynamic Resonance Activity Indicators (MUD, NSL, HRSH, FIZZ)
+    const char* resLabels[4] = { "MUD", "NSL", "HRSH", "FIZZ" };
+    float resStartX = 635.0f;
+    for (int b = 0; b < 4; ++b)
+    {
+        float rx = resStartX + b * 22.0f;
+        float ry = 30.0f;
+        float redAmt = std::clamp(currentResReduction[b] / 6.0f, 0.0f, 1.0f);
+        
+        g.setColour(juce::Colour(0xff607286));
+        g.setFont(juce::Font(7.0f, juce::Font::bold));
+        g.drawText(resLabels[b], rx - 4.0f, ry, 20.0f, 8.0f, juce::Justification::centred);
+
+        juce::Colour dotCol = redAmt > 0.08f ? juce::Colour(0xffffaa00).interpolatedWith(juce::Colour(0xffff0055), redAmt) : juce::Colour(0xff141822);
+        g.setColour(dotCol);
+        g.fillEllipse(rx + 3.5f, ry + 9.0f, 5.0f, 5.0f);
+    }
 
     // Top-Right Version Stamp
     g.setColour(juce::Colour(0xff7f8b98));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("BUILD: v2.5.0", getLocalBounds().getWidth() - 120, 14, 100, 16, juce::Justification::right, true);
+    g.drawText("BUILD: v" JucePlugin_VersionString, getLocalBounds().getWidth() - 120, 14, 100, 16, juce::Justification::right, true);
+
+
 
     // Glowing PluggedIN In-Plugin Cloud Auto-Updater Notification Badge
     if (audioProcessor.getAutoUpdater().isUpdateAvailable())
