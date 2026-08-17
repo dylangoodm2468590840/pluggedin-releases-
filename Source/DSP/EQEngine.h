@@ -54,15 +54,6 @@ public:
         double sinW0 = std::sin(w0);
         double cosW0 = std::cos(w0);
 
-        // Nyquist De-cramping: Pre-warp frequency near Nyquist to preserve high-frequency bell symmetry
-        if (type == Peaking || type == HighShelf || type == Notch)
-        {
-            double w_warped = 2.0 * std::tan(w0 * 0.5);
-            w0 = w_warped;
-            sinW0 = std::sin(w0);
-            cosW0 = std::cos(w0);
-        }
-
         double alpha = sinW0 / (2.0 * Q);
 
         double b0_raw = 1.0, b1_raw = 0.0, b2_raw = 0.0;
@@ -216,7 +207,7 @@ public:
 
 private:
     double currentSampleRate { 44100.0 };
-    static constexpr int maxBands = 12;
+    static constexpr int maxBands = 16;
 
     std::array<TransposedDirectFormIIBiquad, maxBands> biquadArray;
     std::array<BandConfig, maxBands> bandConfigs;
