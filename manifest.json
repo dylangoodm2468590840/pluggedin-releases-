@@ -6,12 +6,12 @@
     "version": "1.1.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Neve 1073 / Tube-Tech Iron Transformer Core Preamp Warmth, Eventide H910 / MicroShift 3D Haas Dual Micro-Pitch Detune Aura, 4-Band Dynamic Resonance & Harshness Suppression Engine with Real-Time UI Visualizer, Instant In-Plugin A/B State Snapshot Switcher, Non-Linear DEGENERATE Demonic Macro Matrix, and 7 Flagship Reference Presets.",
+    "release_notes": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Redesigned Split-Bus Direct/Parallel DSP Engine, Reference Audio Forensic Re-voicing of 7 Core Presets, 100% Mono-Safe 3D Spatial Aura with 180Hz Side-Cut Isolation, Envelope-Reactive Analog Tube/Tape Saturation with 4x Polyphase Oversampling, and Synchronous Formant Sub-Harmonic Resonator.",
     "packages": {
       "windows_x64": {
-        "url": "https://files.catbox.moe/z4svvs.zip",
-        "sha256": "a28870094e15531b34998a849e2280877df065114119ee5c0d7bb72547b8819a",
-        "size_bytes": 3425837
+        "url": "https://files.catbox.moe/lxjuyu.zip",
+        "sha256": "cc5bd76048f60381eb43d20d40c21b5d54fb2205cfb219c6ab6213425a5977ff",
+        "size_bytes": 32483742
       }
     }
   },
@@ -19,14 +19,23 @@
     {
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND V2",
+      "name": "UNDERGROUND V3.2.0 (Boutique Vocal Suite)",
       "latest_version": "3.2.0",
-      "download_url_win": "https://files.catbox.moe/f89z2i.zip",
+      "download_url_win": "https://files.catbox.moe/2e40uj.zip",
+      "download_url_mac": "https://files.catbox.moe/2e40uj.zip",
+      "changelog": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Redesigned Split-Bus Direct/Parallel DSP Engine, Reference Audio Forensic Re-voicing of 7 Core Presets, 100% Mono-Safe 3D Spatial Aura with 180Hz Side-Cut Isolation, Envelope-Reactive Analog Tube/Tape Saturation with 4x Polyphase Oversampling, and Synchronous Formant Sub-Harmonic Resonator.",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/f89z2i.zip",
-          "sha256": "f39a12d72e31da51e6d9c29ea0ab28c157873aa8053dc265375c4d79f470e197"
+          "url": "https://files.catbox.moe/2e40uj.zip",
+          "sha256": "344ebf13b46f7357b8157e6137e72bb43858f2370c6c407afd34976cffb5f964",
+          "size_bytes": 4888759
+        },
+        "macos_universal": {
+          "format": "vst3",
+          "url": "https://files.catbox.moe/2e40uj.zip",
+          "sha256": "344ebf13b46f7357b8157e6137e72bb43858f2370c6c407afd34976cffb5f964",
+          "size_bytes": 4888759
         }
       }
     }
