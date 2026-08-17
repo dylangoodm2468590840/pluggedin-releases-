@@ -145,7 +145,9 @@ private:
     float currentOutLevel { 0.0f };
     float currentCompGr   { 0.0f };
     float currentDeEssGr  { 0.0f };
+    float currentResReduction[4] { 0.0f, 0.0f, 0.0f, 0.0f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (UndergroundAudioProcessorEditor)
 };
+
 
