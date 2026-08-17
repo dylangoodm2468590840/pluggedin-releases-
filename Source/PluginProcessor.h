@@ -57,7 +57,14 @@ public:
     DeEsserProcessor& getDeEsser() noexcept { return deEsserProcessor; }
     AirExciterProcessor& getAirExciter() noexcept { return airExciterProcessor; }
 
+    void toggleABState();
+    int getActiveStateSlot() const noexcept { return activeStateSlot; }
+
 private:
+    int activeStateSlot { 0 }; // 0 = State A, 1 = State B
+    std::unique_ptr<juce::XmlElement> stateSlotA;
+    std::unique_ptr<juce::XmlElement> stateSlotB;
+
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
     juce::AudioProcessorValueTreeState apvts;
