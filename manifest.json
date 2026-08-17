@@ -6,7 +6,7 @@
     "version": "1.1.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "Official UNDERGROUND V3.0.0 Master Suite: Dual-Stage FET/Opto Vocal Leveler with Auto-Makeup & Live GR Metering, Dynamic Split-Band De-Esser, 5-Circuit Analog Saturation Suite with +20dB PUNISH Mode, Slate Fresh Air Psychoacoustic Exciter (Mid-Air & Top-Air Sheen), Intelligent Sidechain Auto-Ducked Dattorro Space Engine, and 50+ Pro Studio Presets.",
+    "release_notes": "Official UNDERGROUND v3.2.0 Boutique Vocal Suite: Neve 1073 / Tube-Tech Iron Transformer Core Preamp Warmth, Eventide H910 / MicroShift 3D Haas Dual Micro-Pitch Detune Aura, 4-Band Dynamic Resonance & Harshness Suppression Engine with Real-Time UI Visualizer, Instant In-Plugin A/B State Snapshot Switcher, Non-Linear DEGENERATE Demonic Macro Matrix, and 7 Flagship Reference Presets.",
     "packages": {
       "windows_x64": {
         "url": "https://files.catbox.moe/z4svvs.zip",
@@ -20,13 +20,13 @@
       "id": "pluggedin_underground",
       "plugin_id": "pluggedin_underground",
       "name": "UNDERGROUND V2",
-      "latest_version": "3.0.0",
-      "download_url_win": "https://files.catbox.moe/6rnd6e.zip",
+      "latest_version": "3.2.0",
+      "download_url_win": "https://files.catbox.moe/f89z2i.zip",
       "packages": {
         "windows_x64": {
           "format": "vst3",
-          "url": "https://files.catbox.moe/6rnd6e.zip",
-          "sha256": "0557fe51fbf54db617085025dd41cc6ee250de6c8901a5b8bc000dbca6e50acd"
+          "url": "https://files.catbox.moe/f89z2i.zip",
+          "sha256": "f39a12d72e31da51e6d9c29ea0ab28c157873aa8053dc265375c4d79f470e197"
         }
       }
     }
