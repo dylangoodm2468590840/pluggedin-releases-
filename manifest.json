@@ -6,12 +6,12 @@
                     "version":  "2.1.0",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "release_notes":  "Official PluggedIN Central v2.1.0: Integrated Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synth \u0026 Sampler engine, 808 machine with glide, 100+ presets, and 1-Click DAW auto-deployment.",
+                    "release_notes":  "Official PluggedIN Central v2.1.0: Added Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synthesizer \u0026 Sampler engine, 808 machine with pitch dive and legato glide, and 100+ production presets.",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  "https://files.catbox.moe/ty4z10.zip",
-                                                         "sha256":  "81a87fc48b6d6c06ff1c1d0a357f72851bb5b9c01d256a36258079f73ab47b56",
-                                                         "size_bytes":  46646005
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip",
+                                                         "sha256":  "1c9c0de6fd7f7b2e59aff003e21e9522777157b35930f4df43158fa34487dea6",
+                                                         "size_bytes":  4646269
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://files.catbox.moe/dfbudg.zip",
@@ -26,20 +26,20 @@
                         "plugin_id":  "pluggedin_plugged1",
                         "name":  "PLUGGED 1 v1.0.0 (Flagship Hybrid Instrument)",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://files.catbox.moe/jt5nha.zip",
-                        "download_url_mac":  "https://files.catbox.moe/i79jpq.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
                         "changelog":  "Official Launch: PLUGGED 1 Hybrid Instrument VST3/Standalone featuring Dual-Layer Sampler + PolyBLEP Synthesizer, Dedicated 808/Sub Machine with Pitch Dive and Mono-Legato Glide, Studio ZDF Filter \u0026 FX Suite (Tube Drive, Ping-Pong Delay, Reverb), and 100+ Presets (ian Plucks \u0026 Leads, Chief Keef Drill Brass, 808s, Concert Grand Piano, and Guitars).",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/jt5nha.zip",
-                                                             "sha256":  "830531d28f43d8e4fafd6977a23382d55555ec9cd4f0c21f7c9b30c9015a794f",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                                                             "sha256":  "9db9388bb8703acadf3be83879d34efa34b056b579c749238a46fe9fc152d3aa",
                                                              "size_bytes":  9618939
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  "https://files.catbox.moe/i79jpq.zip",
-                                                                 "sha256":  "c16d0e914b96755409f23f73513fe9edb8d007f945f11f3abfeeb986f5447a15",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
+                                                                 "sha256":  "789c9af2115e0ea240ff03f07a632c21d1b2ae94d5884fbb44af264f574753f6",
                                                                  "size_bytes":  4818315
                                                              }
                                      }
