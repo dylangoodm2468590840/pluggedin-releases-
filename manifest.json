@@ -13,8 +13,8 @@
                                                                      "",
                                                                      "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip"
                                                                  ],
-                                                         "sha256":  "2711a6795835ae85a19a29bc738256ff6b4ae16c522c19d1b3787178805fc627",
-                                                         "size_bytes":  4646263
+                                                         "sha256":  "cefd0b48521e6b5ae4027da41f55ee50d2dfea0c68a3a4c4342f4d826bc2b486",
+                                                         "size_bytes":  4646836
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://files.catbox.moe/dfbudg.zip",
@@ -45,7 +45,7 @@
                                                                          "",
                                                                          "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip"
                                                                      ],
-                                                             "sha256":  "dab36917acf1b84ed11037d6f1cd08e56472deb790f820cf344d969ed05f06e7",
+                                                             "sha256":  "d77a64048e428a128de717dce30bb96b0f19d659dcd76c4c7c98dd0e3441da03",
                                                              "size_bytes":  9618939
                                                          },
                                          "macos_universal":  {
@@ -54,7 +54,7 @@
                                                                              "",
                                                                              "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip"
                                                                          ],
-                                                                 "sha256":  "dd2e20275a896d80708f7c8b57ce43368622acbbc9d096338cbaea2d88c5d079",
+                                                                 "sha256":  "1cb0c005a9af39345b03ae3c025866465f30e24c4b6e8636b8735056c04ae309",
                                                                  "size_bytes":  4818315
                                                              }
                                      }
