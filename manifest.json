@@ -9,10 +9,7 @@
                     "release_notes":  "Official PluggedIN Central v2.1.0: Added Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synthesizer \u0026 Sampler engine, 808 machine with pitch dive and legato glide, and 100+ production presets.",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  [
-                                                                     "",
-                                                                     "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip"
-                                                                 ],
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip",
                                                          "sha256":  "4a23800178f7a52730689a7fb850a16ea9b5d08762a749a127ae726cb7a07f90",
                                                          "size_bytes":  4650147
                                                      },
@@ -27,33 +24,21 @@
                     {
                         "id":  "pluggedin_plugged1",
                         "plugin_id":  "pluggedin_plugged1",
-                        "name":  "PLUGGED 1 v1.0.0 (Flagship Hybrid Instrument)",
-                        "latest_version":  "1.0.0",
-                        "download_url_win":  [
-                                                 "",
-                                                 "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip"
-                                             ],
-                        "download_url_mac":  [
-                                                 "",
-                                                 "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip"
-                                             ],
-                        "changelog":  "Official Launch: PLUGGED 1 Hybrid Instrument VST3/Standalone featuring Dual-Layer Sampler + PolyBLEP Synthesizer, Dedicated 808/Sub Machine with Pitch Dive and Mono-Legato Glide, Studio ZDF Filter \u0026 FX Suite (Tube Drive, Ping-Pong Delay, Reverb), and 100+ Presets (ian Plucks \u0026 Leads, Chief Keef Drill Brass, 808s, Concert Grand Piano, and Guitars).",
+                        "name":  "PLUGGED 1 v1.2 (Flagship Hybrid Instrument)",
+                        "latest_version":  "1.2.0",
+                        "download_url_win":  "https://files.catbox.moe/o3sx3q.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
+                        "changelog":  "PLUGGED 1 v1.2.0 Major Update: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive \u0026 Legato Glide, Studio ZDF Filter \u0026 Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  [
-                                                                         "",
-                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip"
-                                                                     ],
-                                                             "sha256":  "a0ee03923fc02f330f8fcf87c8ff98fe9c60bbbff5e0801db9e6a06bdaf32791",
-                                                             "size_bytes":  9618939
+                                                             "url":  "https://files.catbox.moe/o3sx3q.zip",
+                                                             "sha256":  "076e59e63d67893a0590d36692fcc15ef34b49b02dacaa911d1bef2f116b5682",
+                                                             "size_bytes":  9860452
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  [
-                                                                             "",
-                                                                             "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip"
-                                                                         ],
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
                                                                  "sha256":  "43a6e5c6d0a69717c7ccaf96730ad253565ff77e89520c1757dc428b9ec6e74d",
                                                                  "size_bytes":  4818315
                                                              }
@@ -62,17 +47,17 @@
                     {
                         "id":  "pluggedin_underground",
                         "plugin_id":  "pluggedin_underground",
-                        "name":  "UNDERGROUND V3.9.0 (Master Studio Suite)",
-                        "latest_version":  "3.9.0",
-                        "download_url_win":  "https://files.catbox.moe/o82edj.zip",
+                        "name":  "UNDERGROUND v1.0 (Master Studio Suite)",
+                        "latest_version":  "4.0.0",
+                        "download_url_win":  "https://files.catbox.moe/b3joey.zip",
                         "download_url_mac":  "https://files.catbox.moe/404iri.zip",
-                        "changelog":  "Official UNDERGROUND v3.9.0 Master Studio DSP: Real-Time PSOLA Glottal Pitch Tracker, 12th-Order LPC Formant Warping, Minimum-Phase Dynamic Resonance Suppressor (Anti-Mud -3.5dB @ 350Hz), Murda Melodies Effect 4 3D Spatial Aura (0.90 Side/Mid ratio), and Consonant Transient Bleed Protection.",
+                        "changelog":  "Official UNDERGROUND v1.0 / v4.0 Master Studio Suite: 6 Rebuilt Pro DSP Engines (Glottal Epoch Alignment \u0026 3-Pole Formant Resonators, SPICE Triode Saturation with Bias Sag, Dolby-A Chebyshev Exciter, 3D Detuner, 28ms Pre-Delay Dattorro Reverb, Dual-Stage Leveler) and 10 Vault Presets.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/o82edj.zip",
-                                                             "sha256":  "3dc06f1662b3c77c8feadf96dc0eda71e120d8d47d851b6cb485f8cf97645674",
-                                                             "size_bytes":  4889591
+                                                             "url":  "https://files.catbox.moe/b3joey.zip",
+                                                             "sha256":  "ba3104c6a8e4514cd655ca6d6ba838e725317d1a6866236a74814e76c9a26662",
+                                                             "size_bytes":  9778248
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
