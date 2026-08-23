@@ -164,6 +164,9 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1/PluginProcessor.cpp")
     )
 
     juce_generate_juce_header(Plugged_1)
+
+    # Ensure Plugged 1 VST3 and AU are always compiled whenever plugins are built
+    add_dependencies(UNDERGROUND_VST3 Plugged_1_VST3 Plugged_1_AU)
 endif()
 
 # Automated Test Harness Executable
