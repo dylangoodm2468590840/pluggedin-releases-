@@ -251,17 +251,16 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
     {
         float degenCurve = degenVal * degenVal;
 
-        // Smoothly pull formant down into the deep resonant chest cavity without flipping phase
+        // Smoothly pull formant down into the deep resonant chest cavity without phase distortion
         float currentFormant = shadowModule.getFormantShift();
-        float deeperFormant = std::clamp(currentFormant - 0.28f * degenVal, 0.12f, 1.0f);
+        float deeperFormant = std::clamp(currentFormant - 0.25f * degenVal, 0.15f, 1.0f);
         shadowModule.setFormantShift(deeperFormant);
 
-        shadowModule.setDrive(std::clamp(shadowModule.getDrive() + 0.35f * degenCurve, 0.0f, 1.0f));
-        shadowModule.setMix(std::clamp(shadowModule.getMix() + 0.30f * degenVal, 0.0f, 1.0f));
+        shadowModule.setDrive(std::clamp(shadowModule.getDrive() + 0.20f * degenCurve, 0.0f, 0.70f));
+        shadowModule.setMix(std::clamp(shadowModule.getMix() + 0.25f * degenVal, 0.0f, 0.85f));
 
-        crushModule.setAmount(std::clamp(crushModule.getAmount() + 0.30f * degenCurve, 0.0f, 1.0f));
-        widthModule.setAmount(std::clamp(widthModule.getAmount() + 0.35f * degenVal, 0.0f, 1.0f));
-        studioMicroDetuner.setAmount(std::clamp(studioMicroDetuner.getAmount() + 0.40f * degenVal, 0.0f, 1.0f));
+        widthModule.setAmount(std::clamp(widthModule.getAmount() + 0.25f * degenVal, 0.0f, 0.90f));
+        studioMicroDetuner.setAmount(std::clamp(studioMicroDetuner.getAmount() + 0.25f * degenVal, 0.0f, 0.80f));
     }
 
     // 12. Parallel Texture Processing (Shadow sub-harmonics & Crush analog saturation)
@@ -272,13 +271,14 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         
         shadowModule.process(parallelShadowBuffer);
 
-        // Transient-aware consonant protection: gently ducks shadow under-layer during sharp consonant attacks
-        float shadowGain = 0.85f * (1.0f - transProt * 0.45f);
+        // Transient-aware consonant protection: reduce shadow during hard plosives only
+        // NOTE: 0.65 scalar removed — was causing SHADOW_MIX to deliver only ~14% of dialed-in level
+        float shadowGain = 1.0f - transProt * 0.35f;
         for (int ch = 0; ch < numChannels; ++ch)
             buffer.addFrom(ch, 0, parallelShadowBuffer, ch, 0, numSamples, shadowGain);
     }
 
-    if (gritEnable > 0.5f && (crushModule.getAmount() > 0.001f || crushModule.isPunishEnabled() || degenVal > 0.05f))
+    if (gritEnable > 0.5f && (crushModule.getAmount() > 0.001f || crushModule.isPunishEnabled()))
     {
         crushModule.process(buffer);
     }
