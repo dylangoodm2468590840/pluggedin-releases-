@@ -66,29 +66,32 @@ void WidthProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
     if (numChannels == 0 || numSamples == 0 || amount <= 0.001f)
         return;
 
-    // MicroShift / Chorus LFO Rate (0.15 Hz to 6.0 Hz)
-    float lfoRateHz = 0.15f + 5.85f * rate * rate;
+    // MicroShift / Chorus LFO Rate (0.15 Hz to 4.5 Hz)
+    float lfoRateHz = 0.15f + 4.35f * rate * rate;
     float lfoPhaseInc = lfoRateHz / static_cast<float>(sampleRate);
 
     // MicroShift modulation depth (sub-millisecond pitch detuning)
-    float modDepthMs = 0.3f + 3.2f * depth * amount;
+    float modDepthMs = 0.25f + 2.5f * depth;
     float modDepthSamples = (modDepthMs * 0.001f) * static_cast<float>(sampleRate);
 
-    // Soundtoys MicroShift / Haas Staggered Base Delays
-    float baseDelayL1 = (0.0092f) * static_cast<float>(sampleRate); // 9.2ms
-    float baseDelayL2 = (0.0174f) * static_cast<float>(sampleRate); // 17.4ms
-    float baseDelayR1 = (0.0128f) * static_cast<float>(sampleRate); // 12.8ms
-    float baseDelayR2 = (0.0226f) * static_cast<float>(sampleRate); // 22.6ms
+    // Staggered prime base delay times (11.3ms, 17.1ms, 23.7ms, 29.4ms)
+    float baseDelayL1 = 0.0113f * static_cast<float>(sampleRate);
+    float baseDelayL2 = 0.0237f * static_cast<float>(sampleRate);
+    float baseDelayR1 = 0.0171f * static_cast<float>(sampleRate);
+    float baseDelayR2 = 0.0294f * static_cast<float>(sampleRate);
 
-    // Feedback amount for flanger mode
-    float fbGain = (mode == ModulationMode::AnalogFlangus) ? (0.35f * amount) : 0.0f;
+    float fbGain = (mode == ModulationMode::AnalogFlangus) ? (0.28f * amount) : 0.0f;
 
     for (size_t i = 0; i < numSamples; ++i)
     {
         float inL = block.getSample(0, i);
         float inR = (numChannels > 1) ? block.getSample(1, i) : inL;
 
-        // Write to circular delay buffer with soft-clipped feedback
+        // 1. Mid/Side Split: The direct dry Mid channel is preserved 100% uncorrupted
+        float dryMid  = 0.5f * (inL + inR);
+        float drySide = 0.5f * (inL - inR);
+
+        // 2. Write to circular delay buffer with soft-clipped feedback
         float writeSampleL = AudioUtils::sanitize(inL + std::tanh(feedbackL * fbGain));
         float writeSampleR = AudioUtils::sanitize(inR + std::tanh(feedbackR * fbGain));
 
@@ -101,7 +104,7 @@ void WidthProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         float lfo3 = std::sin(juce::MathConstants<float>::twoPi * lfoPhase3);
         float lfo4 = std::sin(juce::MathConstants<float>::twoPi * lfoPhase4);
 
-        // Calculate 4 modulated delay times (micro-pitch detuning)
+        // Calculate 4 modulated delay taps
         float dL1 = baseDelayL1 + lfo1 * modDepthSamples;
         float dL2 = baseDelayL2 + lfo2 * modDepthSamples;
         float dR1 = baseDelayR1 + lfo3 * modDepthSamples;
@@ -113,39 +116,33 @@ void WidthProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         float tapR1 = readCubicHermite(delayBufferR, dR1, writeIndex, BUFFER_MASK);
         float tapR2 = readCubicHermite(delayBufferR, dR2, writeIndex, BUFFER_MASK);
 
-        // Mix into ultra-wide stereo image (Left: tapL1 + tapR2, Right: tapR1 + tapL2)
-        float wetL = 0.65f * tapL1 + 0.35f * tapR2;
-        float wetR = 0.65f * tapR1 + 0.35f * tapL2;
+        // Decorrelated stereo diffuse field
+        float diffuseL = 0.60f * tapL1 - 0.40f * tapR2;
+        float diffuseR = 0.60f * tapR1 - 0.40f * tapL2;
 
-        feedbackL = wetL;
-        feedbackR = wetR;
+        feedbackL = diffuseL;
+        feedbackR = diffuseR;
 
-        // Apply Analog BBD Warmth Filtering
-        wetL = bbdWarmthFilterL.processSample(0, wetL);
-        wetR = bbdWarmthFilterR.processSample(0, wetR);
+        // Warm BBD filtering
+        diffuseL = bbdWarmthFilterL.processSample(0, diffuseL);
+        diffuseR = bbdWarmthFilterR.processSample(0, diffuseR);
 
-        // Mid/Side Matrix & Bass Mono-Maker (100% Mono-Safe Sub Bass)
-        float mid = 0.5f * (wetL + wetR);
-        float side = 0.5f * (wetL - wetR);
+        // 3. Extract purely decorrelated Side energy
+        float decorrelatedSide = 0.5f * (diffuseL - diffuseR);
 
-        // Remove stereo side below 130Hz so 808s and low vocals never lose center punch
-        side = bassMonoFilter.processSample(0, side);
+        // 4. Bass Mono-Maker: High-pass Side at 130 Hz so sub-bass stays 100% mono and punchy
+        decorrelatedSide = bassMonoFilter.processSample(0, decorrelatedSide);
 
-        // Expand side energy based on amount
-        float widthGain = 1.0f + 0.75f * amount;
-        side *= widthGain;
+        // 5. Synthesize Output: Mid is completely clean, Side is widened
+        float sideWidth = drySide + decorrelatedSide * (amount * 1.25f);
 
-        float finalWetL = AudioUtils::sanitize(mid + side);
-        float finalWetR = AudioUtils::sanitize(mid - side);
+        float outL = dryMid + sideWidth;
+        float outR = dryMid - sideWidth;
 
-        // Smooth Dry/Wet Mix
-        float dryGain = 1.0f - (0.45f * amount);
-        float wetGain = 0.85f * amount;
-
-        block.setSample(0, i, inL * dryGain + finalWetL * wetGain);
+        block.setSample(0, i, AudioUtils::sanitize(outL));
         if (numChannels > 1)
         {
-            block.setSample(1, i, inR * dryGain + finalWetR * wetGain);
+            block.setSample(1, i, AudioUtils::sanitize(outR));
         }
 
         // Advance buffer & LFO phases
