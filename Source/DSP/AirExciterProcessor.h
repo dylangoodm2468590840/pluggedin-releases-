@@ -48,5 +48,7 @@ private:
     float midEnv[2] { 0.0f, 0.0f };
     float topEnv[2] { 0.0f, 0.0f };
 
+    AudioUtils::DCBlocker dcBlocker[2];
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AirExciterProcessor)
 };
