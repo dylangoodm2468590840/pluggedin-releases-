@@ -162,6 +162,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1/PluginProcessor.cpp")
         juce::juce_gui_basics
         juce::juce_gui_extra
     )
+
+    juce_generate_juce_header(Plugged_1)
 endif()
 
 # Automated Test Harness Executable
