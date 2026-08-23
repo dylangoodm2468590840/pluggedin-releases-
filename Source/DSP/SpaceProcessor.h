@@ -24,19 +24,39 @@ public:
     void reset();
 
     void setReverbMix(float newReverb) noexcept { reverbMix = std::clamp(newReverb, 0.0f, 1.0f); }
+    float getReverbMix() const noexcept         { return reverbMix; }
+    void setReverbDecay(float newDecay) noexcept{ reverbDecay = std::clamp(newDecay, 0.0f, 1.0f); }
+    float getReverbDecay() const noexcept       { return reverbDecay; }
+    void setReverbSize(float newSize) noexcept  { reverbSize = std::clamp(newSize, 0.0f, 1.0f); }
+    float getReverbSize() const noexcept        { return reverbSize; }
+
     void setDelayTime(float newTime) noexcept   { delayTime = std::clamp(newTime, 0.01f, 1.5f); }
+    float getDelayTime() const noexcept         { return delayTime; }
     void setFeedback(float newFb) noexcept      { feedback = std::clamp(newFb, 0.0f, 0.95f); }
+    float getFeedback() const noexcept          { return feedback; }
+    void setDelayMix(float newMix) noexcept     { delayMix = std::clamp(newMix, 0.0f, 1.0f); }
+    float getDelayMix() const noexcept          { return delayMix; }
+
     void setDucking(float newDucking) noexcept  { ducking = std::clamp(newDucking, 0.0f, 1.0f); }
+    float getDucking() const noexcept           { return ducking; }
     void setShimmer(float newShimmer) noexcept  { shimmerMix = std::clamp(newShimmer, 0.0f, 1.0f); }
 
     void process(const juce::dsp::ProcessContextReplacing<float>& context);
 
 private:
-    float reverbMix  { 0.3f };
-    float delayTime  { 0.25f }; // Seconds
-    float feedback   { 0.35f };
-    float ducking    { 0.5f };
-    float shimmerMix { 0.25f };
+    float reverbMix   { 0.3f };
+    float reverbDecay { 0.5f };
+    float reverbSize  { 0.5f };
+
+    float delayTime   { 0.25f }; // Seconds
+    float feedback    { 0.35f };
+    float delayMix    { 0.25f };
+    float ducking     { 0.5f };
+    float shimmerMix  { 0.25f };
+
+    juce::SmoothedValue<float> reverbMixSmoother;
+    juce::SmoothedValue<float> delayMixSmoother;
+    juce::SmoothedValue<float> feedbackSmoother;
 
     double sampleRate { 44100.0 };
 
@@ -99,6 +119,10 @@ private:
 
     float envFollower { 0.0f };
     float wowPhase { 0.0f };
+
+    // 28ms Vocal Pre-Delay Buffer (preserves consonant articulation before reverb tank)
+    std::vector<float> preDelayBuffer;
+    int preDelayWritePos { 0 };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpaceProcessor)
 };
