@@ -27,7 +27,7 @@
                         "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://files.catbox.moe/wk8jyf.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive & Legato Glide, Studio ZDF Filter & Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
@@ -38,9 +38,9 @@
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
-                                                                 "sha256":  "43a6e5c6d0a69717c7ccaf96730ad253565ff77e89520c1757dc428b9ec6e74d",
-                                                                 "size_bytes":  4818315
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
+                                                                 "size_bytes":  6566210
                                                              }
                                      }
                     },
