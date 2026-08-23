@@ -31,6 +31,9 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
         "05. DESTROYED / CRUSHED",
         "06. TELEPHONE / DEVICE",
         "07. FUTURISTIC / ALIEN",
+        "08. SUBTERRANEAN 808",
+        "09. VINTAGE TAPE / MELLOTRON",
+        "10. HYPERPOP / WARP",
         "CUSTOM"
     };
 
@@ -66,8 +69,22 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     abButton.onClick = [this]() { audioProcessor.toggleABState(); };
 
     addAndMakeVisible(bypassButton);
-    addAndMakeVisible(setupButton);
+    bypassButton.setClickingTogglesState(true);
+    bypassButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff18181f));
+    bypassButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffff2244));
+    bypassButton.setColour(juce::TextButton::textColourOnId, juce::Colours::white);
+    bypassButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffa0a0b0));
+    bypassAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::MASTER_BYPASS, bypassButton);
+
     addAndMakeVisible(oversamplingButton);
+    oversamplingButton.setClickingTogglesState(true);
+    oversamplingButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff18181f));
+    oversamplingButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff00e5ff));
+    oversamplingButton.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    oversamplingButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00e5ff));
+    oversamplingAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::CRUSH_OVERSAMPLE, oversamplingButton);
 
 
     // 1. DEGENERATE Signature Macro (Top Crown Hero)
@@ -118,11 +135,11 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     subDriveAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::SHADOW_DRIVE, subDriveSlider);
 
-    setupRotary(subWidthSlider, subWidthLabel, "WIDTH");
+    setupRotary(subWidthSlider, subWidthLabel, "BLEND");
     subWidthAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::SHADOW_MIX, subWidthSlider);
 
-    setupRotary(subCompSlider, subCompLabel, "COMP");
+    setupRotary(subCompSlider, subCompLabel, "DEPTH");
     subCompAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::SHADOW_FORMANT, subCompSlider);
 
@@ -154,13 +171,13 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
     modChorusAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::WIDTH_AMOUNT, modChorusSlider);
 
-    setupRotary(modPhaseSlider, modPhaseLabel, "PHASE");
+    setupRotary(modPhaseSlider, modPhaseLabel, "RATE");
     modPhaseAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_MOTION, modPhaseSlider);
+        audioProcessor.getAPVTS(), ParameterIDs::MOD_RATE, modPhaseSlider);
 
-    setupRotary(modVibeSlider, modVibeLabel, "VIBE");
+    setupRotary(modVibeSlider, modVibeLabel, "DEPTH");
     modVibeAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_CHAOS, modVibeSlider);
+        audioProcessor.getAPVTS(), ParameterIDs::MOD_DEPTH, modVibeSlider);
 
     // Column 4: DELAY
     setupRotary(delayTimeSlider, delayTimeLabel, "TIME");
@@ -169,11 +186,11 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
 
     setupRotary(delayFbSlider, delayFbLabel, "FEEDBACK");
     delayFbAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_GHOST, delayFbSlider);
+        audioProcessor.getAPVTS(), ParameterIDs::DELAY_FEEDBACK, delayFbSlider);
 
     setupRotary(delayMixSlider, delayMixLabel, "MIX");
     delayMixAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_DEPTH, delayMixSlider);
+        audioProcessor.getAPVTS(), ParameterIDs::DELAY_MIX, delayMixSlider);
 
     // Column 5: REVERB
     setupRotary(verbSizeSlider, verbSizeLabel, "SIZE");
@@ -182,30 +199,37 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
 
     setupRotary(verbDecaySlider, verbDecayLabel, "DECAY");
     verbDecayAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_DARK, verbDecaySlider);
+        audioProcessor.getAPVTS(), ParameterIDs::REVERB_DECAY, verbDecaySlider);
 
-    setupRotary(verbSpaceSlider, verbSpaceLabel, "SPACE");
+    setupRotary(verbSpaceSlider, verbSpaceLabel, "MIX");
     verbSpaceAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::MACRO_AGE, verbSpaceSlider);
+        audioProcessor.getAPVTS(), ParameterIDs::REVERB_MIX, verbSpaceSlider);
 
     // 5 Module Bypass Toggle Buttons & APVTS Attachments
-    addAndMakeVisible(subEnableToggle);
+    auto setupModuleToggle = [this](juce::ToggleButton& b) {
+        b.setButtonText("");
+        b.setAlpha(0.0f); // Invisible click hitbox directly over the custom painted Ruby Red LED
+        b.onClick = [this] { repaint(); };
+        addAndMakeVisible(b);
+    };
+
+    setupModuleToggle(subEnableToggle);
     subEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MODULE_SUB_ENABLE, subEnableToggle);
 
-    addAndMakeVisible(gritEnableToggle);
+    setupModuleToggle(gritEnableToggle);
     gritEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MODULE_GRIT_ENABLE, gritEnableToggle);
 
-    addAndMakeVisible(modEnableToggle);
+    setupModuleToggle(modEnableToggle);
     modEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MODULE_MOD_ENABLE, modEnableToggle);
 
-    addAndMakeVisible(delayEnableToggle);
+    setupModuleToggle(delayEnableToggle);
     delayEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MODULE_DELAY_ENABLE, delayEnableToggle);
 
-    addAndMakeVisible(reverbEnableToggle);
+    setupModuleToggle(reverbEnableToggle);
     reverbEnableAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
         audioProcessor.getAPVTS(), ParameterIDs::MODULE_REVERB_ENABLE, reverbEnableToggle);
 
@@ -590,7 +614,5 @@ void UndergroundAudioProcessorEditor::resized()
 
     airTopSlider.setBounds(275, (int)deckY - 4, 40, 40);
     airTopLabel.setBounds(270, (int)deckY + 34, 50, 9);
-
-    oversamplingButton.setBounds(345, (int)deckY + 6, 95, 22);
 }
 
