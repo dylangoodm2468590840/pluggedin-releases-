@@ -59,7 +59,7 @@ void CrushProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         lowpassFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
         lowpassFilter[ch].setResonance(0.707f);
 
-        dcBlocker[ch].reset();
+        dcBlocker[ch].prepare(filterSpec.sampleRate, 15.0f);
     }
 
     reset();
@@ -220,15 +220,33 @@ void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
         const size_t osSamples = oversampledBlock.getNumSamples();
         const size_t osChannels = oversampledBlock.getNumChannels();
 
+        float startAmt  = amountSmoother.getCurrentValue();
+        float targetAmt = amountSmoother.getTargetValue();
+        float startTone = toneSmoother.getCurrentValue();
+        float targetTone= toneSmoother.getTargetValue();
+        float startMix  = mixSmoother.getCurrentValue();
+        float targetMix = mixSmoother.getTargetValue();
+
+        float invOs = (osSamples > 1) ? (1.0f / static_cast<float>(osSamples - 1)) : 1.0f;
+
         for (size_t sample = 0; sample < osSamples; ++sample)
         {
+            float t = static_cast<float>(sample) * invOs;
+            float amt  = startAmt + t * (targetAmt - startAmt);
+            float tone = startTone + t * (targetTone - startTone);
+            float mix  = startMix + t * (targetMix - startMix);
+
             for (size_t ch = 0; ch < osChannels; ++ch)
             {
                 float dry = oversampledBlock.getSample(ch, sample);
-                float wet = processSample(dry, static_cast<int>(ch), curAmount, curTone, isPunished, transProt);
-                oversampledBlock.setSample(ch, sample, dry * (1.0f - curMix) + wet * curMix);
+                float wet = processSample(dry, static_cast<int>(ch), amt, tone, isPunished, transProt);
+                oversampledBlock.setSample(ch, sample, dry * (1.0f - mix) + wet * mix);
             }
         }
+
+        amountSmoother.setCurrentAndTargetValue(targetAmt);
+        toneSmoother.setCurrentAndTargetValue(targetTone);
+        mixSmoother.setCurrentAndTargetValue(targetMix);
 
         oversampler->processSamplesDown(block);
     }
