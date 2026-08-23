@@ -66,12 +66,12 @@ void WidthProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
     if (numChannels == 0 || numSamples == 0 || amount <= 0.001f)
         return;
 
-    // MicroShift / Chorus LFO Rate (0.25 Hz to 3.5 Hz)
-    float lfoRateHz = 0.28f + 2.8f * detune * detune;
+    // MicroShift / Chorus LFO Rate (0.15 Hz to 6.0 Hz)
+    float lfoRateHz = 0.15f + 5.85f * rate * rate;
     float lfoPhaseInc = lfoRateHz / static_cast<float>(sampleRate);
 
     // MicroShift modulation depth (sub-millisecond pitch detuning)
-    float modDepthMs = 0.5f + 2.2f * amount;
+    float modDepthMs = 0.3f + 3.2f * depth * amount;
     float modDepthSamples = (modDepthMs * 0.001f) * static_cast<float>(sampleRate);
 
     // Soundtoys MicroShift / Haas Staggered Base Delays
