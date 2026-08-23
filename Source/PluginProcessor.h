@@ -122,11 +122,19 @@ private:
     std::atomic<float>* crushPunishParam  { nullptr };
 
     std::atomic<float>* widthAmountParam  { nullptr };
+    std::atomic<float>* modRateParam      { nullptr };
+    std::atomic<float>* modDepthParam     { nullptr };
 
     std::atomic<float>* spaceReverbParam  { nullptr };
+    std::atomic<float>* reverbDecayParam  { nullptr };
+    std::atomic<float>* reverbMixParam    { nullptr };
     std::atomic<float>* spaceDelayParam   { nullptr };
+    std::atomic<float>* delayFbParam      { nullptr };
+    std::atomic<float>* delayMixParam     { nullptr };
     std::atomic<float>* spaceDuckingParam { nullptr };
     std::atomic<float>* deviceTypeParam   { nullptr };
+
+    std::atomic<float>* masterBypassParam { nullptr };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UndergroundAudioProcessor)
 };
