@@ -40,12 +40,14 @@ public:
     float getMix() const noexcept { return mix; }
     void setPitchInterval(PitchInterval interval) noexcept { pitchInterval = interval; }
     PitchInterval getPitchInterval() const noexcept { return pitchInterval; }
-    void setFormantShift(float newFormant) noexcept { formantShift = std::clamp(newFormant, 0.0f, 1.0f); }
+    void setFormantShift(float newFormant) noexcept { formantShift = std::clamp(newFormant, 0.0f, 1.0f); formantSmoother.setTargetValue(formantShift); }
     float getFormantShift() const noexcept { return formantShift; }
     void setDarkness(float newDarkness) noexcept { darkness = std::clamp(newDarkness, 0.0f, 1.0f); }
     float getDarkness() const noexcept { return darkness; }
-    void setDrive(float newDrive) noexcept { drive = std::clamp(newDrive, 0.0f, 1.0f); }
+    void setDrive(float newDrive) noexcept { drive = std::clamp(newDrive, 0.0f, 1.0f); driveSmoother.setTargetValue(drive); }
     float getDrive() const noexcept { return drive; }
+    void setClarity(float newClarity) noexcept { clarity = std::clamp(newClarity, 0.0f, 1.0f); claritySmoother.setTargetValue(clarity); }
+    float getClarity() const noexcept { return clarity; }
 
     void process(juce::AudioBuffer<float>& buffer);
 
@@ -65,6 +67,7 @@ private:
     float formantShift { 0.5f };
     float darkness { 0.5f };
     float drive { 0.2f };
+    float clarity { 0.65f }; // Voiced/Unvoiced speech articulation preservation
 
     double sampleRate { 44100.0 };
 
@@ -83,28 +86,43 @@ private:
     int pitchAnalysisCounter { 0 };
     float currentPitchPeriodSamples { 441.0f / 4.0f }; // Default ~400Hz/100Hz
     float smoothedPitchPeriod { 441.0f / 4.0f };
+    float pitchConfidence { 0.0f };
 
     // PSOLA Grain Read Heads (4 heads per channel for seamless overlapping)
     float grainPhase[2][4] { { 0.0f, 0.25f, 0.50f, 0.75f }, { 0.0f, 0.25f, 0.50f, 0.75f } };
     float activeGrainLength[2][4] { { 1024.0f, 1024.0f, 1024.0f, 1024.0f }, { 1024.0f, 1024.0f, 1024.0f, 1024.0f } };
 
-    // 12th-Order LPC Formant Filter State
+    // 12th-Order LPC Formant Filter State with Continuous Coefficient Interpolation
     static constexpr int LPC_ORDER = 12;
     float lpcA[LPC_ORDER + 1] { 1.0f, 0.0f };
-    float lpcGammaA[LPC_ORDER + 1] { 1.0f, 0.0f };
+    float lpcGammaA_Target[LPC_ORDER + 1] { 1.0f, 0.0f };
+    float lpcGammaA_Current[LPC_ORDER + 1] { 1.0f, 0.0f };
     float lpcHistory[2][LPC_ORDER + 1] { { 0.0f }, { 0.0f } };
     float lpcAnalysisBuffer[512] { 0.0f };
     int lpcAnalysisIdx { 0 };
     int lpcUpdateCounter { 0 };
 
+    juce::SmoothedValue<float> mixSmoother;
+    juce::SmoothedValue<float> driveSmoother;
+    juce::SmoothedValue<float> formantSmoother; // 80ms ramp — prevents LPC click on DEGENERATE macro
+    juce::SmoothedValue<float> claritySmoother;
+
     // Phase-Locked Sub-Octave Oscillator
     float subPhase { 0.0f };
     float subEnvFollower { 0.0f };
+    float subFreqSmoothed { 0.0f }; // One-pole smoothed sub frequency — prevents pop on voiced/unvoiced transitions
 
     // Acoustic Chest & Mud Correction Filters (Derived from Murda Melodies Reference)
     juce::dsp::StateVariableTPTFilter<float> chestWeightFilter[2]; // 125Hz low-shelf warmth
     juce::dsp::StateVariableTPTFilter<float> antiMudFilter[2];      // 350Hz dynamic dip
     juce::dsp::StateVariableTPTFilter<float> darknessFilter[2];     // Smooth high-cut tone
+    juce::dsp::StateVariableTPTFilter<float> consonantFilter[2];    // 4.5kHz highpass for unvoiced detection
+
+    // Anatomical Human Formant Resonators (F1 = Chest 520Hz, F2 = Throat 1450Hz, F3 = Mouth 2600Hz)
+    juce::dsp::StateVariableTPTFilter<float> formantF1[2];
+    juce::dsp::StateVariableTPTFilter<float> formantF2[2];
+    juce::dsp::StateVariableTPTFilter<float> formantF3[2];
+    float consonantEnv[2] { 0.0f, 0.0f };
 
     // DC Blocker per channel
     AudioUtils::DCBlocker dcBlocker[2];
