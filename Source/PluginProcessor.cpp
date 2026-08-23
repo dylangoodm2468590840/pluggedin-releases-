@@ -44,8 +44,15 @@ UndergroundAudioProcessor::UndergroundAudioProcessor()
 
 
     widthAmountParam  = apvts.getRawParameterValue(ParameterIDs::WIDTH_AMOUNT);
+    modRateParam      = apvts.getRawParameterValue(ParameterIDs::MOD_RATE);
+    modDepthParam     = apvts.getRawParameterValue(ParameterIDs::MOD_DEPTH);
+
     spaceReverbParam  = apvts.getRawParameterValue(ParameterIDs::SPACE_REVERB);
+    reverbDecayParam  = apvts.getRawParameterValue(ParameterIDs::REVERB_DECAY);
+    reverbMixParam    = apvts.getRawParameterValue(ParameterIDs::REVERB_MIX);
     spaceDelayParam   = apvts.getRawParameterValue(ParameterIDs::SPACE_DELAY);
+    delayFbParam      = apvts.getRawParameterValue(ParameterIDs::DELAY_FEEDBACK);
+    delayMixParam     = apvts.getRawParameterValue(ParameterIDs::DELAY_MIX);
     deviceTypeParam   = apvts.getRawParameterValue(ParameterIDs::DEVICE_TYPE);
 
     compSqueezeParam  = apvts.getRawParameterValue(ParameterIDs::COMP_SQUEEZE);
@@ -56,6 +63,7 @@ UndergroundAudioProcessor::UndergroundAudioProcessor()
     airMidParam       = apvts.getRawParameterValue(ParameterIDs::AIR_MID);
     airTopParam       = apvts.getRawParameterValue(ParameterIDs::AIR_TOP);
     spaceDuckingParam = apvts.getRawParameterValue(ParameterIDs::SPACE_DUCKING);
+    masterBypassParam = apvts.getRawParameterValue(ParameterIDs::MASTER_BYPASS);
 }
 
 
@@ -221,13 +229,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID { ParameterIDs::CRUSH_PUNISH, 1 }, "PUNISH Mode (+20dB)", false));
 
 
-    // WIDTH Module Parameters
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::WIDTH_AMOUNT, 1 }, "Width Amount", 0.0f, 1.0f, 0.50f));
+    // WIDTH & MODULATION Module Parameters
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::WIDTH_AMOUNT, 1 }, "Chorus Amount", 0.0f, 1.0f, 0.50f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::MOD_RATE, 1 }, "Mod Rate", 0.0f, 1.0f, 0.35f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::MOD_DEPTH, 1 }, "Mod Depth", 0.0f, 1.0f, 0.50f));
 
-    // SPACE Module Parameters
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_REVERB, 1 }, "Space Reverb", 0.0f, 1.0f, 0.30f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_DELAY, 1 }, "Space Delay", 0.0f, 1.0f, 0.25f));
+    // SPACE & TIME Module Parameters (Delay & Reverb)
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_DELAY, 1 }, "Delay Time", 0.01f, 1.5f, 0.25f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::DELAY_FEEDBACK, 1 }, "Delay Feedback", 0.0f, 0.95f, 0.35f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::DELAY_MIX, 1 }, "Delay Mix", 0.0f, 1.0f, 0.25f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_REVERB, 1 }, "Reverb Size", 0.0f, 1.0f, 0.30f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::REVERB_DECAY, 1 }, "Reverb Decay", 0.0f, 1.0f, 0.50f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::REVERB_MIX, 1 }, "Reverb Mix", 0.0f, 1.0f, 0.30f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SPACE_DUCKING, 1 }, "Space Ducking", 0.0f, 1.0f, 0.50f));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID { ParameterIDs::MASTER_BYPASS, 1 }, "Master Bypass", false));
 
     // DEVICE Module Parameters
     juce::StringArray deviceChoices { "OFF", "CELL PHONE", "WEBCAM", "EARBUDS", "LAPTOP", "VOICE MEMO" };
@@ -396,13 +413,25 @@ void UndergroundAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     crushProcessor.setMix(crushMixParam ? crushMixParam->load() : 1.0f);
     crushProcessor.setPunish(crushPunishParam ? (crushPunishParam->load() > 0.5f) : false);
 
-    // Update Width Settings
+    // Master Bypass
+    if (masterBypassParam && masterBypassParam->load() > 0.5f)
+        return;
+
+    // Update Width & Modulation Settings
     widthProcessor.setAmount(widthAmountParam ? widthAmountParam->load() : 0.5f);
+    widthProcessor.setRate(modRateParam ? modRateParam->load() : 0.35f);
+    widthProcessor.setDepth(modDepthParam ? modDepthParam->load() : 0.50f);
     widthProcessor.setMix(1.0f);
 
-    // Update Space Settings
-    spaceProcessor.setReverbMix(spaceReverbParam ? spaceReverbParam->load() : 0.3f);
+    // Update Space (Delay & Reverb) Settings
     spaceProcessor.setDelayTime(spaceDelayParam ? spaceDelayParam->load() : 0.25f);
+    spaceProcessor.setFeedback(delayFbParam ? delayFbParam->load() : 0.35f);
+    spaceProcessor.setDelayMix(delayMixParam ? delayMixParam->load() : 0.25f);
+
+    spaceProcessor.setReverbSize(spaceReverbParam ? spaceReverbParam->load() : 0.30f);
+    spaceProcessor.setReverbDecay(reverbDecayParam ? reverbDecayParam->load() : 0.50f);
+    spaceProcessor.setReverbMix(reverbMixParam ? reverbMixParam->load() : 0.30f);
+    spaceProcessor.setDucking(sDuck);
 
     // Update Device Settings
     int devIdx = deviceTypeParam ? juce::roundToInt(deviceTypeParam->load()) : 0;
