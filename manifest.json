@@ -24,11 +24,11 @@
                     {
                         "id":  "pluggedin_plugged1",
                         "plugin_id":  "pluggedin_plugged1",
-                        "name":  "PLUGGED 1 v1.2 (Flagship Hybrid Instrument)",
-                        "latest_version":  "1.2.0",
+                        "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
+                        "latest_version":  "1.0.0",
                         "download_url_win":  "https://files.catbox.moe/wk8jyf.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Mac_VST3.zip",
-                        "changelog":  "PLUGGED 1 v1.2.0 Major Update: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive \u0026 Legato Glide, Studio ZDF Filter \u0026 Saturation Suite, and 100+ Production Presets.",
+                        "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive & Legato Glide, Studio ZDF Filter & Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
