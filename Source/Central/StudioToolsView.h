@@ -26,6 +26,27 @@ public:
         runDiagnosticsButton.setButtonText("RUN DSP DIAGNOSTIC AUDIT");
         runDiagnosticsButton.onClick = [this] { runDspAudit(); };
 
+        // 2b. Sync to FL Studio / Fix Mac Permissions
+        addAndMakeVisible(syncFlStudioButton);
+        syncFlStudioButton.setButtonText("⚡ SYNC TO FL STUDIO / LOGIC (FIX PERMISSIONS)");
+        syncFlStudioButton.onClick = [this]
+        {
+            juce::String report = StudioDiagnostics::repairMacPermissionsAndSync();
+            diagOutput.setText(report);
+            juce::AlertWindow::showMessageBoxAsync(
+                juce::AlertWindow::InfoIcon,
+                "FL Studio & DAW Synchronization",
+                "Permissions and folder paths verified!\n\n"
+                "In FL Studio (Mac):\n"
+                "1. Options -> Manage plugins\n"
+                "2. Turn ON 'Rescan previously verified plugins' & 'Rescan plugins with errors'\n"
+                "3. Click 'Find installed plugins'\n\n"
+                "• UNDERGROUND -> In Mixer FX slots\n"
+                "• PLUGGED 1 -> In Channel Rack (+)",
+                "GOT IT"
+            );
+        };
+
         // 3. Open System VST3 Folder
         addAndMakeVisible(openSysVst3Button);
         openSysVst3Button.setButtonText("OPEN SYSTEM VST3");
@@ -88,6 +109,9 @@ public:
 
         runDiagnosticsButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::mint(darkMode).withAlpha(0.25f));
         runDiagnosticsButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::mint(darkMode));
+
+        syncFlStudioButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::cyan(darkMode).withAlpha(0.25f));
+        syncFlStudioButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::cyan(darkMode));
 
         openSysVst3Button.setColour(juce::TextButton::buttonColourId, darkMode ? juce::Colour(0xff161c28) : juce::Colour(0xffe2e8f0));
         openSysVst3Button.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::textSecondary(darkMode));
@@ -252,9 +276,12 @@ public:
         openUserVst3Button.setBounds(16 + btnW + 8, toolsY, btnW, 32);
         openPresetsButton.setBounds(16 + (btnW + 8) * 2, toolsY, btnW, 32);
 
-        // Diagnostics action button
+        // Diagnostics action buttons
         int diagY = 312;
-        runDiagnosticsButton.setBounds(bounds.getWidth() - 230, diagY, 230, 32);
+        int btnAuditW = 210;
+        int btnSyncW = 340;
+        runDiagnosticsButton.setBounds(bounds.getWidth() - btnAuditW - btnSyncW - 10, diagY, btnAuditW, 32);
+        syncFlStudioButton.setBounds(bounds.getWidth() - btnSyncW, diagY, btnSyncW, 32);
 
         // Output editor
         int outY = 352;
@@ -273,6 +300,7 @@ private:
 
     juce::TextButton rescanDawsButton;
     juce::TextButton runDiagnosticsButton;
+    juce::TextButton syncFlStudioButton;
     juce::TextButton openSysVst3Button;
     juce::TextButton openUserVst3Button;
     juce::TextButton openPresetsButton;
