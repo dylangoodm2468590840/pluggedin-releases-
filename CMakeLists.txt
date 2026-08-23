@@ -108,6 +108,62 @@ target_link_libraries(PluggedIN_Central
         juce::juce_audio_basics
 )
 
+# Plugged 1 Flagship Hybrid Instrument Plugin Target
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1/PluginProcessor.cpp")
+    juce_add_plugin(Plugged_1
+        COMPANY_NAME "Plugged In Central"
+        IS_SYNTH TRUE
+        NEEDS_MIDI_INPUT TRUE
+        NEEDS_MIDI_OUTPUT FALSE
+        IS_MIDI_EFFECT FALSE
+        EDITOR_WANTS_KEYBOARD_FOCUS TRUE
+        PLUGIN_MANUFACTURER_CODE Plug
+        PLUGIN_CODE P101
+        FORMATS VST3 AU Standalone
+        PRODUCT_NAME "Plugged 1"
+        DESCRIPTION "Plugged 1 - Flagship Hybrid Instrument Plugin"
+        VERSION "1.0.0"
+    )
+
+    target_sources(Plugged_1 PRIVATE
+        Source/Plugged1/PluginProcessor.cpp
+        Source/Plugged1/PluginProcessor.h
+        Source/Plugged1/PluginEditor.cpp
+        Source/Plugged1/PluginEditor.h
+        Source/Plugged1/Engine/PluggedSound.h
+        Source/Plugged1/Engine/PluggedVoice.cpp
+        Source/Plugged1/Engine/PluggedVoice.h
+        Source/Plugged1/Engine/VoiceManager.cpp
+        Source/Plugged1/Engine/VoiceManager.h
+        Source/Plugged1/Engine/PolyBLEP.h
+        Source/Plugged1/DSP/StereoSaturator.h
+        Source/Plugged1/DSP/LadderFilter.h
+        Source/Plugged1/DSP/StudioDelay.h
+        Source/Plugged1/DSP/StudioReverb.h
+        Source/Plugged1/Presets/PresetManager.h
+        Source/Plugged1/Presets/PresetManager.cpp
+    )
+
+    target_include_directories(Plugged_1 PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1"
+    )
+
+    target_compile_definitions(Plugged_1
+        PUBLIC
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+            JUCE_VST3_CAN_REPLACE_VST2=0
+    )
+
+    target_link_libraries(Plugged_1 PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_dsp
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+    )
+endif()
+
 # Automated Test Harness Executable
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/TestAdversarial.cpp")
     add_executable(TestAdversarial
