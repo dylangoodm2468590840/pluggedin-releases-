@@ -45,6 +45,16 @@ void CrushProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         tapeHeadBumpFilter[ch].setCutoffFrequency(60.0f);
         tapeHeadBumpFilter[ch].setResonance(1.8f);
 
+        preEmphasisFilter[ch].prepare(filterSpec);
+        preEmphasisFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
+        preEmphasisFilter[ch].setCutoffFrequency(3200.0f);
+        preEmphasisFilter[ch].setResonance(0.707f);
+
+        deEmphasisFilter[ch].prepare(filterSpec);
+        deEmphasisFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+        deEmphasisFilter[ch].setCutoffFrequency(8500.0f);
+        deEmphasisFilter[ch].setResonance(0.707f);
+
         lowpassFilter[ch].prepare(filterSpec);
         lowpassFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
         lowpassFilter[ch].setResonance(0.707f);
@@ -64,6 +74,8 @@ void CrushProcessor::reset()
         lowCrossoverFilter[ch].reset();
         highCrossoverFilter[ch].reset();
         tapeHeadBumpFilter[ch].reset();
+        preEmphasisFilter[ch].reset();
+        deEmphasisFilter[ch].reset();
         lowpassFilter[ch].reset();
         dcBlocker[ch].reset();
     }
@@ -99,19 +111,23 @@ float CrushProcessor::processSample(float inputSample, int channel, float curren
     {
         case Character::Tube12AX7:
         {
-            // 1. 12AX7 Class-A Triode Tube: Asymmetric 2nd-order harmonics with smooth bias curve
-            float drive = (1.0f + currentAmount * 7.5f) * driveBoost;
-            float x = sample * drive;
+            // 1. 12AX7 Class-A Triode Tube: SPICE-derived asymmetric 2nd-order transfer with cathode bias sag
+            float drive = (1.0f + currentAmount * 6.5f) * driveBoost;
+            float pre = preEmphasisFilter[ch].processSample(0, sample) * (0.35f * currentAmount);
+            float x = (sample + pre) * drive;
 
             // Dynamic cathode bias sag tracking input energy
-            tubeBiasSag[ch] += 0.0005f * (std::abs(x) - tubeBiasSag[ch]);
-            float bias = 0.15f * (1.0f - std::clamp(tubeBiasSag[ch], 0.0f, 0.8f));
-            
-            // Continuous quadratic harmonic injection without zero-crossing cusps
-            float x_asym = x + bias * std::tanh(x * x);
-            float sat = std::tanh(x_asym);
+            tubeBiasSag[ch] += 0.0008f * (std::abs(x) - tubeBiasSag[ch]);
+            float sag = std::clamp(tubeBiasSag[ch], 0.0f, 0.75f);
+            float bias = 0.18f * (1.0f - sag);
 
-            processed = dcBlocker[ch].process(sat) / std::sqrt(1.0f + drive * 0.35f) * postPad;
+            // SPICE-derived asymmetric triode transfer curve (warm 2nd harmonic bloom)
+            float num = x + bias * (x * x);
+            float den = 1.0f + 0.55f * std::abs(x) + 0.25f * (x * x);
+            float sat = num / den;
+
+            float smoothedSat = deEmphasisFilter[ch].processSample(0, sat);
+            processed = dcBlocker[ch].process(0.70f * sat + 0.30f * smoothedSat) / std::sqrt(1.0f + drive * 0.30f) * postPad;
             break;
         }
 
@@ -170,8 +186,9 @@ float CrushProcessor::processSample(float inputSample, int channel, float curren
     }
 
     // Dynamic Tone Sculpting Lowpass
-    float lpCutoff = 2200.0f + currentTone * 16500.0f;
-    lowpassFilter[ch].setCutoffFrequency(std::clamp(lpCutoff, 400.0f, (float)(sampleRate * 1.8)));
+    // NOTE: Must clamp to Nyquist-safe 0.45x sampleRate — IIR filter blows up above fs/2
+    float lpCutoff = 2200.0f + currentTone * 14000.0f;
+    lowpassFilter[ch].setCutoffFrequency(std::clamp(lpCutoff, 400.0f, (float)(sampleRate * 0.45)));
     processed = lowpassFilter[ch].processSample(0, processed);
 
     return AudioUtils::sanitize(processed);
