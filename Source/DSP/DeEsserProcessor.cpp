@@ -13,9 +13,9 @@ void DeEsserProcessor::prepare(const juce::dsp::ProcessSpec& spec)
 
     for (int ch = 0; ch < 2; ++ch)
     {
-        sibilanceFilter[ch].prepare(spec);
-        sibilanceFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        sibilanceFilter[ch].setResonance(1.4f);
+        dynamicBellFilter[ch].prepare(spec);
+        dynamicBellFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        dynamicBellFilter[ch].setResonance(1.4f);
 
         sidechainDetectorFilter[ch].prepare(spec);
         sidechainDetectorFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
@@ -29,7 +29,7 @@ void DeEsserProcessor::reset()
 {
     for (int ch = 0; ch < 2; ++ch)
     {
-        sibilanceFilter[ch].reset();
+        dynamicBellFilter[ch].reset();
         sidechainDetectorFilter[ch].reset();
         sibilanceEnv[ch] = 0.0f;
     }
@@ -67,6 +67,9 @@ void DeEsserProcessor::process(juce::AudioBuffer<float>& buffer)
     const int numChannels = std::min(buffer.getNumChannels(), 2);
     const int numSamples = buffer.getNumSamples();
 
+    if (numChannels == 0 || numSamples == 0)
+        return;
+
     // Fast attack (1ms) to clamp harsh sibilant spikes instantly, 35ms release
     const float attCoeff = std::exp(-1.0f / (0.001f * (float)sampleRate));
     const float relCoeff = std::exp(-1.0f / (0.035f * (float)sampleRate));
@@ -81,45 +84,53 @@ void DeEsserProcessor::process(juce::AudioBuffer<float>& buffer)
         float currentThresh = smoothedThresholdDb.getNextValue();
         float currentCutoff = smoothedFreq.getNextValue();
 
+        // Linked stereo sidechain detection
+        float scMaxAbs = 0.0f;
         for (int ch = 0; ch < numChannels; ++ch)
         {
-            sibilanceFilter[ch].setCutoffFrequency(currentCutoff);
             sidechainDetectorFilter[ch].setCutoffFrequency(currentCutoff);
+            dynamicBellFilter[ch].setCutoffFrequency(currentCutoff);
 
+            float input = buffer.getSample(ch, i);
+            float scSignal = sidechainDetectorFilter[ch].processSample(0, input);
+            float scAbs = std::abs(scSignal);
+            if (scAbs > scMaxAbs) scMaxAbs = scAbs;
+        }
+
+        // Update linked envelope follower
+        float detEnv = sibilanceEnv[0];
+        if (scMaxAbs > detEnv)
+            detEnv = scMaxAbs + attCoeff * (detEnv - scMaxAbs);
+        else
+            detEnv = scMaxAbs + relCoeff * (detEnv - scMaxAbs);
+        sibilanceEnv[0] = detEnv;
+        sibilanceEnv[1] = detEnv;
+
+        float detLevel = std::max(detEnv, 1.0e-5f);
+        float detDb = 20.0f * std::log10(detLevel);
+
+        float grDb = 0.0f;
+        if (detDb > currentThresh)
+        {
+            grDb = slope * (detDb - currentThresh);
+        }
+
+        grDb = std::clamp(grDb, 0.0f, 20.0f);
+        if (grDb > maxGrThisBlockDb)
+            maxGrThisBlockDb = grDb;
+
+        // Dynamic notch cut gain: 0 dB = 1.0 (untouched), >0 dB = attenuates only the sibilant band
+        float bandGain = std::pow(10.0f, -grDb / 20.0f);
+
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
             float input = buffer.getSample(ch, i);
             input = AudioUtils::sanitize(input);
 
-            // Isolate sibilance band
-            float sibilantBand = sibilanceFilter[ch].processSample(0, input);
-
-            // Sidechain bandpass for focused sibilance detection
-            float scSignal = sidechainDetectorFilter[ch].processSample(0, input);
-            float scAbs = std::abs(scSignal);
-
-            // Fast envelope follower
-            if (scAbs > sibilanceEnv[ch])
-                sibilanceEnv[ch] = scAbs + attCoeff * (sibilanceEnv[ch] - scAbs);
-            else
-                sibilanceEnv[ch] = scAbs + relCoeff * (sibilanceEnv[ch] - scAbs);
-
-            float detLevel = std::max(sibilanceEnv[ch], 1.0e-5f);
-            float detDb = 20.0f * std::log10(detLevel);
-
-            float grDb = 0.0f;
-            if (detDb > currentThresh)
-            {
-                grDb = slope * (detDb - currentThresh);
-            }
-
-            grDb = std::clamp(grDb, 0.0f, 24.0f);
-            if (grDb > maxGrThisBlockDb)
-                maxGrThisBlockDb = grDb;
-
-            float attenuationFactor = 1.0f - std::pow(10.0f, -grDb / 20.0f);
-
-            // Zero-phase subtractive dynamic de-essing:
-            // When grDb == 0, attenuationFactor == 0, output is 100% bit-exact identical to input (0 notch).
-            float processedSample = input - sibilantBand * attenuationFactor;
+            // Dynamic bell filter: input - sibilantBand * (1.0 - bandGain)
+            // When grDb == 0, bandGain == 1.0, attenuation is 0.0 (bit-exact unity input)
+            float sibilantBand = dynamicBellFilter[ch].processSample(0, input);
+            float processedSample = input - sibilantBand * (1.0f - bandGain);
 
             buffer.setSample(ch, i, AudioUtils::sanitize(processedSample));
         }
