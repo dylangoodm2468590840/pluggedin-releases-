@@ -2,6 +2,7 @@
 
 #include <juce_core/juce_core.h>
 #include <juce_audio_basics/juce_audio_basics.h>
+#include "InstalledRegistry.h"
 #include <vector>
 
 /**
@@ -245,9 +246,9 @@ public:
             return false;
         }
 
-        // 3. Check VST3 Installation Location
-        juce::File vst3User("C:\\Users\\dylan\\AppData\\Local\\Programs\\Common\\VST3\\UNDERGROUND.vst3");
-        juce::File vst3Sys("C:\\Program Files\\Common Files\\VST3\\UNDERGROUND.vst3");
+        // 3. Check VST3 Installation Location dynamically
+        juce::File vst3User = InstalledRegistry::getUserVst3Directory().getChildFile("UNDERGROUND.vst3");
+        juce::File vst3Sys  = InstalledRegistry::getSystemVst3Directory().getChildFile("UNDERGROUND.vst3");
 
         bool vst3Present = vst3User.exists() || vst3Sys.exists();
 
