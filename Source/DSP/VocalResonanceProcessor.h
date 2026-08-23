@@ -84,13 +84,6 @@ private:
 
         void updateBellCoeffs(double sr, double freqHz, double gainDb, double q) noexcept
         {
-            if (std::abs(gainDb) < 0.05)
-            {
-                b0 = 1.0f; b1 = 0.0f; b2 = 0.0f;
-                a1 = 0.0f; a2 = 0.0f;
-                return;
-            }
-
             double A = std::pow(10.0, gainDb / 40.0);
             double w0 = 2.0 * 3.14159265358979323846 * std::clamp(freqHz, 20.0, sr * 0.48) / sr;
             double alpha = std::sin(w0) / (2.0 * std::max(0.1, q));
