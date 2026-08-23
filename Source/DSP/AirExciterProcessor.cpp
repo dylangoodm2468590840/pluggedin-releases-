@@ -17,13 +17,15 @@ void AirExciterProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         midAirFilter[ch].prepare(spec);
         midAirFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
         midAirFilter[ch].setCutoffFrequency(4800.0f);
-        midAirFilter[ch].setResonance(1.1f);
+        midAirFilter[ch].setResonance(0.85f);
 
         // Top-Air Highpass (8.5 kHz+)
         topAirFilter[ch].prepare(spec);
         topAirFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
         topAirFilter[ch].setCutoffFrequency(9200.0f);
         topAirFilter[ch].setResonance(0.707f);
+
+        dcBlocker[ch].reset();
     }
 
     reset();
@@ -35,6 +37,7 @@ void AirExciterProcessor::reset()
     {
         midAirFilter[ch].reset();
         topAirFilter[ch].reset();
+        dcBlocker[ch].reset();
         midEnv[ch] = 0.0f;
         topEnv[ch] = 0.0f;
     }
@@ -44,7 +47,7 @@ void AirExciterProcessor::reset()
 
 float AirExciterProcessor::processBandExciter(float inputBand, float amount, float& envState, float attCoeff, float relCoeff)
 {
-    if (amount <= 0.0001f || std::abs(inputBand) < 1.0e-6f)
+    if (amount <= 0.0001f || std::abs(inputBand) < 1.0e-5f)
         return 0.0f;
 
     float absVal = std::abs(inputBand);
@@ -55,28 +58,23 @@ float AirExciterProcessor::processBandExciter(float inputBand, float amount, flo
     else
         envState = absVal + relCoeff * (envState - absVal);
 
-    if (envState < 1.0e-5f)
+    if (envState < 1.0e-4f)
         return 0.0f;
 
-    float envLevel = std::max(envState, 1.0e-5f);
-    float envDb = 20.0f * std::log10(envLevel);
+    float envDb = 20.0f * std::log10(std::max(envState, 1.0e-5f));
 
-    // Smooth Gaussian Upward Expansion (Dolby-A / Fresh Air Sheen):
-    // Smoothly lifts subtle high-frequency air (-45dB to -20dB) without threshold gating steps
-    float norm = (envDb + 32.0f) / 18.0f;
-    float expansionGainDb = 5.0f * std::exp(-0.5f * norm * norm);
-    float expansionGainLinear = std::pow(10.0f, expansionGainDb / 20.0f);
+    // Optical silence gate: mutes excitation completely on low-level room noise/silence below -45dBFS
+    if (envDb < -46.0f)
+        return 0.0f;
 
-    // Smooth C-infinity non-linear upper harmonic generator (2nd & 3rd order studio harmonics)
-    float x = inputBand * 1.25f;
-    float harmonic = x + 0.22f * (x * x) - 0.06f * (x * x * x);
+    float airGate = std::clamp((envDb - (-46.0f)) / 10.0f, 0.0f, 1.0f);
 
-    // Dynamic soft saturation ceiling with smooth wet harmonic isolation
-    float excited = std::tanh(harmonic * expansionGainLinear * 0.80f) - inputBand;
+    // Dolby-A 361 Optical Harmonic Sheen (3rd-order Chebyshev harmonic generator)
+    float x = std::clamp(inputBand * 1.4f, -1.0f, 1.0f);
+    float cheby3 = 4.0f * (x * x * x) - 3.0f * x;
+    float harmonic = std::tanh(0.60f * cheby3 + 0.40f * x);
 
-    // Optical silence gate: smoothly attenuates excitation on low-level room noise/whisper
-    float airGate = std::clamp((envDb - (-58.0f)) / 14.0f, 0.0f, 1.0f);
-    return excited * (amount * 0.90f) * (airGate * airGate);
+    return harmonic * (amount * 0.55f) * (airGate * airGate);
 }
 
 void AirExciterProcessor::process(juce::AudioBuffer<float>& buffer)
@@ -112,8 +110,10 @@ void AirExciterProcessor::process(juce::AudioBuffer<float>& buffer)
             float midExcited = processBandExciter(midBand, midAmt, midEnv[ch], attCoeff, relCoeff);
             float topExcited = processBandExciter(topBand, topAmt, topEnv[ch], attCoeff, relCoeff);
 
-            // Sum clean signal with excited air
-            float output = input + midExcited + topExcited;
+            float excitedTotal = dcBlocker[ch].process(midExcited + topExcited);
+
+            // Sum clean signal with excited air at controlled parallel level (0.35x prevents loudness spike)
+            float output = input + excitedTotal * 0.35f;
             buffer.setSample(ch, i, AudioUtils::sanitize(output));
         }
     }
