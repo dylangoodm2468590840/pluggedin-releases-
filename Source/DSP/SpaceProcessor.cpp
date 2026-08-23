@@ -49,6 +49,13 @@ void SpaceProcessor::prepare(const juce::dsp::ProcessSpec& spec)
     reverbLowCutR.setCutoffFrequency(150.0f);
     reverbLowCutR.setResonance(0.707f);
 
+    reverbMixSmoother.reset(sampleRate, 0.02);
+    delayMixSmoother.reset(sampleRate, 0.02);
+    feedbackSmoother.reset(sampleRate, 0.02);
+
+    int preDelaySize = static_cast<int>(0.028f * sampleRate);
+    preDelayBuffer.assign(std::max(64, preDelaySize), 0.0f);
+
     reset();
 }
 
@@ -60,6 +67,9 @@ void SpaceProcessor::reset()
     diff4.reset();
     tankDiff1.reset();
     tankDiff2.reset();
+
+    std::fill(preDelayBuffer.begin(), preDelayBuffer.end(), 0.0f);
+    preDelayWritePos = 0;
 
     std::fill(tankDelayL1.begin(), tankDelayL1.end(), 0.0f);
     std::fill(tankDelayL2.begin(), tankDelayL2.end(), 0.0f);
@@ -80,6 +90,10 @@ void SpaceProcessor::reset()
 
     envFollower = 0.0f;
     wowPhase = 0.0f;
+
+    reverbMixSmoother.setCurrentAndTargetValue(reverbMix);
+    delayMixSmoother.setCurrentAndTargetValue(delayMix);
+    feedbackSmoother.setCurrentAndTargetValue(feedback);
 }
 
 void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& context)
@@ -93,6 +107,10 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
     if (numChannels == 0 || numSamples == 0)
         return;
 
+    reverbMixSmoother.setTargetValue(reverbMix);
+    delayMixSmoother.setTargetValue(delayMix);
+    feedbackSmoother.setTargetValue(feedback);
+
     // Delay time targets: Left = T, Right = 1.5 * T (Polyrhythmic Stereo Width)
     float targetDelaySamplesL = delayTime * static_cast<float>(sampleRate);
     float targetDelaySamplesR = (delayTime * 1.5f) * static_cast<float>(sampleRate);
@@ -102,10 +120,15 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
     const float wowPhaseInc = 0.40f / static_cast<float>(sampleRate);                      // 0.40 Hz tape drift
     const float tankLFOInc  = 0.65f / static_cast<float>(sampleRate);                      // 0.65 Hz chorus modulation
 
-    const float decayDecay = 0.72f; // Reverb decay sustain
+    // Scale reverb decay sustain (0.35 to 0.86)
+    const float decayDecay = std::clamp(0.35f + reverbDecay * 0.48f, 0.20f, 0.88f);
 
     for (size_t i = 0; i < numSamples; ++i)
     {
+        float curRevMix = reverbMixSmoother.getNextValue();
+        float curDelMix = delayMixSmoother.getNextValue();
+        float curFb     = feedbackSmoother.getNextValue();
+
         float inL = inputBlock.getSample(0, i);
         float inR = (numChannels > 1) ? inputBlock.getSample(1, i) : inL;
 
@@ -118,10 +141,18 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
 
         float duckGain = 1.0f - std::min(0.85f, envFollower * ducking * 3.0f);
 
-        // 2. High-Density Dattorro Reverb Processing
+        // 2. High-Density Dattorro Reverb Processing with 28ms Pre-Delay
         float monoIn = 0.5f * (inL + inR);
-        // Pre-diffusion stage
-        float d = diff1.process(monoIn);
+        float delayedMonoIn = monoIn;
+        if (!preDelayBuffer.empty())
+        {
+            delayedMonoIn = preDelayBuffer[preDelayWritePos];
+            preDelayBuffer[preDelayWritePos] = monoIn;
+            preDelayWritePos = (preDelayWritePos + 1) % static_cast<int>(preDelayBuffer.size());
+        }
+
+        // Pre-diffusion stage on pre-delayed vocal
+        float d = diff1.process(delayedMonoIn);
         d = diff2.process(d);
         d = diff3.process(d);
         d = diff4.process(d);
@@ -154,12 +185,13 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         tankIdxR2 = (tankIdxR2 + 1) % static_cast<int>(tankDelayR2.size());
 
         // Stereo Reverb Output Taps
-        float reverbOutL = (tankDelayL1[tankIdxL1] + tankDelayL2[tankIdxL2] - tankDelayR1[tankIdxR1]) * 0.6f;
-        float reverbOutR = (tankDelayR1[tankIdxR1] + tankDelayR2[tankIdxR2] - tankDelayL1[tankIdxL1]) * 0.6f;
+        float reverbOutL = (tankDelayL1[tankIdxL1] + tankDelayL2[tankIdxL2] - tankDelayR1[tankIdxR1]) * 0.45f;
+        float reverbOutR = (tankDelayR1[tankIdxR1] + tankDelayR2[tankIdxR2] - tankDelayL1[tankIdxL1]) * 0.45f;
 
-        // Apply Reverb Mix & Ducking
-        float wetReverbL = reverbOutL * (reverbMix * duckGain * 1.1f);
-        float wetReverbR = reverbOutR * (reverbMix * duckGain * 1.1f);
+        // Pro-Calibrated Reverb Mix Curve (Parabolic scaling: 0.05 is a subtle 2% halo, 0.30 is 12% plate)
+        float revScale = curRevMix * curRevMix * 0.65f;
+        float wetReverbL = reverbOutL * (revScale * duckGain);
+        float wetReverbR = reverbOutR * (revScale * duckGain);
 
         // 3. Analog Ping-Pong Tape Delay
         float wow = std::sin(juce::MathConstants<float>::twoPi * wowPhase) * 14.0f;
@@ -174,14 +206,14 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         delayOutR = delayDampFilterR.processSample(0, delayOutR);
 
         // Ping-pong cross feedback with warm soft clipping
-        float fbL = std::tanh(delayOutR * feedback);
-        float fbR = std::tanh(delayOutL * feedback);
+        float fbL = std::tanh(delayOutR * curFb);
+        float fbR = std::tanh(delayOutL * curFb);
 
         delayLineL.pushSample(0, inL + fbL);
         delayLineR.pushSample(0, inR + fbR);
 
-        float wetDelayL = delayOutL * (duckGain * 0.50f);
-        float wetDelayR = delayOutR * (duckGain * 0.50f);
+        float wetDelayL = delayOutL * (curDelMix * duckGain * 1.1f);
+        float wetDelayR = delayOutR * (curDelMix * duckGain * 1.1f);
 
         // Sum Dry + Reverb + Delay
         float outL = AudioUtils::sanitize(inL + wetReverbL + wetDelayL);
