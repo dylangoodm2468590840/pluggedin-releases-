@@ -18,6 +18,11 @@ void ShadowProcessor::prepare(const juce::dsp::ProcessSpec& spec)
     grainBufferR.assign(BUFFER_SIZE, 0.0f);
     writeIndex = 0;
 
+    mixSmoother.reset(sampleRate, 0.02);
+    driveSmoother.reset(sampleRate, 0.02);
+    formantSmoother.reset(sampleRate, 0.08); // 80ms ramp for smooth formant morphing
+    claritySmoother.reset(sampleRate, 0.02);
+
     for (int ch = 0; ch < 2; ++ch)
     {
         // 1. Chest Weight Low-Pass / Low-Shelf (125 Hz Fundamental Resonance)
@@ -36,6 +41,29 @@ void ShadowProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         darknessFilter[ch].prepare(spec);
         darknessFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
         darknessFilter[ch].setResonance(0.707f);
+
+        // 4. Consonant / Sibilance Articulation Highpass (4.2 kHz)
+        consonantFilter[ch].prepare(spec);
+        consonantFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::highpass);
+        consonantFilter[ch].setCutoffFrequency(4200.0f);
+        consonantFilter[ch].setResonance(0.707f);
+        consonantEnv[ch] = 0.0f;
+
+        // 5. Anatomical Formant Resonator Bank (Chest, Throat, Mouth)
+        formantF1[ch].prepare(spec);
+        formantF1[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        formantF1[ch].setCutoffFrequency(520.0f);
+        formantF1[ch].setResonance(2.2f);
+
+        formantF2[ch].prepare(spec);
+        formantF2[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        formantF2[ch].setCutoffFrequency(1450.0f);
+        formantF2[ch].setResonance(2.5f);
+
+        formantF3[ch].prepare(spec);
+        formantF3[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
+        formantF3[ch].setCutoffFrequency(2600.0f);
+        formantF3[ch].setResonance(3.0f);
     }
 
     reset();
@@ -57,17 +85,24 @@ void ShadowProcessor::reset()
     lpcAnalysisIdx = 0;
     lpcUpdateCounter = 0;
     lpcA[0] = 1.0f;
-    lpcGammaA[0] = 1.0f;
+    lpcGammaA_Target[0] = 1.0f;
+    lpcGammaA_Current[0] = 1.0f;
     for (int i = 1; i <= LPC_ORDER; ++i)
     {
         lpcA[i] = 0.0f;
-        lpcGammaA[i] = 0.0f;
+        lpcGammaA_Target[i] = 0.0f;
+        lpcGammaA_Current[i] = 0.0f;
         lpcHistory[0][i] = 0.0f;
         lpcHistory[1][i] = 0.0f;
     }
 
     subPhase = 0.0f;
     subEnvFollower = 0.0f;
+
+    mixSmoother.setCurrentAndTargetValue(mix);
+    driveSmoother.setCurrentAndTargetValue(drive);
+    formantSmoother.setCurrentAndTargetValue(formantShift);
+    subFreqSmoothed = static_cast<float>(sampleRate) / (currentPitchPeriodSamples * 2.0f);
 
     for (int ch = 0; ch < 2; ++ch)
     {
@@ -256,18 +291,25 @@ float ShadowProcessor::processSample(float inputSample, int channel)
                 winBuf[n] = lpcAnalysisBuffer[srcIdx] * win;
             }
             computeLpcCoefficients(winBuf, 512, lpcA, LPC_ORDER);
-
-            // Morph LPC poles by gamma factor (0.5 = deep resonant chest cavity, 1.0 = bright)
-            // formantShift (0.0 -> 1.0) maps to gamma (0.78 -> 0.98)
-            float gamma = std::clamp(0.78f + (formantShift * 0.20f), 0.65f, 0.98f);
-            float gPow = 1.0f;
-            lpcGammaA[0] = 1.0f;
-            for (int i = 1; i <= LPC_ORDER; ++i)
-            {
-                gPow *= gamma;
-                lpcGammaA[i] = lpcA[i] * gPow;
-            }
         }
+    }
+
+    // Continuously interpolate LPC coefficients sample-by-sample to eliminate all clicks & pops
+    // formantSmoother advances every sample for click-free DEGENERATE macro modulation
+    if (ch == 0)
+    {
+        float smoothedFormant = formantSmoother.getNextValue();
+        // Recompute gamma target every LPC analysis cycle using smoothed formant value
+        float gamma = std::clamp(0.76f + (smoothedFormant * 0.12f), 0.65f, 0.88f); // max 0.88 prevents near-unity pole ringing
+        float gPow = 1.0f;
+        lpcGammaA_Target[0] = 1.0f;
+        for (int i = 1; i <= LPC_ORDER; ++i)
+        {
+            gPow *= gamma;
+            lpcGammaA_Target[i] = lpcA[i] * gPow;
+        }
+        for (int i = 1; i <= LPC_ORDER; ++i)
+            lpcGammaA_Current[i] += (lpcGammaA_Target[i] - lpcGammaA_Current[i]) * 0.02f;
     }
 
     // Target Pitch Shift Ratio
@@ -324,57 +366,68 @@ float ShadowProcessor::processSample(float inputSample, int channel)
 
     float pitchedExcitation = (windowSum > 1.0e-5f) ? (grainAccum / windowSum) : 0.0f;
 
-    // 12th-Order LPC Formant All-Pole Resynthesis Filter 1 / A(z / gamma)
-    float resonantVocalBody = pitchedExcitation;
-    for (int i = 1; i <= LPC_ORDER; ++i)
-        resonantVocalBody -= lpcGammaA[i] * lpcHistory[ch][i];
-
-    resonantVocalBody = AudioUtils::sanitize(resonantVocalBody);
-
-    // Update LPC filter history
-    for (int i = LPC_ORDER; i > 1; --i)
-        lpcHistory[ch][i] = lpcHistory[ch][i - 1];
-    lpcHistory[ch][1] = resonantVocalBody;
-
-    // Blend Resonant Body with Core Excitation
-    float vocalLayer = pitchedExcitation * 0.40f + resonantVocalBody * 0.60f;
-
-    // Murda Melodies Reference Curve: +21.9dB Chest Boost (125Hz) and -3dB Mud Cut (350Hz)
-    float chestBoost = chestWeightFilter[ch].processSample(0, vocalLayer);
-    float mudBand = antiMudFilter[ch].processSample(0, vocalLayer);
+    // Voiced / Unvoiced Speech Articulation Split (Little AlterBoy Standard)
+    // Preserves crisp unvoiced consonants (T, S, K, P) while pitching vowels down
+    float consonantSample = consonantFilter[ch].processSample(0, sample);
+    float absCons = std::abs(consonantSample);
+    consonantEnv[ch] = 0.985f * consonantEnv[ch] + 0.015f * absCons;
     
-    // Smooth composite layer
-    float shadowCore = vocalLayer + (chestBoost * 0.45f) - (mudBand * 0.25f);
+    float curClarity = claritySmoother.getNextValue();
+    float unvoicedRatio = std::clamp(consonantEnv[ch] * 4.0f, 0.0f, 0.85f) * curClarity;
+    float articulatedVoice = (1.0f - unvoicedRatio) * pitchedExcitation + unvoicedRatio * sample;
 
-    // Phase-Locked Sub-Octave Fundamental Synthesizer
+    // Anatomical 3-Pole Formant Resonator Modeling (Little AlterBoy / Throat Acoustics)
+    // F1 = Chest Cavity, F2 = Pharyngeal Throat, F3 = Oral Cavity
+    float fScale = 0.65f + 0.70f * formantShift;
+    formantF1[ch].setCutoffFrequency(std::clamp(520.0f * fScale, 180.0f, (float)(sampleRate * 0.45)));
+    formantF2[ch].setCutoffFrequency(std::clamp(1450.0f * fScale, 500.0f, (float)(sampleRate * 0.45)));
+    formantF3[ch].setCutoffFrequency(std::clamp(2600.0f * fScale, 1200.0f, (float)(sampleRate * 0.45)));
+
+    float f1Sample = formantF1[ch].processSample(0, articulatedVoice);
+    float f2Sample = formantF2[ch].processSample(0, articulatedVoice);
+    float f3Sample = formantF3[ch].processSample(0, articulatedVoice);
+
+    float formantResonated = articulatedVoice * 0.50f + (f1Sample * 0.35f + f2Sample * 0.25f + f3Sample * 0.15f);
+
+    // Murda Melodies Reference Curve: +18dB Chest Boost (125Hz) and -3dB Mud Cut (350Hz)
+    float chestBoost = chestWeightFilter[ch].processSample(0, formantResonated);
+    float mudBand = antiMudFilter[ch].processSample(0, formantResonated);
+    
+    // Smooth composite layer with controlled headroom
+    float shadowCore = formantResonated + (chestBoost * 0.40f) - (mudBand * 0.20f);
+
+    // Phase-Locked Sub-Octave Fundamental Synthesizer with smoothed frequency
+    // One-pole frequency smoothing prevents pop/click on voiced<->unvoiced period jumps
     if (ch == 0)
     {
         float absIn = std::abs(sample);
         subEnvFollower = 0.992f * subEnvFollower + 0.008f * absIn;
-        float subFreq = (static_cast<float>(sampleRate) / basePeriod) * 0.5f; // Sub-octave F0 / 2
-        float phaseInc = (subFreq * juce::MathConstants<float>::twoPi) / static_cast<float>(sampleRate);
+        float subFreqTarget = (static_cast<float>(sampleRate) / basePeriod) * 0.5f; // Sub-octave F0/2
+        // One-pole smooth: 99.97% old + 0.03% new (~10ms time constant at 44.1k)
+        subFreqSmoothed = 0.9997f * subFreqSmoothed + 0.0003f * subFreqTarget;
+        float phaseInc = (subFreqSmoothed * juce::MathConstants<float>::twoPi) / static_cast<float>(sampleRate);
         subPhase += phaseInc;
         if (subPhase >= juce::MathConstants<float>::twoPi)
             subPhase -= juce::MathConstants<float>::twoPi;
     }
     
-    float subOsc = std::sin(subPhase) * subEnvFollower * 0.28f;
+    float subOsc = std::sin(subPhase) * subEnvFollower * 0.30f;
     float combinedVoice = shadowCore + subOsc;
 
-    // Analog Warmth & Harmonic Preamp Drive
-    if (drive > 0.005f)
+    // Analog Warmth & Harmonic Preamp Drive (Symmetrical Odd-Harmonics, Zero DC offset)
+    float curDrive = driveSmoother.getNextValue();
+    if (curDrive > 0.005f)
     {
-        float satDrive = 1.0f + drive * 3.5f;
+        float satDrive = 1.0f + curDrive * 2.5f;
         float x = combinedVoice * satDrive;
-        // Asymmetric warm tube transfer curve
-        float sat = std::tanh(x + 0.12f * (x * x));
-        combinedVoice = sat / std::sqrt(satDrive);
+        float sat = std::tanh(x);
+        combinedVoice = sat / std::sqrt(1.0f + curDrive * 1.5f);
     }
 
     // DC Protection & Tone Shaping
     combinedVoice = dcBlocker[ch].process(combinedVoice);
 
-    float darknessCutoff = 500.0f + (1.0f - darkness) * 6500.0f;
+    float darknessCutoff = 450.0f + (1.0f - darkness) * 7500.0f;
     darknessCutoff = std::clamp(darknessCutoff, 120.0f, static_cast<float>(sampleRate * 0.45));
     darknessFilter[ch].setCutoffFrequency(darknessCutoff);
     combinedVoice = darknessFilter[ch].processSample(0, combinedVoice);
@@ -384,7 +437,10 @@ float ShadowProcessor::processSample(float inputSample, int channel)
 
 void ShadowProcessor::process(juce::AudioBuffer<float>& buffer)
 {
-    if (!enabled || mix <= 0.001f)
+    mixSmoother.setTargetValue(enabled ? mix : 0.0f);
+    driveSmoother.setTargetValue(drive);
+
+    if (!enabled && mixSmoother.getCurrentValue() <= 0.0001f)
     {
         buffer.clear();
         return;
@@ -396,17 +452,17 @@ void ShadowProcessor::process(juce::AudioBuffer<float>& buffer)
     if (numChannels == 0 || numSamples == 0)
         return;
 
-    float wetGain = mix * 1.05f;
-
     for (int i = 0; i < numSamples; ++i)
     {
+        float currentWetGain = mixSmoother.getNextValue() * 1.05f;
+
         for (int ch = 0; ch < numChannels; ++ch)
         {
             float* channelData = buffer.getWritePointer(ch);
             float drySample = channelData[i];
             float shadowSample = processSample(drySample, ch);
 
-            channelData[i] = AudioUtils::sanitize(shadowSample * wetGain);
+            channelData[i] = AudioUtils::sanitize(shadowSample * currentWetGain);
         }
 
         writeIndex = (writeIndex + 1) & BUFFER_MASK;
