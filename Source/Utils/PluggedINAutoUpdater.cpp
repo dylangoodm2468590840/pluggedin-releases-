@@ -23,6 +23,8 @@ bool PluggedINAutoUpdater::isPluginUpdateAvailable(const juce::String& pluginId)
 {
     if (pluginId == "pluggedin_underground")
         return undergroundUpdateAvailable.load();
+    if (pluginId == "pluggedin_plugged1")
+        return plugged1UpdateAvailable.load();
     return false;
 }
 
@@ -30,6 +32,8 @@ juce::String PluggedINAutoUpdater::getPluginLatestVersion(const juce::String& pl
 {
     if (pluginId == "pluggedin_underground")
         return undergroundLatestVersion;
+    if (pluginId == "pluggedin_plugged1")
+        return plugged1LatestVersion;
     return "1.0.0";
 }
 
@@ -37,6 +41,8 @@ juce::String PluggedINAutoUpdater::getPluginDownloadUrl(const juce::String& plug
 {
     if (pluginId == "pluggedin_underground")
         return undergroundDownloadUrl;
+    if (pluginId == "pluggedin_plugged1")
+        return plugged1DownloadUrl;
     return "";
 }
 
@@ -44,6 +50,17 @@ juce::String PluggedINAutoUpdater::getPluginSha256(const juce::String& pluginId)
 {
     if (pluginId == "pluggedin_underground")
         return undergroundSha256;
+    if (pluginId == "pluggedin_plugged1")
+        return plugged1Sha256;
+    return "";
+}
+
+juce::String PluggedINAutoUpdater::getPluginChangelog(const juce::String& pluginId) const noexcept
+{
+    if (pluginId == "pluggedin_underground")
+        return undergroundChangelog;
+    if (pluginId == "pluggedin_plugged1")
+        return plugged1Changelog;
     return "";
 }
 
@@ -71,13 +88,18 @@ void PluggedINAutoUpdater::parseManifestJson(const juce::String& jsonText)
                 auto pkgVar = mgrObj->getProperty("packages");
                 if (auto* pkgObj = pkgVar.getDynamicObject())
                 {
-                    if (pkgObj->hasProperty("windows_x64"))
+#if JUCE_MAC
+                    juce::String platformKey = "macos_universal";
+#else
+                    juce::String platformKey = "windows_x64";
+#endif
+                    if (pkgObj->hasProperty(platformKey))
                     {
-                        auto winVar = pkgObj->getProperty("windows_x64");
-                        if (auto* winObj = winVar.getDynamicObject())
+                        auto platVar = pkgObj->getProperty(platformKey);
+                        if (auto* platObj = platVar.getDynamicObject())
                         {
-                            downloadUrl = winObj->getProperty("url").toString();
-                            managerSha256 = winObj->getProperty("sha256").toString();
+                            downloadUrl = platObj->getProperty("url").toString();
+                            managerSha256 = platObj->getProperty("sha256").toString();
                         }
                     }
                 }
@@ -109,35 +131,62 @@ void PluggedINAutoUpdater::parseManifestJson(const juce::String& jsonText)
                     if (id.isEmpty()) id = pObj->getProperty("plugin_id").toString();
 
                     juce::String latest = pObj->getProperty("latest_version").toString();
+                    juce::String pChangelog = pObj->getProperty("changelog").toString();
+
+                    juce::String pWinUrl = "";
+                    juce::String pWinSha = "";
+
+                    if (pObj->hasProperty("packages"))
+                    {
+                        auto pkgVar = pObj->getProperty("packages");
+                        if (auto* pkgObj = pkgVar.getDynamicObject())
+                        {
+#if JUCE_MAC
+                            juce::String platformKey = "macos_universal";
+#else
+                            juce::String platformKey = "windows_x64";
+#endif
+                            if (pkgObj->hasProperty(platformKey))
+                            {
+                                auto platVar = pkgObj->getProperty(platformKey);
+                                if (auto* platObj = platVar.getDynamicObject())
+                                {
+                                    pWinUrl = platObj->getProperty("url").toString();
+                                    pWinSha = platObj->getProperty("sha256").toString();
+                                }
+                            }
+                        }
+                    }
+                    else if (pObj->hasProperty("download_url_win"))
+                    {
+#if JUCE_MAC
+                        pWinUrl = pObj->getProperty("download_url_mac").toString();
+#else
+                        pWinUrl = pObj->getProperty("download_url_win").toString();
+#endif
+                    }
 
                     if (id == "pluggedin_underground")
                     {
                         undergroundLatestVersion = latest;
-
-                        if (pObj->hasProperty("packages"))
-                        {
-                            auto pkgVar = pObj->getProperty("packages");
-                            if (auto* pkgObj = pkgVar.getDynamicObject())
-                            {
-                                if (pkgObj->hasProperty("windows_x64"))
-                                {
-                                    auto winVar = pkgObj->getProperty("windows_x64");
-                                    if (auto* winObj = winVar.getDynamicObject())
-                                    {
-                                        undergroundDownloadUrl = winObj->getProperty("url").toString();
-                                        undergroundSha256 = winObj->getProperty("sha256").toString();
-                                    }
-                                }
-                            }
-                        }
-                        else if (pObj->hasProperty("download_url_win"))
-                        {
-                            undergroundDownloadUrl = pObj->getProperty("download_url_win").toString();
-                        }
+                        undergroundDownloadUrl = pWinUrl;
+                        undergroundSha256 = pWinSha;
+                        undergroundChangelog = pChangelog;
 
                         juce::String installed = InstalledRegistry::getInstalledVersion(id);
                         bool needsPluginUpdate = (installed.isNotEmpty() && InstalledRegistry::compareVersions(installed, latest) < 0);
                         undergroundUpdateAvailable.store(needsPluginUpdate);
+                    }
+                    else if (id == "pluggedin_plugged1")
+                    {
+                        plugged1LatestVersion = latest;
+                        plugged1DownloadUrl = pWinUrl;
+                        plugged1Sha256 = pWinSha;
+                        plugged1Changelog = pChangelog;
+
+                        juce::String installed = InstalledRegistry::getInstalledVersion(id);
+                        bool needsPluginUpdate = (installed.isNotEmpty() && InstalledRegistry::compareVersions(installed, latest) < 0);
+                        plugged1UpdateAvailable.store(needsPluginUpdate);
                     }
                 }
             }
@@ -193,9 +242,7 @@ void PluggedINAutoUpdater::run()
             appDir.getChildFile("version.json"),
             appDir.getChildFile("dist\\manifest.json"),
             appDir.getChildFile("dist\\version.json"),
-            appDir.getParentDirectory().getChildFile("dist\\version.json"),
-            juce::File("C:\\Users\\dylan\\Documents\\First plug in\\dist\\version.json"),
-            juce::File("C:\\Users\\dylan\\Documents\\First plug in\\dist\\manifest.json")
+            appDir.getParentDirectory().getChildFile("dist\\version.json")
         };
 
         for (const auto& file : fallbackFiles)
