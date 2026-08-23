@@ -31,6 +31,11 @@ public:
     void setAmount(float newAmount) noexcept { amount = std::clamp(newAmount, 0.0f, 1.0f); }
     float getAmount() const noexcept { return amount; }
 
+    void setRate(float newRate) noexcept { rate = std::clamp(newRate, 0.0f, 1.0f); }
+    float getRate() const noexcept { return rate; }
+    void setDepth(float newDepth) noexcept { depth = std::clamp(newDepth, 0.0f, 1.0f); }
+    float getDepth() const noexcept { return depth; }
+
     void setDetune(float newDetune) noexcept { detune = std::clamp(newDetune, 0.0f, 1.0f); }
     void setMix(float newMix) noexcept { mix = std::clamp(newMix, 0.0f, 1.0f); }
     void setMode(ModulationMode newMode) noexcept { mode = newMode; }
@@ -65,8 +70,10 @@ private:
     }
 
     float amount { 0.5f };
+    float rate   { 0.35f };
+    float depth  { 0.50f };
     float detune { 0.3f };
-    float mix { 1.0f };
+    float mix    { 1.0f };
     ModulationMode mode { ModulationMode::DimensionalChorus };
 
     double sampleRate { 44100.0 };
