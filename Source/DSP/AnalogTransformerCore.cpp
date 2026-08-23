@@ -69,12 +69,12 @@ void AnalogTransformerCore::process(juce::AudioBuffer<float>& buffer)
             // 1. Isolate chest resonance fundamental (180-450Hz)
             float chest = chestFilter[chIdx].processSample(0, in);
 
-            // 2. Transformer Core Saturation: 2nd-order even harmonics + magnetic flux compression
-            float chestDriven = chest * (1.0f + drive * 2.5f);
-            float chestHarmonics = chestDriven + 0.20f * (chestDriven * chestDriven) - 0.05f * std::tanh(chestDriven * 1.5f);
+            // 2. Transformer Core Saturation: Symmetrical magnetic hysteresis & odd harmonics
+            float chestDriven = chest * (1.0f + drive * 2.0f);
+            float chestHarmonics = std::tanh(chestDriven * 1.25f) - 0.20f * std::tanh(chestDriven * 0.60f);
 
             // 3. Sum original signal + transformer chest weight
-            float rich = in + chestHarmonics * (warmth * 0.30f);
+            float rich = in + chestHarmonics * (warmth * 0.25f);
             rich = dcBlocker[chIdx].process(rich);
             rich = slewFilter[chIdx].processSample(0, rich);
 
