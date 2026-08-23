@@ -34,25 +34,33 @@ public:
     juce::String getPluginLatestVersion(const juce::String& pluginId) const noexcept;
     juce::String getPluginDownloadUrl(const juce::String& pluginId) const noexcept;
     juce::String getPluginSha256(const juce::String& pluginId) const noexcept;
+    juce::String getPluginChangelog(const juce::String& pluginId) const noexcept;
 
 private:
     void run() override;
     void parseManifestJson(const juce::String& jsonText);
 
-    juce::String currentVersion { "2.0.0" };
+    juce::String currentVersion { "2.1.0" };
     std::atomic<bool> updateAvailable { false };
 
-    juce::String latestVersion { "2.0.0" };
+    juce::String latestVersion { "2.1.0" };
     juce::String managerSha256 { "" };
     juce::String changelog { "" };
     juce::String downloadUrl { "" };
 
-    // Plugin Catalog Cache
-    juce::String undergroundLatestVersion { "" }; // Empty until cloud manifest loads — prevents false update badge on startup
+    // Plugin Catalog Cache - UNDERGROUND
+    juce::String undergroundLatestVersion { "" };
     juce::String undergroundDownloadUrl { "" };
     juce::String undergroundSha256 { "" };
+    juce::String undergroundChangelog { "" };
     std::atomic<bool> undergroundUpdateAvailable { false };
 
+    // Plugin Catalog Cache - PLUGGED 1
+    juce::String plugged1LatestVersion { "" };
+    juce::String plugged1DownloadUrl { "" };
+    juce::String plugged1Sha256 { "" };
+    juce::String plugged1Changelog { "" };
+    std::atomic<bool> plugged1UpdateAvailable { false };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluggedINAutoUpdater)
 };
