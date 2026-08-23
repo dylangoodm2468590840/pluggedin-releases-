@@ -47,6 +47,8 @@ private:
     // Envelope followers per channel for dynamic upward expansion
     float midEnv[2] { 0.0f, 0.0f };
     float topEnv[2] { 0.0f, 0.0f };
+    std::unique_ptr<juce::dsp::Oversampling<float>> oversampler;
+    bool oversamplingReady { false };
 
     AudioUtils::DCBlocker dcBlocker[2];
 
