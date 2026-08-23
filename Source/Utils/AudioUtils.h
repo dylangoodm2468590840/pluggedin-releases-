@@ -51,14 +51,22 @@ namespace AudioUtils
         return std::tanh(x + 0.3f * std::tanh(x * 2.0f));
     }
 
-    // Fast 1-pole DC Blocker filter for asymmetric saturation
+    // Sample-Rate Aware 1-pole DC Blocker filter
     class DCBlocker
     {
     public:
+        void prepare(double sampleRate, float cutoffHz = 15.0f) noexcept
+        {
+            double sr = sampleRate > 1000.0 ? sampleRate : 44100.0;
+            R = static_cast<float>(std::clamp(1.0 - (2.0 * 3.14159265358979323846 * static_cast<double>(cutoffHz) / sr), 0.95, 0.9999));
+            reset();
+        }
+
         void reset() noexcept { x1 = 0.0f; y1 = 0.0f; }
+        
         inline float process(float x) noexcept
         {
-            float y = x - x1 + 0.995f * y1;
+            float y = x - x1 + R * y1;
             x1 = x;
             y1 = y;
             return sanitize(y);
@@ -66,5 +74,6 @@ namespace AudioUtils
     private:
         float x1 { 0.0f };
         float y1 { 0.0f };
+        float R  { 0.9978f }; // Default 15Hz at 44.1kHz
     };
 }
