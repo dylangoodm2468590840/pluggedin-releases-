@@ -58,8 +58,9 @@ void StudioMicroDetuner::process(juce::AudioBuffer<float>& buffer)
     const float shiftRatioL = std::pow(2.0f, (cents / 1200.0f));   // + cents
     const float shiftRatioR = std::pow(2.0f, (-cents / 1200.0f));  // - cents
 
-    const float phaseIncL = (shiftRatioL - 1.0f) / grainSizeSamples;
-    const float phaseIncR = (shiftRatioR - 1.0f) / grainSizeSamples;
+    // Micro-pitch shift direction: advance read head for pitch up, retard for pitch down
+    const float phaseIncL = (1.0f - shiftRatioL) / grainSizeSamples;
+    const float phaseIncR = (1.0f - shiftRatioR) / grainSizeSamples;
 
     const float baseDelayL = static_cast<float>(sampleRate) * 0.014f; // 14ms offset Left
     const float baseDelayR = static_cast<float>(sampleRate) * 0.022f; // 22ms offset Right
@@ -112,9 +113,12 @@ void StudioMicroDetuner::process(juce::AudioBuffer<float>& buffer)
 
         writePos = (writePos + 1) & BUFFER_MASK;
 
-        // Wide 3D aura with dry center preservation and solid low-frequency anchor
-        float wetL = inL * (1.0f - amt * 0.35f) + detunedL * (amt * 0.70f) + monoLow * (amt * 0.15f);
-        float wetR = inR * (1.0f - amt * 0.35f) + detunedR * (amt * 0.70f) + monoLow * (amt * 0.15f);
+        // True stereo microshift balance: pure center anchor + spacious detuned halo
+        float dryGain = 1.0f - (amt * 0.25f);
+        float wetGain = amt * 0.55f;
+
+        float wetL = inL * dryGain + detunedL * wetGain;
+        float wetR = inR * dryGain + detunedR * wetGain;
 
         buffer.setSample(0, i, AudioUtils::sanitize(wetL));
         if (numChannels > 1)
