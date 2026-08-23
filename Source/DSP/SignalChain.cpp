@@ -300,6 +300,9 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         spaceModule.process(context);
     deviceModule.process(context);
 
+    // 14.5. Auto-Level Loudness Matching Engine (Compensates perceived loudness transparently)
+    autoLevelCompensator.process(dryBuffer, buffer);
+
     // 15. Global Dry/Wet Mix
     globalMixSmoother.setTargetValue(globalMix);
     for (int sample = 0; sample < numSamples; ++sample)
