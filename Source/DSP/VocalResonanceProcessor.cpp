@@ -133,31 +133,34 @@ void VocalResonanceProcessor::process(juce::AudioBuffer<float>& buffer)
                 else                detEnv = relCoeff * detEnv + (1.0f - relCoeff) * absBp;
                 bands[b].detectorEnv[channelIdx] = AudioUtils::sanitize(detEnv);
 
-                // 3. Peak-to-Broadband Resonance Ratio
+                // 3. Peak-to-Broadband Resonance Ratio with higher threshold to protect sung notes
                 float ratio = (detEnv + 1.0e-5f) / (broadEnv + 1.0e-5f);
                 float targetCutDb = 0.0f;
 
-                if (ratio > 1.15f && detEnv > 0.003f)
+                if (ratio > 1.35f && detEnv > 0.005f)
                 {
-                    float excessDb = 20.0f * std::log10(ratio / 1.15f);
-                    float reductionDb = excessDb * currentAmt * bandWeights[b] * 1.5f;
-                    targetCutDb = std::min(reductionDb, 9.0f); // Max 9dB dynamic notch cut
+                    float excessDb = 20.0f * std::log10(ratio / 1.35f);
+                    float reductionDb = excessDb * currentAmt * bandWeights[b] * 0.80f;
+                    targetCutDb = std::min(reductionDb, 6.0f); // Max 6dB musical dynamic notch cut
                 }
 
                 // Smooth gain movement
-                bands[b].currentGainDb[channelIdx] = 0.88f * bands[b].currentGainDb[channelIdx] + 0.12f * targetCutDb;
+                bands[b].currentGainDb[channelIdx] = 0.92f * bands[b].currentGainDb[channelIdx] + 0.08f * targetCutDb;
                 float curCutDb = bands[b].currentGainDb[channelIdx];
 
                 if (curCutDb > maxBandDb)
                     maxBandDb = curCutDb;
 
-                // 4. Apply True Minimum-Phase Dynamic Bell Cut
-                bands[b].dynamicCutBiquad[channelIdx].updateBellCoeffs(
-                    sampleRate, 
-                    bands[b].centerFreq, 
-                    -static_cast<double>(curCutDb), 
-                    bands[b].qFactor
-                );
+                // Update filter coefficients at 16-sample intervals to eliminate trigonometric CPU churning & clicks
+                if ((i & 15) == 0)
+                {
+                    bands[b].dynamicCutBiquad[channelIdx].updateBellCoeffs(
+                        sampleRate, 
+                        bands[b].centerFreq, 
+                        -static_cast<double>(curCutDb), 
+                        bands[b].qFactor
+                    );
+                }
 
                 float processed = bands[b].dynamicCutBiquad[channelIdx].process(inSample);
                 channelData[i] = AudioUtils::sanitize(processed);
