@@ -161,35 +161,37 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         d = reverbLowCutL.processSample(0, d);
 
         // Modulated Delay excursion for chorused Lexicon tail
-        float modSamples = std::sin(juce::MathConstants<float>::twoPi * tankLFOPhase) * 12.0f;
+        float modSamples = std::sin(juce::MathConstants<float>::twoPi * tankLFOPhase) * 8.0f;
 
-        // Left Tank Branch
+        // Left Tank Branch with LFO modulation
+        int readIdxL1 = (tankIdxL1 + static_cast<int>(modSamples) + static_cast<int>(tankDelayL1.size())) % static_cast<int>(tankDelayL1.size());
         float tankInL = d + tankDelayR2[tankIdxR2] * decayDecay;
         float diffOutL = tankDiff1.process(tankInL);
         tankDelayL1[tankIdxL1] = diffOutL;
         tankIdxL1 = (tankIdxL1 + 1) % static_cast<int>(tankDelayL1.size());
 
         // One-pole high damping absorption (silky top-end roll-off)
-        dampingFilterL = dampingFilterL * 0.45f + tankDelayL1[tankIdxL1] * 0.55f;
+        dampingFilterL = dampingFilterL * 0.45f + tankDelayL1[readIdxL1] * 0.55f;
         tankDelayL2[tankIdxL2] = dampingFilterL;
         tankIdxL2 = (tankIdxL2 + 1) % static_cast<int>(tankDelayL2.size());
 
-        // Right Tank Branch
+        // Right Tank Branch with opposite LFO modulation
+        int readIdxR1 = (tankIdxR1 - static_cast<int>(modSamples) + static_cast<int>(tankDelayR1.size())) % static_cast<int>(tankDelayR1.size());
         float tankInR = d + tankDelayL2[tankIdxL2] * decayDecay;
         float diffOutR = tankDiff2.process(tankInR);
         tankDelayR1[tankIdxR1] = diffOutR;
         tankIdxR1 = (tankIdxR1 + 1) % static_cast<int>(tankDelayR1.size());
 
-        dampingFilterR = dampingFilterR * 0.45f + tankDelayR1[tankIdxR1] * 0.55f;
+        dampingFilterR = dampingFilterR * 0.45f + tankDelayR1[readIdxR1] * 0.55f;
         tankDelayR2[tankIdxR2] = dampingFilterR;
         tankIdxR2 = (tankIdxR2 + 1) % static_cast<int>(tankDelayR2.size());
 
         // Stereo Reverb Output Taps
-        float reverbOutL = (tankDelayL1[tankIdxL1] + tankDelayL2[tankIdxL2] - tankDelayR1[tankIdxR1]) * 0.45f;
-        float reverbOutR = (tankDelayR1[tankIdxR1] + tankDelayR2[tankIdxR2] - tankDelayL1[tankIdxL1]) * 0.45f;
+        float reverbOutL = (tankDelayL1[readIdxL1] + tankDelayL2[tankIdxL2] - tankDelayR1[readIdxR1]) * 0.45f;
+        float reverbOutR = (tankDelayR1[readIdxR1] + tankDelayR2[tankIdxR2] - tankDelayL1[readIdxL1]) * 0.45f;
 
         // Pro-Calibrated Reverb Mix Curve (Parabolic scaling: 0.05 is a subtle 2% halo, 0.30 is 12% plate)
-        float revScale = curRevMix * curRevMix * 0.65f;
+        float revScale = curRevMix * curRevMix * 0.55f;
         float wetReverbL = reverbOutL * (revScale * duckGain);
         float wetReverbR = reverbOutR * (revScale * duckGain);
 
@@ -212,12 +214,15 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         delayLineL.pushSample(0, inL + fbL);
         delayLineR.pushSample(0, inR + fbR);
 
-        float wetDelayL = delayOutL * (curDelMix * duckGain * 1.1f);
-        float wetDelayR = delayOutR * (curDelMix * duckGain * 1.1f);
+        float wetDelayL = delayOutL * (curDelMix * duckGain * 0.85f);
+        float wetDelayR = delayOutR * (curDelMix * duckGain * 0.85f);
 
-        // Sum Dry + Reverb + Delay
-        float outL = AudioUtils::sanitize(inL + wetReverbL + wetDelayL);
-        float outR = AudioUtils::sanitize((numChannels > 1 ? inR : inL) + wetReverbR + wetDelayR);
+        // Balanced Constant-Perceived-Power Mix
+        float totalWetAmt = std::clamp(revScale + curDelMix * 0.65f, 0.0f, 0.75f);
+        float dryScale = std::sqrt(1.0f - totalWetAmt * 0.5f);
+
+        float outL = AudioUtils::sanitize(inL * dryScale + wetReverbL + wetDelayL);
+        float outR = AudioUtils::sanitize((numChannels > 1 ? inR : inL) * dryScale + wetReverbR + wetDelayR);
 
         outputBlock.setSample(0, i, outL);
         if (numChannels > 1)
