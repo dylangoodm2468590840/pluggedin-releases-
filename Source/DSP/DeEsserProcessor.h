@@ -48,11 +48,11 @@ private:
     juce::SmoothedValue<float> smoothedThresholdDb;
     juce::SmoothedValue<float> smoothedFreq;
 
-    // Sibilance bandpass filter & Sidechain detector per channel
-    juce::dsp::StateVariableTPTFilter<float> sibilanceFilter[2];
+    // Zero-Delay Feedback Dynamic Bell Filters & Sidechain detectors
+    juce::dsp::StateVariableTPTFilter<float> dynamicBellFilter[2];
     juce::dsp::StateVariableTPTFilter<float> sidechainDetectorFilter[2];
 
-    // Envelope followers per channel for sibilance detection
+    // Linked envelope followers
     float sibilanceEnv[2] { 0.0f, 0.0f };
 
     std::atomic<float> currentGainReductionDb { 0.0f };
