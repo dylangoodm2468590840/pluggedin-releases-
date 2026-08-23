@@ -58,6 +58,17 @@ public:
         return juce::File("/Library/Audio/Plug-Ins/Components");
     }
 
+    static void ensurePluginDirectoriesExist()
+    {
+        getUserVst3Directory().createDirectory();
+#if JUCE_MAC
+        getUserAuDirectory().createDirectory();
+        juce::File userAppSupport = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory).getChildFile("PluggedIN");
+        if (!userAppSupport.exists())
+            userAppSupport.createDirectory();
+#endif
+    }
+
     static juce::File getRegistryFile()
     {
         juce::File appDataDir = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory);
