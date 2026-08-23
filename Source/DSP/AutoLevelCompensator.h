@@ -72,23 +72,25 @@ public:
             }
         }
 
-        float blockDryRms = std::sqrt(drySum / static_cast<float>(numSamples * numChannels + 1));
-        float blockWetRms = std::sqrt(wetSum / static_cast<float>(numSamples * numChannels + 1));
+        float totalCount = static_cast<float>(numSamples * numChannels);
+        float blockDryRms = std::sqrt(drySum / std::max(totalCount, 1.0f));
+        float blockWetRms = std::sqrt(wetSum / std::max(totalCount, 1.0f));
 
-        // Smooth energy followers
+        // Smooth energy followers (400ms integration window)
         dryRms = timeCoeff * dryRms + (1.0f - timeCoeff) * blockDryRms;
         wetRms = timeCoeff * wetRms + (1.0f - timeCoeff) * blockWetRms;
 
-        // Compute compensation factor only during active audio
-        float targetGain = 1.0f;
-        if (dryRms > 0.005f && wetRms > 0.005f)
+        // Compute compensation factor with speech pause freeze
+        if (dryRms > 0.0025f && wetRms > 0.0025f)
         {
+            // Active speech detected: update compensation ratio smoothly
             float ratio = (dryRms + 1.0e-4f) / (wetRms + 1.0e-4f);
-            // Clamp compensation between -12dB (0.25x) and +6dB (2.0x)
-            targetGain = std::clamp(ratio, 0.25f, 2.0f);
+            // Apply soft-knee bounded compensation between -9 dB (0.35x) and +4.5 dB (1.68x)
+            lastTargetGain = std::clamp(std::sqrt(ratio), 0.35f, 1.68f);
         }
+        // When dry audio pauses (reverb tail or silence), lastTargetGain is frozen so tails decay naturally!
 
-        smoothedGainTrim.setTargetValue(targetGain);
+        smoothedGainTrim.setTargetValue(lastTargetGain);
 
         for (int i = 0; i < numSamples; ++i)
         {
@@ -114,6 +116,7 @@ private:
 
     float dryRms { 0.0f };
     float wetRms { 0.0f };
+    float lastTargetGain { 1.0f };
 
     juce::SmoothedValue<float> smoothedGainTrim;
     std::atomic<float> currentCompensationDb { 0.0f };
