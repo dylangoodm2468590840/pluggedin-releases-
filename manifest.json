@@ -14,9 +14,9 @@
                                                          "size_bytes":  4650147
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://files.catbox.moe/dfbudg.zip",
-                                                             "sha256":  "23ad2a52d235dfcb0bd5f28be6c855739e35a54e479306a8e283b682273a2b3b",
-                                                             "size_bytes":  32503801
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PluggedIN_Central_Mac.zip",
+                                                             "sha256":  "f4ffc2a9d8841d683c7b4eae663e4b549be5ed8e728953c0785a15ab4634b01d",
+                                                             "size_bytes":  5070315
                                                          }
                                  }
                 },
@@ -50,7 +50,7 @@
                         "name":  "UNDERGROUND v1.0 (Master Studio Suite)",
                         "latest_version":  "4.0.0",
                         "download_url_win":  "https://files.catbox.moe/oe2sq6.zip",
-                        "download_url_mac":  "https://files.catbox.moe/404iri.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
                         "changelog":  "Official UNDERGROUND v1.0 / v4.0 Master Studio Suite: 6 Rebuilt Pro DSP Engines (Glottal Epoch Alignment \u0026 3-Pole Formant Resonators, SPICE Triode Saturation with Bias Sag, Dolby-A Chebyshev Exciter, 3D Detuner, 28ms Pre-Delay Dattorro Reverb, Dual-Stage Leveler) and 10 Vault Presets.",
                         "packages":  {
                                          "windows_x64":  {
@@ -61,9 +61,9 @@
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  "https://files.catbox.moe/404iri.zip",
-                                                                 "sha256":  "b2e5eafaee8d1556762d6222098d8d578cf1e0e1e7a7f1f85798e47ca50ad713",
-                                                                 "size_bytes":  4890163
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "1fe67a1401d18dd62dd1e7ac8672185f6d4fbac01bd327813a1b17e3482641a2",
+                                                                 "size_bytes":  6357286
                                                              }
                                      }
                     }
