@@ -113,9 +113,12 @@ public:
         g.drawText(currentStatus, 48, 245, bounds.getWidth() - 96, 20, juce::Justification::centred);
 
         // 8. Footer Meta
+        juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr)
+                                  ? juce::JUCEApplication::getInstance()->getApplicationVersion()
+                                  : "2.1.0";
         g.setColour(juce::Colour(0xff4a5465));
         g.setFont(juce::Font(10.0f, juce::Font::plain));
-        g.drawText("v1.0.7 (x64 Native DSP)  •  Cross-DAW Synchronizer", 0, (int)bounds.getHeight() - 28, bounds.getWidth(), 18, juce::Justification::centred);
+        g.drawText("v" + appVer + " (x64 Native)  •  Cross-DAW Synchronizer", 0, (int)bounds.getHeight() - 28, bounds.getWidth(), 18, juce::Justification::centred);
     }
 
 private:
