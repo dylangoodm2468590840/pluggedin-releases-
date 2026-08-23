@@ -8,12 +8,20 @@
 #include "../Utils/CloudDownloader.h"
 #include "../Utils/ManagerSelfUpdater.h"
 #include "../Utils/StudioDiagnostics.h"
+#include "CentralDesignSystem.h"
+#include "PluginDataModel.h"
+#include "PluginCardComponent.h"
+#include "PluginDetailModal.h"
+#include "UpdatesView.h"
+#include "StudioToolsView.h"
 #include "AuthModal.h"
 #include "SplashScreenComponent.h"
+#include <vector>
+#include <memory>
 
 /**
  * @class CentralMainComponent
- * @brief Commercial-grade Audio Plugin Management Hub with Theme Toggle & Resizable Layout.
+ * @brief Commercial-grade Audio Plugin Management Hub with dynamic catalog, view switching, and safe transactions.
  */
 class CentralMainComponent : public juce::Component, private juce::Timer
 {
@@ -23,18 +31,21 @@ public:
         MyProducts,
         AllPlugins,
         Updates,
-        Diagnostics
+        StudioTools
     };
 
     CentralMainComponent()
     {
         setLookAndFeel(&customLookAndFeel);
 
-        // 1. Sidebar Navigation Buttons
-        setupNavButton(navMyProducts, "MY PRODUCTS");
-        setupNavButton(navAllPlugins, "ALL PLUGINS");
-        setupNavButton(navUpdates,    "UPDATES");
-        setupNavButton(navSettings,   "STUDIO TOOLS");
+        // 1. Initialize Product Catalog Metadata
+        initProductCatalog();
+
+        // 2. Sidebar Navigation Buttons
+        setupNavButton(navMyProducts,  "MY PLUGINS");
+        setupNavButton(navAllPlugins,  "ALL PLUGINS");
+        setupNavButton(navUpdates,     "UPDATES");
+        setupNavButton(navStudioTools, "STUDIO TOOLS");
 
         auto refreshCloud = [this] {
             juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
@@ -43,37 +54,32 @@ public:
             autoUpdater.checkForUpdatesAsync(appVer);
         };
 
-        navMyProducts.onClick = [this, refreshCloud] { currentSection = NavSection::MyProducts; refreshCloud(); repaint(); };
-        navAllPlugins.onClick = [this, refreshCloud] { currentSection = NavSection::AllPlugins; refreshCloud(); repaint(); };
-        navUpdates.onClick    = [this, refreshCloud] { currentSection = NavSection::Updates; refreshCloud(); repaint(); };
-        navSettings.onClick   = [this, refreshCloud] { currentSection = NavSection::Diagnostics; refreshCloud(); repaint(); };
+        navMyProducts.onClick  = [this, refreshCloud] { currentSection = NavSection::MyProducts;  refreshCloud(); updateActiveViews(); };
+        navAllPlugins.onClick  = [this, refreshCloud] { currentSection = NavSection::AllPlugins;  refreshCloud(); updateActiveViews(); };
+        navUpdates.onClick     = [this, refreshCloud] { currentSection = NavSection::Updates;     refreshCloud(); updateActiveViews(); };
+        navStudioTools.onClick = [this, refreshCloud] { currentSection = NavSection::StudioTools; refreshCloud(); updateActiveViews(); };
 
-        // 2. Search Box
+        // 3. Search Box with Instant Live Filtering
         addAndMakeVisible(searchInput);
-        searchInput.setTextToShowWhenEmpty("Search plugins & audio tools...", juce::Colour(0xff4a5465));
-        searchInput.setColour(juce::TextEditor::backgroundColourId, juce::Colour(0xff12161f));
-        searchInput.setColour(juce::TextEditor::textColourId, juce::Colours::white);
-        searchInput.setColour(juce::TextEditor::outlineColourId, juce::Colour(0xff1e2633));
-        searchInput.setColour(juce::TextEditor::focusedOutlineColourId, juce::Colour(0xff00f0ff));
+        searchInput.setTextToShowWhenEmpty("Search plugins, instruments & audio tools...", juce::Colour(0xff4a5465));
+        searchInput.onTextChange = [this] { filterAndRefreshCards(); };
 
-        // 3. Theme Toggle Button (Dark Mode / Light Mode)
+        // 4. Theme Toggle Button (Dark / Light)
         addAndMakeVisible(themeToggleButton);
         themeToggleButton.setButtonText("THEME: DARK");
-        themeToggleButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-        themeToggleButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00f0ff));
         themeToggleButton.onClick = [this]
         {
             isDarkMode = !isDarkMode;
             themeToggleButton.setButtonText(isDarkMode ? "THEME: DARK" : "THEME: LIGHT");
             applyThemeColors();
-            repaint();
         };
 
-        // 4. Header Controls
+        // 5. Header Account Button
         addAndMakeVisible(accountButton);
         updateAccountButtonState();
         accountButton.onClick = [this] { openAuthDialog(); };
 
+        // 6. Header Global Status / Update Badge
         addAndMakeVisible(statusActionButton);
         statusActionButton.onClick = [this]
         {
@@ -81,47 +87,39 @@ public:
             {
                 updateManagerApplication();
             }
-            else if (autoUpdater.isPluginUpdateAvailable("pluggedin_underground"))
-            {
-                installUndergroundPlugin();
-            }
             else
             {
-                statusActionButton.setButtonText("CHECKING CLOUD...");
-                autoUpdater.checkForUpdatesAsync(autoUpdater.getCurrentVersion());
+                currentSection = NavSection::Updates;
+                updateActiveViews();
             }
         };
 
-        // 5. Quick Action Buttons
-        addAndMakeVisible(rescanDawsButton);
-        rescanDawsButton.setButtonText("RESCAN DAWS");
-        rescanDawsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-        rescanDawsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff7f8b98));
-        rescanDawsButton.onClick = [this] { rescanDAWCache(); };
+        // 7. Scrollable Card Viewport Container
+        addAndMakeVisible(cardsViewport);
+        cardsViewport.setViewedComponent(&cardsListContainer, false);
+        cardsViewport.setScrollBarsShown(true, false);
+        cardsViewport.setScrollBarThickness(8);
 
-        addAndMakeVisible(diagnosticsButton);
-        diagnosticsButton.setButtonText("DSP TEST");
-        diagnosticsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-        diagnosticsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00ff66));
-        diagnosticsButton.onClick = [this] { runDiagnostics(); };
+        // 8. Dedicated Sub-Views
+        updatesView = std::make_unique<UpdatesViewComponent>(isDarkMode);
+        updatesView->onCheckUpdatesClicked = [this, refreshCloud] { refreshCloud(); checkInstallationStatus(); };
+        updatesView->onUpdateAllClicked    = [this] { updateAllPendingPlugins(); };
+        updatesView->onInstallClicked      = [this](const juce::String& id) { handleInstallPlugin(id); };
+        updatesView->onRepairClicked       = [this](const juce::String& id) { handleRepairPlugin(id); };
+        updatesView->onUninstallClicked    = [this](const juce::String& id) { handleUninstallPlugin(id); };
+        updatesView->onOpenFolderClicked   = [this](const juce::String& id) { handleOpenFolder(id); };
+        updatesView->onViewDetailsClicked  = [this](const juce::String& id) { handleViewDetails(id); };
+        addChildComponent(updatesView.get());
 
-        // 6. Plugin Action Controls
-        addAndMakeVisible(undergroundInstallButton);
-        undergroundInstallButton.onClick = [this] { installUndergroundPlugin(); };
+        studioToolsView = std::make_unique<StudioToolsViewComponent>(isDarkMode);
+        addChildComponent(studioToolsView.get());
 
-        addAndMakeVisible(undergroundOptionsButton);
-        undergroundOptionsButton.setButtonText("OPTIONS");
-        undergroundOptionsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff181d26));
-        undergroundOptionsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00f0ff));
-        undergroundOptionsButton.onClick = [this] { showPluginOptionsMenu(); };
+        // 9. Empty State Button for "My Plugins"
+        addChildComponent(browseAllButton);
+        browseAllButton.setButtonText("BROWSE UNIVERSAL CATALOG");
+        browseAllButton.onClick = [this] { currentSection = NavSection::AllPlugins; updateActiveViews(); };
 
-        addAndMakeVisible(crushButton);
-        crushButton.setButtonText("FREE DOWNLOAD");
-        crushButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff00f0ff).withAlpha(0.2f));
-        crushButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00f0ff));
-        crushButton.onClick = [this] { installCrushPlugin(); };
-
-        // Initial background tasks
+        // 10. Initial Background Cloud Sync & Self-Healing
         detectedDaws = StudioDiagnostics::scanInstalledDAWs();
         StudioDiagnostics::syncFactoryPresets();
 
@@ -130,19 +128,16 @@ public:
             : autoUpdater.getCurrentVersion();
         autoUpdater.checkForUpdatesAsync(appVer);
 
-        // Self-healing boot scan: runs in background on every launch on every computer.
-        // Finds the highest installed VST3 version, deletes stale ghost copies in all
-        // lower-priority directories (including C:\Program Files\Common Files\VST3),
-        // and registers the correct authoritative version before the first UI paint.
         juce::Thread::launch([]
         {
             InstalledRegistry::selfHealInstallations("pluggedin_underground");
-            InstalledRegistry::selfHealInstallations("pluggedin_crush");
+            InstalledRegistry::selfHealInstallations("pluggedin_plugged1");
         });
 
+        applyThemeColors();
         checkInstallationStatus();
 
-        setSize(920, 600);
+        setSize(940, 620);
         startTimerHz(10);
     }
 
@@ -152,58 +147,112 @@ public:
         setLookAndFeel(nullptr);
     }
 
+    void initProductCatalog()
+    {
+        products.clear();
+
+        // 1. UNDERGROUND
+        PluginProduct ug;
+        ug.id = "pluggedin_underground";
+        ug.name = "UNDERGROUND";
+        ug.subtitle = "Boutique Vocal Multi-FX Suite";
+        ug.category = "Vocal Multi-FX";
+        ug.description = "Flagship Master Vocal Multi-FX Suite featuring 6 Pro DSP Engines, 3-Pole PSOLA Formant Filters, Neve 1073 Iron Transformer Warmth, and 100% Mono-Safe 3D Spatial Aura.";
+        ug.dspHighlights = {
+            "6 Rebuilt Studio DSP Engines (Formants, Triode Drive, Air Exciter, Micro-Detuner, Dattorro Space, Compressor)",
+            "Dynamic 12AX7 SPICE-Modeled Tube Saturation & Dynamic Iron Core",
+            "4-Band Dynamic Harshness & Sibilance Resonance Tamer",
+            "Zero-Latency Tracking Mode & 7 Master Flagship Presets"
+        };
+        ug.supportedFormats = { "VST3 64-Bit", "AU (macOS)", "Standalone" };
+        ug.latestVersion = "3.5.0";
+        ug.changelog = "• Adaptive Optical Noise Squelch (< -62 dBFS) eliminates floor hiss.\n• Dynamic Silence Downward Expansion in VocalCompressor.\n• Zero-bypass micro-gating for top-air exciter.\n• 14/14 automated DSP adversarial audit passed.";
+        products.push_back(ug);
+
+        // 2. PLUGGED 1
+        PluginProduct p1;
+        p1.id = "pluggedin_plugged1";
+        p1.name = "PLUGGED 1";
+        p1.subtitle = "Flagship Hybrid Synthesizer & 808";
+        p1.category = "Instrument";
+        p1.description = "Dual-Layer PolyBLEP Multi-Wave Synthesizer and Multi-Sample Instrument with dedicated 808 Pitch Dive Machine and Zero-Delay Feedback Ladder Filter.";
+        p1.dspHighlights = {
+            "Dual-Layer Synth + Multi-Sample Acoustic & Digital Sound Engine",
+            "Dedicated 808 Sub Machine with Pitch Dive & Legato Glide",
+            "Zero-Delay Feedback Ladder Filter, Ping-Pong Tape Delay & Reverb",
+            "100+ Production Factory Presets across 8 Instrument Categories"
+        };
+        p1.supportedFormats = { "VST3 64-Bit", "AU (macOS)", "Standalone" };
+        p1.latestVersion = "1.2.0";
+        p1.changelog = "• Dual-Layer Sampler + PolyBLEP Multi-Wave Synthesizer.\n• Dedicated 808 Machine with Pitch Dive and Legato Glide.\n• Studio ZDF Ladder Filter, Ping-Pong Tape Delay & Reverb.\n• 100+ Production Factory Presets.";
+        products.push_back(p1);
+
+        // 3. CRUSH (Future Ecosystem Product)
+        PluginProduct crush;
+        crush.id = "pluggedin_crush";
+        crush.name = "CRUSH";
+        crush.subtitle = "Analog Tube & Tape Saturation Beast";
+        crush.category = "Analog Saturation";
+        crush.description = "SPICE-Modeled 12AX7 Triode Preamp, Transformer Iron Core Saturation, and Multi-Stage Dynamic Warmth.";
+        crush.dspHighlights = {
+            "SPICE-Level Analog Circuit Emulation",
+            "Neve Iron Core Transformer Emulation",
+            "Dynamic ODF Harmonics Generator",
+            "Zero-Latency Tracking Mode"
+        };
+        crush.supportedFormats = { "VST3 64-Bit", "AU (macOS)" };
+        crush.latestVersion = "1.0.0";
+        crush.isAvailableInCloud = false;
+        crush.changelog = "• Initial Studio Beta Release.";
+        products.push_back(crush);
+    }
+
     void applyThemeColors()
     {
-        if (isDarkMode)
-        {
-            searchInput.setColour(juce::TextEditor::backgroundColourId, juce::Colour(0xff12161f));
-            searchInput.setColour(juce::TextEditor::textColourId, juce::Colours::white);
-            searchInput.setColour(juce::TextEditor::outlineColourId, juce::Colour(0xff1e2633));
+        searchInput.setColour(juce::TextEditor::backgroundColourId, CentralDesignSystem::darkBgInput());
+        searchInput.setColour(juce::TextEditor::textColourId, CentralDesignSystem::textPrimary(isDarkMode));
+        searchInput.setColour(juce::TextEditor::outlineColourId, CentralDesignSystem::borderSubtle(isDarkMode));
+        searchInput.setColour(juce::TextEditor::focusedOutlineColourId, CentralDesignSystem::cyan(isDarkMode));
 
-            themeToggleButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-            themeToggleButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00f0ff));
+        themeToggleButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff141822) : juce::Colour(0xffe2e8f0));
+        themeToggleButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::cyan(isDarkMode));
 
-            rescanDawsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-            rescanDawsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff7f8b98));
+        browseAllButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::cyan(isDarkMode).withAlpha(0.25f));
+        browseAllButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::cyan(isDarkMode));
 
-            diagnosticsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff141820));
-            diagnosticsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff00ff66));
-
-            setupNavButton(navMyProducts, "MY PRODUCTS");
-            setupNavButton(navAllPlugins, "ALL PLUGINS");
-            setupNavButton(navUpdates,    "UPDATES");
-            setupNavButton(navSettings,   "STUDIO TOOLS");
-        }
-        else
-        {
-            // Light Theme
-            searchInput.setColour(juce::TextEditor::backgroundColourId, juce::Colour(0xffffffff));
-            searchInput.setColour(juce::TextEditor::textColourId, juce::Colour(0xff10141c));
-            searchInput.setColour(juce::TextEditor::outlineColourId, juce::Colour(0xffcbd5e1));
-
-            themeToggleButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            themeToggleButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff0284c7));
-
-            rescanDawsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            rescanDawsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff475569));
-
-            diagnosticsButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            diagnosticsButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff059669));
-
-            navMyProducts.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            navMyProducts.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff1e293b));
-
-            navAllPlugins.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            navAllPlugins.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff1e293b));
-
-            navUpdates.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            navUpdates.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff1e293b));
-
-            navSettings.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffe2e8f0));
-            navSettings.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff1e293b));
-        }
+        updateNavButtonsTheme();
         updateAccountButtonState();
-        checkInstallationStatus();
+
+        if (updatesView != nullptr)
+            updatesView->updateTheme(isDarkMode);
+
+        if (studioToolsView != nullptr)
+            studioToolsView->updateTheme(isDarkMode);
+
+        filterAndRefreshCards();
+        repaint();
+    }
+
+    void updateNavButtonsTheme()
+    {
+        auto styleBtn = [this](juce::TextButton& btn, bool active)
+        {
+            if (active)
+            {
+                btn.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff182234) : juce::Colour(0xffe0f2fe));
+                btn.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::cyan(isDarkMode));
+            }
+            else
+            {
+                btn.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff10141d) : juce::Colour(0xffe2e8f0));
+                btn.setColour(juce::TextButton::textColourOffId, isDarkMode ? CentralDesignSystem::textSecondary(true) : CentralDesignSystem::textSecondary(false));
+            }
+        };
+
+        styleBtn(navMyProducts,  currentSection == NavSection::MyProducts);
+        styleBtn(navAllPlugins,  currentSection == NavSection::AllPlugins);
+        styleBtn(navUpdates,     currentSection == NavSection::Updates);
+        styleBtn(navStudioTools, currentSection == NavSection::StudioTools);
     }
 
     void updateAccountButtonState()
@@ -212,13 +261,13 @@ public:
         {
             accountButton.setButtonText(AuthManager::getCurrentProducerName() + " | PRO");
             accountButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff15241b) : juce::Colour(0xffdcfce7));
-            accountButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
+            accountButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::mint(isDarkMode));
         }
         else
         {
             accountButton.setButtonText("SIGN IN / REGISTER");
-            accountButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff00f0ff).withAlpha(0.18f) : juce::Colour(0xffe0f2fe));
-            accountButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
+            accountButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? CentralDesignSystem::cyan(true).withAlpha(0.18f) : juce::Colour(0xffe0f2fe));
+            accountButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::cyan(isDarkMode));
         }
     }
 
@@ -256,504 +305,353 @@ public:
         juce::DialogWindow::LaunchOptions options;
         options.content.setOwned(authComp);
         options.dialogTitle                   = "PluggedIN Audio Account";
-        options.dialogBackgroundColour        = isDarkMode ? juce::Colour(0xff0e1116) : juce::Colour(0xfff8fafc);
+        options.dialogBackgroundColour        = CentralDesignSystem::bgHeader(isDarkMode);
         options.escapeKeyTriggersCloseButton  = true;
         options.useNativeTitleBar             = true;
         options.resizable                     = false;
         options.launchAsync();
     }
 
-    void runDiagnostics()
+    void updateActiveViews()
     {
-        juce::String report;
-        bool passed = StudioDiagnostics::runAudioEngineDiagnostics(report);
+        updateNavButtonsTheme();
 
-        juce::AlertWindow::showMessageBoxAsync(
-            passed ? juce::AlertWindow::InfoIcon : juce::AlertWindow::WarningIcon,
-            "PluggedIN DSP Engine Diagnostics",
-            report,
-            "DONE"
-        );
-    }
+        bool showUpdatesView = (currentSection == NavSection::Updates);
+        bool showStudioTools = (currentSection == NavSection::StudioTools);
+        bool showCards       = (currentSection == NavSection::MyProducts || currentSection == NavSection::AllPlugins);
 
-    void rescanDAWCache()
-    {
-        detectedDaws = StudioDiagnostics::scanInstalledDAWs();
-        checkInstallationStatus();
-
-        juce::String dawList = "";
-        for (const auto& daw : detectedDaws)
+        if (updatesView != nullptr)
         {
-            if (daw.isInstalled)
-                dawList += "• " + daw.name + " (" + daw.version + ")\n";
+            updatesView->setVisible(showUpdatesView);
+            if (showUpdatesView)
+                updatesView->setPlugins(products, isDarkMode);
         }
-        if (dawList.isEmpty()) dawList = "No default DAW folders detected in Program Files.";
 
-        juce::AlertWindow::showMessageBoxAsync(
-            juce::AlertWindow::InfoIcon,
-            "DAW Scanner & Cache Rescan",
-            "Detected Installed DAWs:\n\n" + dawList + "\nVST3 cache timestamps synchronized!",
-            "OK"
-        );
+        if (studioToolsView != nullptr)
+            studioToolsView->setVisible(showStudioTools);
+
+        cardsViewport.setVisible(showCards);
+
+        filterAndRefreshCards();
+        resized();
         repaint();
     }
 
-    void showPluginOptionsMenu()
+    void filterAndRefreshCards()
     {
-        juce::PopupMenu menu;
-        menu.addItem(1, "Reinstall / Repair UNDERGROUND", isUndergroundInstalled);
-        menu.addItem(2, "Uninstall Plugin", isUndergroundInstalled);
-        menu.addSeparator();
-        menu.addItem(3, "Open VST3 Installation Folder");
-        menu.addItem(4, "View Release Changelog");
+        juce::String filter = searchInput.getText().trim().toLowerCase();
 
-        menu.showMenuAsync(juce::PopupMenu::Options().withTargetComponent(&undergroundOptionsButton),
-                           [this](int result)
-                           {
-                               if (result == 1)
-                               {
-                                   installUndergroundPlugin();
-                               }
-                               else if (result == 2)
-                               {
-                                   CloudDownloader::uninstallPlugin("pluggedin_underground");
-                                   checkInstallationStatus();
-                                   repaint();
-                               }
-                               else if (result == 3)
-                               {
-                                   juce::File userVst3Dir = InstalledRegistry::getUserVst3Directory();
-                                   if (!userVst3Dir.exists()) userVst3Dir.createDirectory();
-                                   userVst3Dir.startAsProcess();
-                               }
-                               else if (result == 4)
-                               {
-                                   juce::AlertWindow::showMessageBoxAsync(
-                                       juce::AlertWindow::InfoIcon,
-                                       "UNDERGROUND V3.3.0 Changelog",
-                                       "• Split-Bus Direct/Parallel Boutique DSP Architecture.\n"
-                                       "• 7 Re-Voiced Reference Presets with 4x Polyphase Oversampling.\n"
-                                       "• 100% Mono-Safe 3D Spatial Aura (180Hz Side-Cut).\n"
-                                       "• Dynamic Transformer Core & Non-Linear Tube Saturation.\n"
-                                       "• Real-Time 4-Band Dynamic Resonance & Harshness Suppression.",
-                                       "CLOSE"
-                                   );
-                               }
-                           });
-    }
-
-    void paint(juce::Graphics& g) override
-    {
-        auto bounds = getLocalBounds().toFloat();
-        float sidebarWidth = 210.0f;
-        float headerHeight = 60.0f;
-
-        juce::Colour bgColour     = isDarkMode ? juce::Colour(0xff090b10) : juce::Colour(0xfff1f5f9);
-        juce::Colour sideGradTop  = isDarkMode ? juce::Colour(0xff10141c) : juce::Colour(0xffe2e8f0);
-        juce::Colour sideGradBot  = isDarkMode ? juce::Colour(0xff0a0d13) : juce::Colour(0xffcbd5e1);
-        juce::Colour borderColour = isDarkMode ? juce::Colour(0xff18202c) : juce::Colour(0xffcbd5e1);
-        juce::Colour textPrimary  = isDarkMode ? juce::Colours::white     : juce::Colour(0xff0f172a);
-        juce::Colour textMuted    = isDarkMode ? juce::Colour(0xff8a99ad) : juce::Colour(0xff64748b);
-        juce::Colour headerColour = isDarkMode ? juce::Colour(0xff0e1219) : juce::Colour(0xfff8fafc);
-        juce::Colour card1Top     = isDarkMode ? juce::Colour(0xff131822) : juce::Colour(0xffffffff);
-        juce::Colour card1Bot     = isDarkMode ? juce::Colour(0xff0d1117) : juce::Colour(0xfff8fafc);
-        juce::Colour card2Colour  = isDarkMode ? juce::Colour(0xff0f131a) : juce::Colour(0xfff8fafc);
-
-        // 1. Background
-        g.fillAll(bgColour);
-
-        // 2. Left Sidebar
-        auto sidebarRect = juce::Rectangle<float>(0, 0, sidebarWidth, bounds.getHeight());
-        juce::ColourGradient sideGrad(sideGradTop, 0, 0, sideGradBot, sidebarWidth, bounds.getHeight(), false);
-        g.setGradientFill(sideGrad);
-        g.fillRect(sidebarRect);
-
-        g.setColour(borderColour);
-        g.drawVerticalLine((int)sidebarWidth, 0.0f, bounds.getHeight());
-
-        // Sidebar Logo
-        g.setColour(isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
-        g.setFont(juce::Font(18.0f, juce::Font::bold));
-        g.drawText("PLUGGEDIN", 20, 18, 170, 22, juce::Justification::left);
-
-        g.setColour(textMuted);
-        g.setFont(juce::Font(10.0f, juce::Font::bold));
-        g.drawText("STUDIO HUB", 20, 38, 170, 14, juce::Justification::left);
-
-        // Sidebar Section Label
-        g.setColour(textMuted);
-        g.setFont(juce::Font(9.5f, juce::Font::bold));
-        g.drawText("MANAGE", 20, 78, 170, 14, juce::Justification::left);
-
-        // Sidebar Bottom DAW Status
-        float sideBotY = bounds.getHeight() - 90.0f;
-        g.setColour(borderColour);
-        g.drawHorizontalLine((int)sideBotY, 15.0f, sidebarWidth - 15.0f);
-
-        g.setColour(textMuted);
-        g.setFont(juce::Font(9.0f, juce::Font::bold));
-        g.drawText("DETECTED HOSTS", 20, (int)sideBotY + 8, 170, 12, juce::Justification::left);
-
-        float pillY = sideBotY + 24.0f;
-        for (const auto& daw : detectedDaws)
+        displayedProducts.clear();
+        for (const auto& p : products)
         {
-            if (daw.isInstalled && pillY < bounds.getHeight() - 30.0f)
+            if (currentSection == NavSection::MyProducts && !p.isInstalled())
+                continue;
+
+            if (filter.isNotEmpty())
             {
-                g.setColour(isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
-                g.setFont(juce::Font(10.0f, juce::Font::plain));
-                g.drawText("• " + daw.name, 22, (int)pillY, 160, 14, juce::Justification::left);
-                pillY += 16.0f;
+                bool matchName = p.name.toLowerCase().contains(filter);
+                bool matchSub  = p.subtitle.toLowerCase().contains(filter);
+                bool matchCat  = p.category.toLowerCase().contains(filter);
+                bool matchDesc = p.description.toLowerCase().contains(filter);
+                if (!matchName && !matchSub && !matchCat && !matchDesc)
+                    continue;
             }
+
+            displayedProducts.push_back(p);
         }
 
-        // Sidebar Version Footer
-        g.setColour(textMuted);
-        g.setFont(juce::Font(9.5f, juce::Font::plain));
-        g.drawText("v" + autoUpdater.getCurrentVersion() + " | x64 NATIVE", 20, (int)bounds.getHeight() - 20, 170, 14, juce::Justification::left);
-
-        // 3. Header Bar
-        auto contentRect = juce::Rectangle<float>(sidebarWidth, 0, bounds.getWidth() - sidebarWidth, bounds.getHeight());
-        auto headerRect = juce::Rectangle<float>(sidebarWidth, 0, contentRect.getWidth(), headerHeight);
-
-        g.setColour(headerColour);
-        g.fillRect(headerRect);
-        g.setColour(borderColour);
-        g.drawHorizontalLine((int)headerHeight, sidebarWidth, bounds.getWidth());
-
-        // 4. Main Body Area
-        float mainX = sidebarWidth + 24.0f;
-        float mainWidth = bounds.getWidth() - sidebarWidth - 48.0f;
-        float startY = headerHeight + 20.0f;
-
-        // Top Banner / Update Alert
-        if (autoUpdater.isUpdateAvailable())
+        // Rebuild card components inside cardsListContainer
+        cardsListContainer.cards.clear();
+        for (const auto& p : displayedProducts)
         {
-            auto updateBanner = juce::Rectangle<float>(mainX, startY, mainWidth, 32.0f);
-            g.setColour(juce::Colour(0xffffaa00).withAlpha(0.2f));
-            g.fillRoundedRectangle(updateBanner, 4.0f);
-            g.setColour(juce::Colour(0xffffaa00));
-            g.drawRoundedRectangle(updateBanner, 4.0f, 1.0f);
+            auto card = std::make_unique<PluginCardComponent>(p, isDarkMode);
+            card->onInstallClicked     = [this](const juce::String& id) { handleInstallPlugin(id); };
+            card->onRepairClicked      = [this](const juce::String& id) { handleRepairPlugin(id); };
+            card->onUninstallClicked   = [this](const juce::String& id) { handleUninstallPlugin(id); };
+            card->onOpenFolderClicked  = [this](const juce::String& id) { handleOpenFolder(id); };
+            card->onViewDetailsClicked = [this](const juce::String& id) { handleViewDetails(id); };
 
-            g.setFont(juce::Font(11.0f, juce::Font::bold));
-            g.setColour(juce::Colour(0xffffaa00));
-            g.drawText("PLUGGEDIN CENTRAL APP UPDATE AVAILABLE (" + autoUpdater.getLatestVersion() + ") -- CLICK STATUS TO UPDATE", updateBanner, juce::Justification::centred);
-            startY += 42.0f;
+            cardsListContainer.addAndMakeVisible(card.get());
+            cardsListContainer.cards.push_back(std::move(card));
         }
 
-        // Section Title
-        g.setColour(textPrimary);
-        g.setFont(juce::Font(18.0f, juce::Font::bold));
-        juce::String sectionTitle = (currentSection == NavSection::MyProducts) ? "Installed Audio Plugins" :
-                                    (currentSection == NavSection::AllPlugins) ? "Universal Plugin Catalog" :
-                                    (currentSection == NavSection::Updates) ? "Available Cloud Updates" : "Diagnostics & Studio Setup";
-        g.drawText(sectionTitle, (int)mainX, (int)startY, (int)mainWidth, 24, juce::Justification::left);
+        bool showEmptyBrowse = (currentSection == NavSection::MyProducts && displayedProducts.empty() && filter.isEmpty());
+        browseAllButton.setVisible(showEmptyBrowse);
 
-        startY += 32.0f;
-
-        // 5. Card 1: UNDERGROUND V3.3.0
-        auto card1 = juce::Rectangle<float>(mainX, startY, mainWidth, 130.0f);
-        juce::ColourGradient card1Grad(card1Top, card1.getX(), card1.getY(), card1Bot, card1.getX(), card1.getBottom(), false);
-        g.setGradientFill(card1Grad);
-        g.fillRoundedRectangle(card1, 6.0f);
-
-        g.setColour(isUndergroundInstalled ? (isDarkMode ? juce::Colour(0xff00ff66).withAlpha(0.6f) : juce::Colour(0xff16a34a).withAlpha(0.6f))
-                                           : (isDarkMode ? juce::Colour(0xff00f0ff).withAlpha(0.6f) : juce::Colour(0xff0284c7).withAlpha(0.6f)));
-        g.drawRoundedRectangle(card1, 6.0f, 1.2f);
-
-        // Accent strip
-        auto accent1 = card1.removeFromLeft(5.0f);
-        g.setColour(isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
-        g.fillRoundedRectangle(accent1, 3.0f);
-
-        // Card 1 Text
-        g.setColour(textPrimary);
-        g.setFont(juce::Font(16.0f, juce::Font::bold));
-        g.drawText("PluggedIN -- UNDERGROUND V3.3.0 (Boutique Vocal Suite)", (int)mainX + 20, (int)startY + 16, (int)mainWidth - 280, 22, juce::Justification::left);
-
-        g.setColour(textMuted);
-        g.setFont(juce::Font(11.5f, juce::Font::plain));
-        g.drawText("Boutique Multi-FX Vocal Suite with Split-Bus DSP & 7 Re-Voiced Core Presets", (int)mainX + 20, (int)startY + 42, (int)mainWidth - 280, 18, juce::Justification::left);
-
-        g.setColour(isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
-        g.setFont(juce::Font(9.5f, juce::Font::bold));
-        g.drawText("VST3 64-BIT  |  AU  |  CLAP  |  STANDALONE  |  ALL DAWS CERTIFIED", (int)mainX + 20, (int)startY + 72, (int)mainWidth - 280, 16, juce::Justification::left);
-
-        // 6. Card 2: CRUSH (Coming Soon)
-        float card2Y = startY + 144.0f;
-        if (card2Y + 110.0f < bounds.getHeight())
-        {
-            auto card2 = juce::Rectangle<float>(mainX, card2Y, mainWidth, 110.0f);
-            g.setColour(card2Colour);
-            g.fillRoundedRectangle(card2, 6.0f);
-            g.setColour(borderColour);
-            g.drawRoundedRectangle(card2, 6.0f, 1.0f);
-
-            g.setColour(textPrimary.withAlpha(0.6f));
-            g.setFont(juce::Font(15.0f, juce::Font::bold));
-            g.drawText("PluggedIN -- CRUSH (Coming Soon)", (int)mainX + 20, (int)card2Y + 16, (int)mainWidth - 280, 20, juce::Justification::left);
-
-            g.setColour(textMuted);
-            g.setFont(juce::Font(11.5f, juce::Font::plain));
-            g.drawText("Analog Tape, Tube Fuzz & Bitcrusher Saturator Module", (int)mainX + 20, (int)card2Y + 42, (int)mainWidth - 280, 18, juce::Justification::left);
-        }
+        layoutCards();
     }
 
-    void resized() override
+    void layoutCards()
     {
-        auto bounds = getLocalBounds();
-        float sidebarWidth = 210.0f;
-        float headerHeight = 60.0f;
+        int cardW = cardsViewport.getWidth() - 16;
+        if (cardW < 200) cardW = getWidth() - 260;
+        int cardH = 120;
+        int spacing = 12;
 
-        // Sidebar Navigation Buttons
-        int navY = 100;
-        int navHeight = 36;
-        int navSpacing = 6;
+        int totalH = static_cast<int>(cardsListContainer.cards.size()) * (cardH + spacing) + 20;
+        cardsListContainer.setSize(cardW, juce::jmax(totalH, cardsViewport.getHeight()));
 
-        navMyProducts.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
-        navY += navHeight + navSpacing;
-
-        navAllPlugins.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
-        navY += navHeight + navSpacing;
-
-        navUpdates.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
-        navY += navHeight + navSpacing;
-
-        navSettings.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
-
-        // Header Controls (Right to Left)
-        int rightX = bounds.getWidth() - 16;
-
-        // Account Button
-        rightX -= 140;
-        accountButton.setBounds(rightX, 12, 135, 36);
-
-        // Theme Toggle Button
-        rightX -= 125;
-        themeToggleButton.setBounds(rightX, 12, 115, 36);
-
-        // Status Button
-        rightX -= 185;
-        statusActionButton.setBounds(rightX, 12, 175, 36);
-
-        // Diagnostics
-        rightX -= 95;
-        diagnosticsButton.setBounds(rightX, 14, 85, 32);
-
-        // Rescan DAWs
-        rightX -= 115;
-        rescanDawsButton.setBounds(rightX, 14, 105, 32);
-
-        // Search Input
-        int searchX = (int)sidebarWidth + 20;
-        int searchWidth = juce::jmax(120, rightX - searchX - 16);
-        searchInput.setBounds(searchX, 14, searchWidth, 32);
-
-        // Main Viewport Cards Layout
-        float startY = headerHeight + 20.0f;
-        if (autoUpdater.isUpdateAvailable())
-            startY += 42.0f;
-        startY += 32.0f; // Section title offset
-
-        int card1Y = (int)startY;
-        undergroundInstallButton.setBounds(bounds.getWidth() - 240, card1Y + 45, 150, 40);
-        undergroundOptionsButton.setBounds(bounds.getWidth() - 80, card1Y + 45, 60, 40);
-
-        int card2Y = card1Y + 144;
-        crushButton.setBounds(bounds.getWidth() - 240, card2Y + 36, 220, 38);
-    }
-
-private:
-    void setupNavButton(juce::TextButton& btn, const juce::String& text)
-    {
-        addAndMakeVisible(btn);
-        btn.setButtonText(text);
-        btn.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff121620));
-        btn.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff8a99ad));
-    }
-
-    int pollCloudCounter { 0 };
-
-    void timerCallback() override
-    {
-        // Re-poll cloud manifest every 15 seconds so Central reflects live releases without restart
-        if (++pollCloudCounter >= 150)
+        int y = 8;
+        for (auto& card : cardsListContainer.cards)
         {
-            pollCloudCounter = 0;
-            juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
-                ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
-                : autoUpdater.getCurrentVersion();
-            autoUpdater.checkForUpdatesAsync(appVer);
+            card->setBounds(0, y, cardW, cardH);
+            y += cardH + spacing;
         }
-
-        checkInstallationStatus();
-        repaint();
     }
 
     void checkInstallationStatus()
     {
-        juce::String installedVersion = InstalledRegistry::getInstalledVersion("pluggedin_underground");
-        juce::String cloudVersion = autoUpdater.getPluginLatestVersion("pluggedin_underground");
+        int updatesCount = 0;
 
-        bool hasUpdate = false;
-
-        if (installedVersion.isNotEmpty())
+        for (auto& p : products)
         {
-            isUndergroundInstalled = true;
+            p.installedVersion = InstalledRegistry::getInstalledVersion(p.id);
+            juce::String cloudVer = autoUpdater.getPluginLatestVersion(p.id);
+            if (cloudVer.isNotEmpty()) p.latestVersion = cloudVer;
 
-            // Only compare if the cloud manifest has actually loaded (non-empty)
-            if (cloudVersion.isNotEmpty() && InstalledRegistry::compareVersions(installedVersion, cloudVersion) < 0)
+            p.downloadUrl = autoUpdater.getPluginDownloadUrl(p.id);
+            p.sha256      = autoUpdater.getPluginSha256(p.id);
+            p.changelog   = autoUpdater.getPluginChangelog(p.id);
+
+            if (cloudDownloader.isBusy() && activeDownloadPluginId == p.id)
             {
-                hasUpdate = true;
-                undergroundInstallButton.setButtonText("UPDATE (" + cloudVersion + ")");
-                undergroundInstallButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00));
-                undergroundInstallButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xff000000));
+                // State handled dynamically by progress callbacks
+            }
+            else if (p.installedVersion.isNotEmpty())
+            {
+                if (p.latestVersion.isNotEmpty() && InstalledRegistry::compareVersions(p.installedVersion, p.latestVersion) < 0)
+                {
+                    p.state = PluginInstallState::UpdateAvailable;
+                    updatesCount++;
+                }
+                else
+                {
+                    p.state = PluginInstallState::Installed;
+                }
             }
             else
             {
-                undergroundInstallButton.setButtonText("INSTALLED (" + installedVersion + ")");
-                undergroundInstallButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff15241b) : juce::Colour(0xffdcfce7));
-                undergroundInstallButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
+                p.state = PluginInstallState::NotInstalled;
             }
         }
-        else
-        {
-            isUndergroundInstalled = false;
-            undergroundInstallButton.setButtonText("INSTALL PLUGIN");
-            undergroundInstallButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff00f0ff).withAlpha(0.2f) : juce::Colour(0xffe0f2fe));
-            undergroundInstallButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00f0ff) : juce::Colour(0xff0284c7));
-        }
 
-        undergroundOptionsButton.setVisible(isUndergroundInstalled);
-
-        // System Status Header Badge Updates
+        // Update Nav & Header Status Badges
         if (autoUpdater.isUpdateAvailable())
         {
-            statusActionButton.setButtonText("MANAGER UPDATE (" + autoUpdater.getLatestVersion() + ")");
-            statusActionButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.25f));
-            statusActionButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
+            statusActionButton.setButtonText("CENTRAL APP UPDATE (" + autoUpdater.getLatestVersion() + ")");
+            statusActionButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::amber(isDarkMode).withAlpha(0.25f));
+            statusActionButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::amber(isDarkMode));
             navUpdates.setButtonText("UPDATES (1)");
-            navUpdates.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
+            navUpdates.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::amber(isDarkMode));
         }
-        else if (hasUpdate)
+        else if (updatesCount > 0)
         {
-            statusActionButton.setButtonText("1 PLUGIN UPDATE");
-            statusActionButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.25f));
-            statusActionButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
-            navUpdates.setButtonText("UPDATES (1)");
-            navUpdates.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
+            statusActionButton.setButtonText(juce::String(updatesCount) + " PLUGIN UPDATE" + (updatesCount > 1 ? "S" : ""));
+            statusActionButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::amber(isDarkMode).withAlpha(0.25f));
+            statusActionButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::amber(isDarkMode));
+            navUpdates.setButtonText("UPDATES (" + juce::String(updatesCount) + ")");
+            navUpdates.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::amber(isDarkMode));
         }
         else
         {
-            statusActionButton.setButtonText("STATUS: UP TO DATE");
+            statusActionButton.setButtonText("STATUS: ALL UP TO DATE");
             statusActionButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff15241b) : juce::Colour(0xffdcfce7));
-            statusActionButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
+            statusActionButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::mint(isDarkMode));
             navUpdates.setButtonText("UPDATES");
-            navUpdates.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff8a99ad) : juce::Colour(0xff1e293b));
+            navUpdates.setColour(juce::TextButton::textColourOffId, isDarkMode ? CentralDesignSystem::textSecondary(true) : CentralDesignSystem::textSecondary(false));
         }
+
+        // Sync to active cards without rebuilding if busy
+        for (auto& card : cardsListContainer.cards)
+        {
+            for (const auto& p : products)
+            {
+                if (card->getPluginData().id == p.id)
+                {
+                    card->updateData(p, isDarkMode);
+                    break;
+                }
+            }
+        }
+
+        if (updatesView != nullptr && updatesView->isVisible())
+            updatesView->setPlugins(products, isDarkMode);
     }
 
-    void installUndergroundPlugin()
+    void handleInstallPlugin(const juce::String& pluginId)
     {
         if (cloudDownloader.isBusy())
             return;
 
-        undergroundInstallButton.setButtonText("INITIALIZING...");
-        undergroundInstallButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.3f));
-        undergroundInstallButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
-        repaint();
-
-        cloudDownloader.onProgressState = [this](float fraction, const juce::String& stateLabel)
+        PluginProduct* target = nullptr;
+        for (auto& p : products)
         {
-            undergroundInstallButton.setButtonText(stateLabel.toUpperCase());
-            repaint();
+            if (p.id == pluginId)
+            {
+                target = &p;
+                break;
+            }
+        }
+
+        if (target == nullptr) return;
+
+        activeDownloadPluginId = pluginId;
+        target->state = PluginInstallState::Downloading;
+        target->progress = 0.05f;
+        target->statusMessage = "CONNECTING...";
+        checkInstallationStatus();
+
+        cloudDownloader.onProgressState = [this, pluginId](float fraction, const juce::String& stateLabel)
+        {
+            for (auto& p : products)
+            {
+                if (p.id == pluginId)
+                {
+                    p.progress = fraction;
+                    p.statusMessage = stateLabel;
+                    break;
+                }
+            }
+            checkInstallationStatus();
         };
 
-        cloudDownloader.onComplete = [this](bool success, const juce::String& error)
+        cloudDownloader.onComplete = [this, pluginId](bool success, const juce::String& error)
         {
+            activeDownloadPluginId = "";
+
             if (success)
             {
-                // Re-run self-heal after install: this cleans up any stale ghost copies
-                // in other directories so the registry reflects the real new version.
-                juce::Thread::launch([]
+                juce::Thread::launch([pluginId]
                 {
-                    InstalledRegistry::selfHealInstallations("pluggedin_underground");
+                    InstalledRegistry::selfHealInstallations(pluginId);
                 });
 
-                // Small delay so the self-heal thread has time to update the registry
-                // before we re-read it for the UI status check
-                juce::Timer::callAfterDelay(2200, [this]
+                juce::Timer::callAfterDelay(2500, [this]
                 {
                     autoUpdater.clearUpdateState();
                     checkInstallationStatus();
-                    repaint();
+                    filterAndRefreshCards();
                 });
             }
             else
             {
-                undergroundInstallButton.setButtonText(error.isNotEmpty() && error.contains("DAW") ? "DAW RUNNING!" : "UPDATE FAILED!");
-                undergroundInstallButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f1015));
-                undergroundInstallButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff0055));
+                for (auto& p : products)
+                {
+                    if (p.id == pluginId)
+                    {
+                        p.state = PluginInstallState::Failed;
+                        p.errorMessage = error;
+                        p.statusMessage = "INSTALL FAILED";
+                        break;
+                    }
+                }
 
                 if (error.isNotEmpty())
                 {
                     juce::AlertWindow::showMessageBoxAsync(
                         juce::AlertWindow::WarningIcon,
-                        "PluggedIN Installation Notice",
+                        "Installation Notice",
                         error,
                         "OK"
                     );
                 }
-            }
-            repaint();
-        };
-
-        juce::String cloudUrl = autoUpdater.getPluginDownloadUrl("pluggedin_underground");
-        if (cloudUrl.isEmpty()) cloudUrl = autoUpdater.getDownloadUrl();
-        juce::String latestVer = autoUpdater.getPluginLatestVersion("pluggedin_underground");
-        juce::String sha = autoUpdater.getPluginSha256("pluggedin_underground");
-        cloudDownloader.startDownloadAsync(cloudUrl, "pluggedin_underground", latestVer, sha);
-    }
-
-    void installCrushPlugin()
-    {
-        if (cloudDownloader.isBusy())
-            return;
-
-        crushButton.setButtonText("INITIALIZING...");
-        crushButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.3f));
-        crushButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffffaa00));
-        repaint();
-
-        cloudDownloader.onProgressState = [this](float fraction, const juce::String& stateLabel)
-        {
-            crushButton.setButtonText(stateLabel.toUpperCase());
-            repaint();
-        };
-
-        cloudDownloader.onComplete = [this](bool success, const juce::String& error)
-        {
-            if (success)
-            {
-                crushButton.setButtonText("INSTALLED (1.0.0)");
-                crushButton.setColour(juce::TextButton::buttonColourId, isDarkMode ? juce::Colour(0xff15241b) : juce::Colour(0xffdcfce7));
-                crushButton.setColour(juce::TextButton::textColourOffId, isDarkMode ? juce::Colour(0xff00ff66) : juce::Colour(0xff16a34a));
                 checkInstallationStatus();
             }
-            else
-            {
-                crushButton.setButtonText(error.isNotEmpty() && error.contains("DAW") ? "DAW RUNNING!" : "FAILED");
-                crushButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f1015));
-                crushButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff0055));
-            }
-            repaint();
         };
 
-        juce::String cloudUrl = autoUpdater.getPluginDownloadUrl("pluggedin_crush");
-        if (cloudUrl.isEmpty()) cloudUrl = "https://files.catbox.moe/yuu96z.zip";
-        juce::String latestVer = autoUpdater.getPluginLatestVersion("pluggedin_crush");
-        if (latestVer.isEmpty()) latestVer = "1.0.0";
-        juce::String sha = autoUpdater.getPluginSha256("pluggedin_crush");
-        cloudDownloader.startDownloadAsync(cloudUrl, "pluggedin_crush", latestVer, sha);
+        juce::String cloudUrl = target->downloadUrl;
+        if (cloudUrl.isEmpty()) cloudUrl = autoUpdater.getPluginDownloadUrl(pluginId);
+        if (cloudUrl.isEmpty()) cloudUrl = autoUpdater.getDownloadUrl();
+
+        cloudDownloader.startDownloadAsync(cloudUrl, target->id, target->latestVersion, target->sha256);
+    }
+
+    void handleRepairPlugin(const juce::String& pluginId)
+    {
+        handleInstallPlugin(pluginId);
+    }
+
+    void handleUninstallPlugin(const juce::String& pluginId)
+    {
+        juce::String pluginName = (pluginId == "pluggedin_plugged1") ? "PLUGGED 1" : "UNDERGROUND";
+
+        juce::AlertWindow::showOkCancelBox(
+            juce::AlertWindow::QuestionIcon,
+            "Confirm Plugin Uninstall",
+            "Are you sure you want to uninstall " + pluginName + "?\n\n" +
+            "• Plugin binaries will be safely removed from VST3 directories.\n" +
+            "• Your user presets, project states, and DAW sessions will be preserved.",
+            "UNINSTALL PLUGIN",
+            "CANCEL",
+            nullptr,
+            juce::ModalCallbackFunction::create([this, pluginId](int result)
+            {
+                if (result == 1) // OK clicked
+                {
+                    CloudDownloader::uninstallPlugin(pluginId);
+                    checkInstallationStatus();
+                    filterAndRefreshCards();
+                }
+            })
+        );
+    }
+
+    void handleOpenFolder(const juce::String& pluginId)
+    {
+        juce::File userVst3 = InstalledRegistry::getUserVst3Directory();
+        if (!userVst3.exists()) userVst3.createDirectory();
+        userVst3.startAsProcess();
+    }
+
+    void handleViewDetails(const juce::String& pluginId)
+    {
+        for (const auto& p : products)
+        {
+            if (p.id == pluginId)
+            {
+                auto* detailComp = new PluginDetailModalComponent(p, isDarkMode);
+                detailComp->onPrimaryAction = [this, pluginId, detailComp]
+                {
+                    handleInstallPlugin(pluginId);
+                    if (auto* window = detailComp->findParentComponentOfClass<juce::DialogWindow>())
+                        window->exitModalState(1);
+                };
+                detailComp->onRepairAction = [this, pluginId, detailComp]
+                {
+                    handleRepairPlugin(pluginId);
+                    if (auto* window = detailComp->findParentComponentOfClass<juce::DialogWindow>())
+                        window->exitModalState(1);
+                };
+                detailComp->onUninstallAction = [this, pluginId, detailComp]
+                {
+                    if (auto* window = detailComp->findParentComponentOfClass<juce::DialogWindow>())
+                        window->exitModalState(1);
+                    handleUninstallPlugin(pluginId);
+                };
+
+                juce::DialogWindow::LaunchOptions options;
+                options.content.setOwned(detailComp);
+                options.dialogTitle                  = p.name + " — Product Overview";
+                options.dialogBackgroundColour       = CentralDesignSystem::bgHeader(isDarkMode);
+                options.escapeKeyTriggersCloseButton = true;
+                options.useNativeTitleBar            = true;
+                options.resizable                    = false;
+                options.launchAsync();
+                break;
+            }
+        }
+    }
+
+    void updateAllPendingPlugins()
+    {
+        for (const auto& p : products)
+        {
+            if (p.needsUpdate())
+            {
+                handleInstallPlugin(p.id);
+                break; // Execute sequentially
+            }
+        }
     }
 
     void updateManagerApplication()
@@ -761,8 +659,8 @@ private:
         if (managerSelfUpdater.isBusy())
             return;
 
-        statusActionButton.setButtonText("UPDATING MANAGER...");
-        statusActionButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xffffaa00).withAlpha(0.4f));
+        statusActionButton.setButtonText("UPDATING CENTRAL...");
+        statusActionButton.setColour(juce::TextButton::buttonColourId, CentralDesignSystem::amber(isDarkMode).withAlpha(0.4f));
         repaint();
 
         managerSelfUpdater.onProgress = [this](float fraction)
@@ -778,13 +676,13 @@ private:
             {
                 statusActionButton.setButtonText("UPDATE FAILED");
                 statusActionButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff3f1015));
-                statusActionButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffff0055));
+                statusActionButton.setColour(juce::TextButton::textColourOffId, CentralDesignSystem::crimson(isDarkMode));
 
                 if (error.isNotEmpty())
                 {
                     juce::AlertWindow::showMessageBoxAsync(
                         juce::AlertWindow::WarningIcon,
-                        "Manager Update Notice",
+                        "Central Update Notice",
                         error,
                         "OK"
                     );
@@ -799,6 +697,215 @@ private:
         managerSelfUpdater.startSelfUpdateAsync(downloadUrl, latestVer, sha);
     }
 
+    void paint(juce::Graphics& g) override
+    {
+        auto bounds = getLocalBounds().toFloat();
+        float sidebarWidth = 210.0f;
+        float headerHeight = 60.0f;
+
+        // 1. Background
+        g.fillAll(CentralDesignSystem::bgMain(isDarkMode));
+
+        // 2. Left Sidebar
+        auto sidebarRect = juce::Rectangle<float>(0, 0, sidebarWidth, bounds.getHeight());
+        juce::ColourGradient sideGrad(
+            CentralDesignSystem::bgSidebar(isDarkMode), 0, 0,
+            CentralDesignSystem::bgMain(isDarkMode), sidebarWidth, bounds.getHeight(), false);
+        g.setGradientFill(sideGrad);
+        g.fillRect(sidebarRect);
+
+        g.setColour(CentralDesignSystem::borderSubtle(isDarkMode));
+        g.drawVerticalLine((int)sidebarWidth, 0.0f, bounds.getHeight());
+
+        // Sidebar Branding Logo
+        g.setColour(CentralDesignSystem::cyan(isDarkMode));
+        g.setFont(juce::Font(18.0f, juce::Font::bold));
+        g.drawText("PLUGGEDIN", 20, 18, 170, 22, juce::Justification::left);
+
+        g.setColour(CentralDesignSystem::textMuted(isDarkMode));
+        g.setFont(juce::Font(9.5f, juce::Font::bold));
+        g.drawText("STUDIO HUB", 20, 38, 170, 14, juce::Justification::left);
+
+        // Sidebar Section Label
+        g.setColour(CentralDesignSystem::textMuted(isDarkMode));
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.drawText("MANAGE", 20, 78, 170, 14, juce::Justification::left);
+
+        // Sidebar Bottom DAW Status
+        float sideBotY = bounds.getHeight() - 100.0f;
+        g.setColour(CentralDesignSystem::borderSubtle(isDarkMode));
+        g.drawHorizontalLine((int)sideBotY, 15.0f, sidebarWidth - 15.0f);
+
+        g.setColour(CentralDesignSystem::textMuted(isDarkMode));
+        g.setFont(juce::Font(9.0f, juce::Font::bold));
+        g.drawText("DETECTED HOSTS", 20, (int)sideBotY + 8, 170, 12, juce::Justification::left);
+
+        float pillY = sideBotY + 24.0f;
+        int drawn = 0;
+        for (const auto& daw : detectedDaws)
+        {
+            if (daw.isInstalled && drawn < 3)
+            {
+                g.setColour(CentralDesignSystem::mint(isDarkMode));
+                g.setFont(juce::Font(10.0f, juce::Font::plain));
+                g.drawText("• " + daw.name, 22, (int)pillY, 160, 14, juce::Justification::left);
+                pillY += 16.0f;
+                drawn++;
+            }
+        }
+        if (drawn == 0)
+        {
+            g.setColour(CentralDesignSystem::textDim(isDarkMode));
+            g.setFont(juce::Font(9.5f, juce::Font::plain));
+            g.drawText("No DAWs Detected", 22, (int)pillY, 160, 14, juce::Justification::left);
+        }
+
+        // Sidebar Version Footer
+        juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
+            ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
+            : "2.1.0";
+        g.setColour(CentralDesignSystem::textDim(isDarkMode));
+        g.setFont(juce::Font(9.0f, juce::Font::plain));
+        g.drawText("v" + appVer + " | x64 NATIVE", 20, (int)bounds.getHeight() - 20, 170, 14, juce::Justification::left);
+
+        // 3. Header Bar
+        auto headerRect = juce::Rectangle<float>(sidebarWidth, 0, bounds.getWidth() - sidebarWidth, headerHeight);
+        g.setColour(CentralDesignSystem::bgHeader(isDarkMode));
+        g.fillRect(headerRect);
+        g.setColour(CentralDesignSystem::borderSubtle(isDarkMode));
+        g.drawHorizontalLine((int)headerHeight, sidebarWidth, bounds.getWidth());
+
+        // 4. Main Section Title (for Card views)
+        if (currentSection == NavSection::MyProducts || currentSection == NavSection::AllPlugins)
+        {
+            float mainX = sidebarWidth + 24.0f;
+            float titleY = headerHeight + 14.0f;
+
+            g.setColour(CentralDesignSystem::textPrimary(isDarkMode));
+            g.setFont(juce::Font(18.0f, juce::Font::bold));
+            juce::String sectionTitle = (currentSection == NavSection::MyProducts) ? "My Installed Plugins" : "Universal Plugin Catalog";
+            g.drawText(sectionTitle, (int)mainX, (int)titleY, 300, 24, juce::Justification::left);
+
+            // Empty state message if My Products has 0 items
+            if (currentSection == NavSection::MyProducts && displayedProducts.empty() && searchInput.getText().trim().isEmpty())
+            {
+                auto centerBox = juce::Rectangle<float>(sidebarWidth + 40, headerHeight + 80, bounds.getWidth() - sidebarWidth - 80, 180);
+                g.setColour(CentralDesignSystem::bgCard(isDarkMode));
+                g.fillRoundedRectangle(centerBox, 8.0f);
+                g.setColour(CentralDesignSystem::borderSubtle(isDarkMode));
+                g.drawRoundedRectangle(centerBox, 8.0f, 1.0f);
+
+                g.setColour(CentralDesignSystem::textPrimary(isDarkMode));
+                g.setFont(juce::Font(16.0f, juce::Font::bold));
+                g.drawText("No Plugins Installed Yet", centerBox.getX(), centerBox.getY() + 32, centerBox.getWidth(), 22, juce::Justification::centred);
+
+                g.setColour(CentralDesignSystem::textSecondary(isDarkMode));
+                g.setFont(juce::Font(12.0f, juce::Font::plain));
+                g.drawText("Browse the universal catalog to install your boutique vocal multi-FX suites and instruments.",
+                           centerBox.getX() + 20, centerBox.getY() + 58, centerBox.getWidth() - 40, 20, juce::Justification::centred);
+            }
+            else if (displayedProducts.empty())
+            {
+                g.setColour(CentralDesignSystem::textMuted(isDarkMode));
+                g.setFont(juce::Font(13.0f, juce::Font::italic));
+                g.drawText("No audio plugins found matching '" + searchInput.getText().trim() + "'",
+                           (int)mainX, (int)titleY + 50, 400, 20, juce::Justification::left);
+            }
+        }
+    }
+
+    void resized() override
+    {
+        auto bounds = getLocalBounds();
+        float sidebarWidth = 210.0f;
+        float headerHeight = 60.0f;
+
+        // Sidebar Navigation
+        int navY = 100;
+        int navHeight = 36;
+        int navSpacing = 6;
+
+        navMyProducts.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
+        navY += navHeight + navSpacing;
+
+        navAllPlugins.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
+        navY += navHeight + navSpacing;
+
+        navUpdates.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
+        navY += navHeight + navSpacing;
+
+        navStudioTools.setBounds(12, navY, (int)sidebarWidth - 24, navHeight);
+
+        // Header Controls (Right to Left)
+        int rightX = bounds.getWidth() - 16;
+
+        // Account Button
+        rightX -= 145;
+        accountButton.setBounds(rightX, 12, 140, 36);
+
+        // Theme Toggle
+        rightX -= 120;
+        themeToggleButton.setBounds(rightX, 12, 110, 36);
+
+        // Status Button
+        rightX -= 195;
+        statusActionButton.setBounds(rightX, 12, 185, 36);
+
+        // Search Input
+        int searchX = (int)sidebarWidth + 20;
+        int searchW = juce::jmax(120, rightX - searchX - 16);
+        searchInput.setBounds(searchX, 14, searchW, 32);
+
+        // Main Viewport & Sub-views Area
+        int mainX = (int)sidebarWidth + 24;
+        int mainY = (int)headerHeight + 46;
+        int mainW = bounds.getWidth() - mainX - 24;
+        int mainH = bounds.getHeight() - mainY - 16;
+
+        cardsViewport.setBounds(mainX, mainY, mainW, mainH);
+        layoutCards();
+
+        if (updatesView != nullptr)
+            updatesView->setBounds(mainX, (int)headerHeight + 20, mainW, bounds.getHeight() - (int)headerHeight - 36);
+
+        if (studioToolsView != nullptr)
+            studioToolsView->setBounds(mainX, (int)headerHeight + 20, mainW, bounds.getHeight() - (int)headerHeight - 36);
+
+        // Empty browse button inside My Products
+        if (browseAllButton.isVisible())
+        {
+            int btnW = 240;
+            int btnH = 38;
+            browseAllButton.setBounds(mainX + (mainW - btnW) / 2, (int)headerHeight + 190, btnW, btnH);
+        }
+    }
+
+private:
+    void setupNavButton(juce::TextButton& btn, const juce::String& text)
+    {
+        addAndMakeVisible(btn);
+        btn.setButtonText(text);
+    }
+
+    void timerCallback() override
+    {
+        if (++pollCloudCounter >= 150) // 15 seconds
+        {
+            pollCloudCounter = 0;
+            juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
+                ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
+                : autoUpdater.getCurrentVersion();
+            autoUpdater.checkForUpdatesAsync(appVer);
+        }
+
+        checkInstallationStatus();
+    }
+
+    struct CardsListContainer : public juce::Component
+    {
+        std::vector<std::unique_ptr<PluginCardComponent>> cards;
+    };
+
     RackUnitLookAndFeel customLookAndFeel;
     PluggedINAutoUpdater autoUpdater;
     CloudDownloader cloudDownloader;
@@ -806,49 +913,50 @@ private:
 
     NavSection currentSection { NavSection::MyProducts };
     bool isDarkMode { true };
+    int pollCloudCounter { 0 };
+    juce::String activeDownloadPluginId { "" };
 
     juce::TextButton navMyProducts;
     juce::TextButton navAllPlugins;
     juce::TextButton navUpdates;
-    juce::TextButton navSettings;
+    juce::TextButton navStudioTools;
 
     juce::TextEditor searchInput;
     juce::TextButton themeToggleButton;
     juce::TextButton accountButton;
     juce::TextButton statusActionButton;
-    juce::TextButton undergroundInstallButton;
-    juce::TextButton undergroundOptionsButton;
-    juce::TextButton crushButton;
+    juce::TextButton browseAllButton;
 
-    juce::TextButton rescanDawsButton;
-    juce::TextButton diagnosticsButton;
+    juce::Viewport cardsViewport;
+    CardsListContainer cardsListContainer;
 
+    std::unique_ptr<UpdatesViewComponent> updatesView;
+    std::unique_ptr<StudioToolsViewComponent> studioToolsView;
+
+    std::vector<PluginProduct> products;
+    std::vector<PluginProduct> displayedProducts;
     std::vector<StudioDiagnostics::DAWInfo> detectedDaws;
-    bool isUndergroundInstalled { false };
 };
 
 /**
  * @class CentralWindow
- * @brief Resizable / Expandable DocumentWindow host supporting Splash Sequence and CentralMainComponent.
+ * @brief Resizable commercial host window with splash sequence.
  */
 class CentralWindow : public juce::DocumentWindow
 {
 public:
     CentralWindow(const juce::String& name)
         : juce::DocumentWindow(name,
-                               juce::Colour(0xff090b10),
+                               CentralDesignSystem::darkBgMain(),
                                juce::DocumentWindow::allButtons)
     {
         setUsingNativeTitleBar(true);
-
-        // Enable resizing and maximize/restore capability
         setResizable(true, true);
-        setResizeLimits(800, 520, 1920, 1080);
+        setResizeLimits(820, 540, 1920, 1080);
 
-        // Host the Hub Container
         rootContainer = std::make_unique<HubRootContainer>();
         setContentNonOwned(rootContainer.get(), true);
-        centreWithSize(920, 600);
+        centreWithSize(940, 620);
         setVisible(true);
     }
 
@@ -892,7 +1000,7 @@ private:
                 });
             };
 
-            setSize(920, 600);
+            setSize(940, 620);
         }
 
         void resized() override
