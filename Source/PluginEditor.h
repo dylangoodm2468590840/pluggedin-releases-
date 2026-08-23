@@ -35,8 +35,10 @@ private:
     juce::TextButton abButton         { "A/B" };
     juce::TextButton bypassButton     { "BYPASS" };
     juce::TextButton setupButton      { "SETUP" };
-    juce::TextButton oversamplingButton { "OVERSAMPLING" };
+    juce::TextButton oversamplingButton { "4X HQ" };
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> presetModeAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> oversamplingAttach;
 
     // Signature Macro Component (Top Crown Hero)
     DegenerateKnob degenerateKnob;
