@@ -2,7 +2,11 @@
 #include <cmath>
 #include <algorithm>
 
-AirExciterProcessor::AirExciterProcessor() = default;
+AirExciterProcessor::AirExciterProcessor()
+{
+    oversampler = std::make_unique<juce::dsp::Oversampling<float>>(
+        2, 2, juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR, true);
+}
 
 void AirExciterProcessor::prepare(const juce::dsp::ProcessSpec& spec)
 {
@@ -10,6 +14,12 @@ void AirExciterProcessor::prepare(const juce::dsp::ProcessSpec& spec)
 
     midAirSmoother.reset(sampleRate, 0.02);
     topAirSmoother.reset(sampleRate, 0.02);
+
+    if (oversampler)
+    {
+        oversampler->initProcessing(spec.maximumBlockSize);
+        oversamplingReady = true;
+    }
 
     for (int ch = 0; ch < 2; ++ch)
     {
@@ -25,7 +35,7 @@ void AirExciterProcessor::prepare(const juce::dsp::ProcessSpec& spec)
         topAirFilter[ch].setCutoffFrequency(9200.0f);
         topAirFilter[ch].setResonance(0.707f);
 
-        dcBlocker[ch].reset();
+        dcBlocker[ch].prepare(sampleRate, 20.0f);
     }
 
     reset();
@@ -41,6 +51,9 @@ void AirExciterProcessor::reset()
         midEnv[ch] = 0.0f;
         topEnv[ch] = 0.0f;
     }
+    if (oversampler)
+        oversampler->reset();
+
     midAirSmoother.setCurrentAndTargetValue(0.0f);
     topAirSmoother.setCurrentAndTargetValue(0.0f);
 }
@@ -58,23 +71,22 @@ float AirExciterProcessor::processBandExciter(float inputBand, float amount, flo
     else
         envState = absVal + relCoeff * (envState - absVal);
 
-    if (envState < 1.0e-4f)
+    if (envState < 1.0e-5f)
         return 0.0f;
 
     float envDb = 20.0f * std::log10(std::max(envState, 1.0e-5f));
 
-    // Optical silence gate: mutes excitation completely on low-level room noise/silence below -45dBFS
-    if (envDb < -46.0f)
-        return 0.0f;
+    // Smooth soft-knee gate: transparent fade-in from -54 dBFS without clicks
+    float airGate = std::clamp((envDb - (-54.0f)) / 14.0f, 0.0f, 1.0f);
+    airGate = airGate * airGate;
 
-    float airGate = std::clamp((envDb - (-46.0f)) / 10.0f, 0.0f, 1.0f);
+    // Silky asymmetric even/odd harmonic sheen generator (Maag EQ4 / Dolby 361 style)
+    float x = std::clamp(inputBand * 1.25f, -1.0f, 1.0f);
+    float signX = (x >= 0.0f) ? 1.0f : -1.0f;
+    float evenHarm = (2.0f * x * x - 1.0f) * signX;
+    float harmonic = std::tanh(0.70f * x + 0.30f * evenHarm);
 
-    // Dolby-A 361 Optical Harmonic Sheen (3rd-order Chebyshev harmonic generator)
-    float x = std::clamp(inputBand * 1.4f, -1.0f, 1.0f);
-    float cheby3 = 4.0f * (x * x * x) - 3.0f * x;
-    float harmonic = std::tanh(0.60f * cheby3 + 0.40f * x);
-
-    return harmonic * (amount * 0.55f) * (airGate * airGate);
+    return harmonic * (amount * 0.45f) * airGate;
 }
 
 void AirExciterProcessor::process(juce::AudioBuffer<float>& buffer)
@@ -87,6 +99,9 @@ void AirExciterProcessor::process(juce::AudioBuffer<float>& buffer)
 
     const int numChannels = std::min(buffer.getNumChannels(), 2);
     const int numSamples = buffer.getNumSamples();
+
+    if (numChannels == 0 || numSamples == 0)
+        return;
 
     // 2ms attack for rapid transient response, 40ms release for natural decay
     const float attCoeff = std::exp(-1.0f / (0.002f * (float)sampleRate));
@@ -112,8 +127,8 @@ void AirExciterProcessor::process(juce::AudioBuffer<float>& buffer)
 
             float excitedTotal = dcBlocker[ch].process(midExcited + topExcited);
 
-            // Sum clean signal with excited air at controlled parallel level (0.35x prevents loudness spike)
-            float output = input + excitedTotal * 0.35f;
+            // Sum clean signal with excited air at controlled parallel level
+            float output = input + excitedTotal * 0.30f;
             buffer.setSample(ch, i, AudioUtils::sanitize(output));
         }
     }
