@@ -55,6 +55,27 @@ if [ -d "Plugged 1.component" ]; then
     echo "[✓] PLUGGED 1 AU installed    → $AU_DIR/Plugged 1.component"
 fi
 
+# ── Gatekeeper & Security Quarantine Self-Healing ─────────────
+echo "Configuring macOS security permissions..."
+xattr -cr "$VST3_DIR/UNDERGROUND.vst3" 2>/dev/null
+xattr -cr "$AU_DIR/UNDERGROUND.component" 2>/dev/null
+xattr -cr "$VST3_DIR/Plugged 1.vst3" 2>/dev/null
+xattr -cr "$AU_DIR/Plugged 1.component" 2>/dev/null
+
+# Clear quarantine on Central app in current folder if present
+if [ -d "PluggedIN Central.app" ]; then
+    xattr -cr "PluggedIN Central.app" 2>/dev/null
+    codesign --force --deep --sign - "PluggedIN Central.app" 2>/dev/null
+    echo "[✓] PluggedIN Central security clearance enabled"
+fi
+
+# Ad-hoc code sign for Apple Silicon macOS 14/15 Gatekeeper
+codesign --force --deep --sign - "$VST3_DIR/UNDERGROUND.vst3" 2>/dev/null
+codesign --force --deep --sign - "$AU_DIR/UNDERGROUND.component" 2>/dev/null
+codesign --force --deep --sign - "$VST3_DIR/Plugged 1.vst3" 2>/dev/null
+codesign --force --deep --sign - "$AU_DIR/Plugged 1.component" 2>/dev/null
+echo "[✓] macOS security permissions and Gatekeeper clearance enabled"
+
 # ── Write Registry Manifest ───────────────────────────────────
 cat > "$REG_DIR/installed_manifest.json" << MANIFEST
 {
