@@ -455,26 +455,94 @@ private:
                         bool systemInstallOk = false;
 
 #if JUCE_MAC
-                        // macOS: User VST3 directory (~/.../VST3) does NOT require elevation
-                        userVst3Dir.getParentDirectory().createDirectory();
-                        if (userVst3Dir.exists()) userVst3Dir.deleteRecursively();
-                        unpackedVst3.copyDirectoryTo(userVst3Dir);
-                        systemInstallOk = userVst3Dir.exists();
+                        // macOS Step 1: Ensure all standard User and System audio plugin folders exist
+                        juce::File userVst3Parent = InstalledRegistry::getUserVst3Directory();
+                        juce::File sysVst3Parent  = InstalledRegistry::getSystemVst3Directory();
+                        juce::File userAuParent   = InstalledRegistry::getUserAuDirectory();
+                        juce::File sysAuParent    = InstalledRegistry::getSystemAuDirectory();
+                        juce::File appSupport     = juce::File::getSpecialLocation(juce::File::userApplicationDataDirectory).getChildFile("PluggedIN");
 
-                        // Also attempt system-level install (/Library/Audio/Plug-Ins/VST3)
-                        // using ditto via osascript for polished permission prompt
-                        if (sysVst3Dir.getParentDirectory().exists())
+                        userVst3Parent.createDirectory();
+                        userAuParent.createDirectory();
+                        appSupport.createDirectory();
+
+                        // Discover AU .component if present
+                        juce::String auFolder = (pluginId == "pluggedin_plugged1") ? "Plugged 1.component" :
+                                                (pluginId == "pluggedin_crush")    ? "CRUSH.component"     : "UNDERGROUND.component";
+                        juce::File unpackedAu = stageExtract.getChildFile(auFolder);
+                        if (!unpackedAu.exists())
                         {
-                            juce::String dittoCmd = "/usr/bin/ditto \""
-                                                    + unpackedVst3.getFullPathName() + "\" \""
-                                                    + sysVst3Dir.getFullPathName() + "\"";
-                            juce::String osascriptCmd = "osascript -e 'do shell script \""
-                                                         + dittoCmd.replace("\"", "\\\"")
-                                                         + "\" with administrator privileges'";
-                            juce::ChildProcess osProc;
-                            if (osProc.start(osascriptCmd))
-                                osProc.waitForProcessToFinish(30000);
+                            juce::Array<juce::File> foundAu;
+                            stageExtract.findChildFiles(foundAu, juce::File::findDirectories, true, "*.component");
+                            if (foundAu.size() > 0)
+                            {
+                                for (const auto& f : foundAu)
+                                {
+                                    if (f.getFileName().equalsIgnoreCase(auFolder))
+                                    {
+                                        unpackedAu = f;
+                                        break;
+                                    }
+                                }
+                                if (!unpackedAu.exists()) unpackedAu = foundAu[0];
+                            }
                         }
+
+                        // macOS Step 2: Install VST3 to User (~/Library/Audio/Plug-Ins/VST3)
+                        if (unpackedVst3.exists())
+                        {
+                            if (userVst3Dir.exists()) userVst3Dir.deleteRecursively();
+                            unpackedVst3.copyDirectoryTo(userVst3Dir);
+                            systemInstallOk = userVst3Dir.exists();
+
+                            // Also copy to System /Library/Audio/Plug-Ins/VST3 if writable
+                            try {
+                                if (sysVst3Parent.exists())
+                                {
+                                    if (sysVst3Dir.exists()) sysVst3Dir.deleteRecursively();
+                                    unpackedVst3.copyDirectoryTo(sysVst3Dir);
+                                }
+                            } catch (...) {}
+                        }
+
+                        // macOS Step 3: Install AU to User (~/Library/Audio/Plug-Ins/Components)
+                        juce::File userAuDir = userAuParent.getChildFile(auFolder);
+                        juce::File sysAuDir  = sysAuParent.getChildFile(auFolder);
+                        if (unpackedAu.exists())
+                        {
+                            if (userAuDir.exists()) userAuDir.deleteRecursively();
+                            unpackedAu.copyDirectoryTo(userAuDir);
+
+                            try {
+                                if (sysAuParent.exists())
+                                {
+                                    if (sysAuDir.exists()) sysAuDir.deleteRecursively();
+                                    unpackedAu.copyDirectoryTo(sysAuDir);
+                                }
+                            } catch (...) {}
+                        }
+
+                        // macOS Step 4: Fix Mach-O permissions (chmod 755), clear Gatekeeper quarantine (xattr -cr), and ad-hoc sign
+                        updateState(0.93f, "Configuring macOS security & permissions...");
+                        auto fixBundlePermissions = [](const juce::File& bundle)
+                        {
+                            if (bundle.exists())
+                            {
+                                juce::String p = bundle.getFullPathName();
+                                juce::ChildProcess::startAndReadProcessOutput("chmod -R 755 \"" + p + "\"");
+                                juce::ChildProcess::startAndReadProcessOutput("xattr -cr \"" + p + "\"");
+                                juce::ChildProcess::startAndReadProcessOutput("xattr -rd com.apple.quarantine \"" + p + "\" 2>/dev/null");
+                                juce::ChildProcess::startAndReadProcessOutput("codesign --force --deep --sign - \"" + p + "\" 2>/dev/null");
+                            }
+                        };
+
+                        fixBundlePermissions(userVst3Dir);
+                        fixBundlePermissions(sysVst3Dir);
+                        fixBundlePermissions(userAuDir);
+                        fixBundlePermissions(sysAuDir);
+
+                        // Reset macOS audio unit daemon cache for immediate DAW recognition
+                        juce::ChildProcess::startAndReadProcessOutput("killall -9 AudioComponentRegistrar 2>/dev/null");
 
 #else // Windows
                         // Elevated PowerShell install for C:\Program Files\Common Files\VST3
@@ -533,6 +601,15 @@ private:
                         if (!physicallyInstalled)
                             physicallyInstalled = sysVst3Dir.exists() &&
                                 sysVst3Dir.getChildFile("Contents").exists();
+
+#if JUCE_MAC
+                        // Fallback: check AU component directory
+                        if (!physicallyInstalled)
+                        {
+                            juce::File userAu = InstalledRegistry::getUserAuDirectory().getChildFile(auFolder);
+                            physicallyInstalled = userAu.exists() && userAu.getChildFile("Contents").exists();
+                        }
+#endif
 
                         if (physicallyInstalled)
                         {
