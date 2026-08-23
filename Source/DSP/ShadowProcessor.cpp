@@ -170,13 +170,13 @@ void ShadowProcessor::updatePitchPeriod(float sample)
     int readStart = (pitchBufIdx - PITCH_BUF_SIZE + BUFFER_SIZE) % PITCH_BUF_SIZE;
 
     float energy0 = 0.0f;
-    for (int i = 0; i < analysisLen; ++i)
+    for (int i = 0; i < analysisLen; i += 2)
     {
         float s = pitchBuffer[(readStart + i) % PITCH_BUF_SIZE];
         energy0 += s * s;
     }
 
-    if (energy0 > 1.0e-4f)
+    if (energy0 > 1.0e-5f)
     {
         for (int lag = minLag; lag <= maxLag; lag += 2)
         {
