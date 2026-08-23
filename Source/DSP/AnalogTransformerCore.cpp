@@ -15,15 +15,15 @@ void AnalogTransformerCore::prepare(const juce::dsp::ProcessSpec& spec)
     {
         chestFilter[ch].prepare(monoSpec);
         chestFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::bandpass);
-        chestFilter[ch].setCutoffFrequency(280.0f);
-        chestFilter[ch].setResonance(1.4f);
+        chestFilter[ch].setCutoffFrequency(240.0f);
+        chestFilter[ch].setResonance(1.1f);
 
         slewFilter[ch].prepare(monoSpec);
         slewFilter[ch].setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-        slewFilter[ch].setCutoffFrequency(18500.0f);
+        slewFilter[ch].setCutoffFrequency(std::min(19500.0f, static_cast<float>(sampleRate * 0.45)));
         slewFilter[ch].setResonance(0.707f);
 
-        dcBlocker[ch].reset();
+        dcBlocker[ch].prepare(sampleRate, 15.0f);
     }
 
     reset();
@@ -62,19 +62,17 @@ void AnalogTransformerCore::process(juce::AudioBuffer<float>& buffer)
         for (int ch = 0; ch < numChannels; ++ch)
         {
             int chIdx = std::min(ch, 1);
-            float in = buffer.getSample(ch, i);
-            if (std::abs(in) < 1.0e-7f)
-                continue;
+            float in = AudioUtils::sanitize(buffer.getSample(ch, i));
 
-            // 1. Isolate chest resonance fundamental (180-450Hz)
+            // 1. Isolate chest fundamental
             float chest = chestFilter[chIdx].processSample(0, in);
 
             // 2. Transformer Core Saturation: Symmetrical magnetic hysteresis & odd harmonics
-            float chestDriven = chest * (1.0f + drive * 2.0f);
-            float chestHarmonics = std::tanh(chestDriven * 1.25f) - 0.20f * std::tanh(chestDriven * 0.60f);
+            float chestDriven = chest * (1.0f + drive * 1.5f);
+            float chestHarmonics = std::tanh(chestDriven * 1.15f) - 0.15f * std::tanh(chestDriven * 0.50f);
 
-            // 3. Sum original signal + transformer chest weight
-            float rich = in + chestHarmonics * (warmth * 0.25f);
+            // 3. Smooth blend
+            float rich = in + (chestHarmonics - chest) * (warmth * 0.18f);
             rich = dcBlocker[chIdx].process(rich);
             rich = slewFilter[chIdx].processSample(0, rich);
 
