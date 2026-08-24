@@ -55,7 +55,11 @@ public:
     PluggedINAutoUpdater& getAutoUpdater() noexcept { return autoUpdater; }
     VocalCompressor& getVocalCompressor() noexcept { return vocalCompressor; }
     DeEsserProcessor& getDeEsser() noexcept { return deEsserProcessor; }
-    AirExciterProcessor& getAirExciter() noexcept { return airExciterProcessor; }
+    ShadowProcessor& getShadowProcessor() noexcept { return shadowProcessor; }
+    CrushProcessor& getCrushProcessor() noexcept { return crushProcessor; }
+    WidthProcessor& getWidthProcessor() noexcept { return widthProcessor; }
+    SpaceProcessor& getSpaceProcessor() noexcept { return spaceProcessor; }
+    DeviceProcessor& getDeviceProcessor() noexcept { return deviceProcessor; }
 
     void toggleABState();
     int getActiveStateSlot() const noexcept { return activeStateSlot; }
@@ -106,11 +110,13 @@ private:
     std::atomic<float>* macroGhostParam   { nullptr };
     std::atomic<float>* macroToneParam    { nullptr };
 
-    // Shadow Engine params
+    // Shadow / Demon Engine params
     std::atomic<float>* shadowEnableParam { nullptr };
     std::atomic<float>* shadowMixParam    { nullptr };
     std::atomic<float>* shadowPitchParam  { nullptr };
     std::atomic<float>* shadowFormantParam{ nullptr };
+    std::atomic<float>* shadowLinkParam   { nullptr };
+    std::atomic<float>* shadowModeParam   { nullptr };
     std::atomic<float>* shadowDarkParam   { nullptr };
     std::atomic<float>* shadowDriveParam  { nullptr };
 
