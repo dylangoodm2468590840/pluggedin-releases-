@@ -4,17 +4,18 @@ on:
   push:
     branches: [ "main" ]
     tags:
-      - "mac-v*"          # e.g. mac-v4.0.0  — triggers a tagged release build
+      - "mac-v*"
+      - "plugtune-dev*"
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Release tag to publish (e.g. mac-v4.0.0). Leave blank to skip release.'
+        description: 'Release tag (e.g. plugtune-dev1059)'
         required: false
-        default: ''
+        default: 'plugtune-dev1059'
 
 jobs:
   build-macos:
-    runs-on: macos-13 # Apple Silicon M1/M2/M3 native runner
+    runs-on: macos-13
 
     steps:
     - name: Check out repository
@@ -32,85 +33,60 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
           -DCMAKE_OSX_DEPLOYMENT_TARGET="10.13"
 
-    - name: Build macOS VST3, AU Component & Central App
+    - name: Build macOS VST3, AU & PlugTune
       run: |
-        cmake --build build --config Release --target UNDERGROUND_VST3 UNDERGROUND_AU PluggedIN_Central
+        cmake --build build --config Release --target UNDERGROUND_VST3 UNDERGROUND_AU PluggedIN_Central PlugTune_VST3
 
     - name: Package macOS Artifacts
       run: |
         mkdir -p dist/mac
         cd build/UNDERGROUND_artefacts/Release
-        
-        # Package VST3
         if [ -d "VST3/UNDERGROUND.vst3" ]; then
           zip -r -y ../../../dist/mac/UNDERGROUND_Mac_Universal.vst3.zip VST3/UNDERGROUND.vst3
-          echo "UNDERGROUND VST3 packaged"
         fi
-        
-        # Package AudioUnit (AU) for Logic Pro / GarageBand
         if [ -d "AU/UNDERGROUND.component" ]; then
           zip -r -y ../../../dist/mac/UNDERGROUND_Mac_Universal.component.zip AU/UNDERGROUND.component
-          echo "UNDERGROUND AU packaged"
         fi
-
         cd ../../../
-
-        # Package Mac Central App
         if [ -d "build/PluggedIN_Central_artefacts/Release/PluggedIN Central.app" ]; then
           cd "build/PluggedIN_Central_artefacts/Release"
           zip -r -y ../../../dist/mac/PluggedIN_Central_Mac.zip "PluggedIN Central.app"
-          echo "Central Mac app packaged"
           cd ../../../
         fi
-
-        # Package Plugged 1 VST3 (if built)
         if [ -d "build/Plugged_1_artefacts/Release/VST3/Plugged 1.vst3" ]; then
           cd "build/Plugged_1_artefacts/Release"
           zip -r -y ../../../dist/mac/PLUGGED_1_Mac_Universal.vst3.zip "VST3/Plugged 1.vst3"
-          echo "Plugged 1 VST3 packaged"
           cd ../../../
         fi
+        if [ -d "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" ]; then
+          cd "build/PlugTune_artefacts/Release"
+          zip -r -y ../../../dist/mac/PlugTune_Mac_Universal.vst3.zip "VST3/PlugTune.vst3"
+          cd ../../../
+          echo "PlugTune Mac packaged successfully"
+        fi
+        echo "=== SHA-256 checksums ==="
+        for f in dist/mac/*.zip; do shasum -a 256 "$f"; done
 
-        # Print SHA-256 for each file (copy these into manifest.json)
-        echo "=== SHA-256 checksums (update manifest.json with these) ==="
-        for f in dist/mac/*.zip; do
-          shasum -a 256 "$f"
-        done
-
-    - name: Upload Mac Artifacts to GitHub Actions
+    - name: Upload Mac Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: PluggedIN_macOS_Universal_Binaries
         path: dist/mac/*
 
-    - name: Publish GitHub Release (on tag or manual trigger with release_tag)
-      # Only run when triggered by a version tag OR a manual dispatch with a release_tag
-      if: startsWith(github.ref, 'refs/tags/mac-v') || (github.event_name == 'workflow_dispatch' && inputs.release_tag != '')
+    - name: Publish GitHub Release
+      if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.release_tag }}
-        name: "PluggedIN macOS Universal — ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.release_tag }}"
-        body: |
-          ## PluggedIN macOS Universal Binaries
-
-          **Architecture:** Apple Silicon (arm64) + Intel (x86_64) Universal Binary  
-          **macOS minimum:** 10.13 High Sierra  
-          **Formats included:** VST3, AU (Audio Unit for Logic Pro & GarageBand)
-
-          ### SHA-256 checksums
-          See workflow run log for file checksums to update `manifest.json`.
-
-          ### Instal
-          1. Download the zip for your plugin
-          2. Unzip and run `1-CLICK_INSTALL_MAC.command` (or copy `.vst3` to `~/Library/Audio/Plug-Ins/VST3/`)
-          3. Rescan plugins in your DAW
+        tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || (inputs.release_tag != '' && inputs.release_tag || 'plugtune-dev1059') }}
+        name: "PluggedIN - ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || (inputs.release_tag != '' && inputs.release_tag || 'plugtune-dev1059') }}"
+        body: "Automated macOS Universal build (arm64+x86_64)."
         draft: false
-        prerelease: false
+        prerelease: true
         files: |
           dist/mac/UNDERGROUND_Mac_Universal.vst3.zip
           dist/mac/UNDERGROUND_Mac_Universal.component.zip
           dist/mac/PluggedIN_Central_Mac.zip
           dist/mac/PLUGGED_1_Mac_Universal.vst3.zip
+          dist/mac/PlugTune_Mac_Universal.vst3.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
