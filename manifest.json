@@ -47,23 +47,23 @@
         {
             "id": "pluggedin_underground",
             "plugin_id": "pluggedin_underground",
-            "name": "UNDERGROUND v4.1 (Platinum Studio Suite)",
-            "latest_version": "4.1.0",
-            "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.1.0/UNDERGROUND_v4.1.0_Win64_VST3.zip",
-            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-            "changelog": "UNDERGROUND v4.1.0 Platinum DSP Update: Active Speech-Gated Auto-Level Loudness Engine, 4x Polyphase Anti-Aliased Air Exciter, 100% Mono-Safe Mid/Side 3D Width, Linkwitz-Riley ZDF Dynamic De-Esser, and Local Spectral Resonance Tracking.",
+            "name": "UNDERGROUND v4.2 (Pitch & Formant Demon Suite)",
+            "latest_version": "4.2.0",
+            "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_v4.2.0_Win64_VST3.zip",
+            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_Mac_Universal.vst3.zip",
+            "changelog": "UNDERGROUND v4.2.0 Platinum Update: Real-Time Semitone Pitch Transposition (-24 to +24 ST), Anatomical Throat Formant Shifting (-12 to +12 ST), Varispeed Link Mode, 3 Production Modes (Transpose, Robot Drone, Hard Tune Quantize), and 16 Flagship Vocal Presets.",
             "packages": {
                 "windows_x64": {
                     "format": "vst3",
-                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.1.0/UNDERGROUND_v4.1.0_Win64_VST3.zip",
-                    "sha256": "edcaad0370b3031ee42772190fc943c0ae438c68cc5a886b173277641a9bcfae",
-                    "size_bytes": 4898798
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_v4.2.0_Win64_VST3.zip",
+                    "sha256": "52218eaad2223e29eebf6e1edf253ff2dfaa7b351d755e6e0984a1568168a91f",
+                    "size_bytes": 4908150
                 },
                 "macos_universal": {
                     "format": "vst3",
-                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-                    "sha256": "b83596f870cf3c21dcdceacae0fc011ec27e7ef3f4ba7a371eb60b3055f1a9d6",
-                    "size_bytes": 6345602
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_Mac_Universal.vst3.zip",
+                    "sha256": "2884aea80fcb80a9ae7540e143b0981a0e42cd08206334196a2c001c32c4d6cc",
+                    "size_bytes": 6345607
                 }
             }
         }
