@@ -1,17 +1,17 @@
 {
     "schema_version":  "1.0.0",
     "channel":  "production",
-    "hub_version":  "2.1.0",
+    "hub_version":  "2.2.0",
     "manager":  {
-                    "version":  "2.1.0",
+                    "version":  "2.2.0",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "release_notes":  "Official PluggedIN Central v2.1.0: Added Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synthesizer and Sampler engine, 808 machine with pitch dive and legato glide, and 100+ production presets.",
+                    "release_notes":  "Official PluggedIN Central v2.2.0: Added PlugTune v1.0.0 Real-Time AutoTune Suite, Dynamic Cloud Catalog Auto-Discovery, Sub-10ms Live Recording Engine, and Enhanced Multi-DAW Verification.",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip",
-                                                         "sha256":  "4a23800178f7a52730689a7fb850a16ea9b5d08762a749a127ae726cb7a07f90",
-                                                         "size_bytes":  4650147
+                                                         "url":  "https://files.catbox.moe/vr1x7b.zip",
+                                                         "sha256":  "b3fd07f6b081697195893feffc5f3162c9264c3d255f2909675d8da50fd0f635",
+                                                         "size_bytes":  32511737
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PluggedIN_Central_Mac.zip",
@@ -22,9 +22,36 @@
                 },
     "plugins":  [
                     {
+                        "id":  "pluggedin_plugtune",
+                        "plugin_id":  "pluggedin_plugtune",
+                        "name":  "PLUGTUNE v1.0.0 (Real-Time AutoTune and Formant Suite)",
+                        "subtitle":  "Real-Time AutoTune and Formant Suite",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "1.0.0",
+                        "download_url_win":  "https://files.catbox.moe/wwq0xy.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
+                        "changelog":  "PLUGTUNE v1.0.0 (DEV-1059) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite: Sub-10ms Live Tracking Engine, Dynamic DAW Delay Compensation (PDC), McLeod Pitch Method (MPM) Tracking with Schmitt-Trigger Scale Quantization, 12-Tone Scale Heatmap Keyboard, Vocal Doubler, and Live Monophonic Tone Reference Audition.",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "format":  "vst3",
+                                                             "url":  "https://files.catbox.moe/wwq0xy.zip",
+                                                             "sha256":  "67e705d6e1557bb22511b178b65643e49485c688a896368f8e14fa075bd65a0f",
+                                                             "size_bytes":  4649457
+                                                         },
+                                         "macos_universal":  {
+                                                                 "format":  "vst3",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
+                                                                 "size_bytes":  6566210
+                                                             }
+                                     }
+                    },
+                    {
                         "id":  "pluggedin_plugged1",
                         "plugin_id":  "pluggedin_plugged1",
                         "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
+                        "subtitle":  "Flagship Hybrid Synthesizer \u0026 808",
+                        "category":  "Instrument",
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://files.catbox.moe/wk8jyf.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
@@ -48,6 +75,8 @@
                         "id":  "pluggedin_underground",
                         "plugin_id":  "pluggedin_underground",
                         "name":  "UNDERGROUND v4.2.2 (Studio Pitch \u0026 Formant Demon Suite)",
+                        "subtitle":  "Boutique Vocal Multi-FX Suite",
+                        "category":  "Vocal Multi-FX",
                         "latest_version":  "4.2.2",
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_Mac_Universal.vst3.zip",
@@ -64,29 +93,6 @@
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_Mac_Universal.vst3.zip",
                                                                  "sha256":  "1ebecb43b77d29dc78d916f2b8eac2929322d38485f221ca604d9eadd9d501c3",
                                                                  "size_bytes":  6345609
-                                                             }
-                                     }
-                    },
-                    {
-                        "id":  "pluggedin_plugtune",
-                        "plugin_id":  "pluggedin_plugtune",
-                        "name":  "PLUGTUNE v1.0.0 (Real-Time AutoTune and Formant Suite)",
-                        "latest_version":  "1.0.0",
-                        "download_url_win":  "https://files.catbox.moe/wwq0xy.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
-                        "changelog":  "PLUGTUNE v1.0.0 (DEV-1059) Real-Time Vocal Pitch Correction and Formant Manipulation Suite: Sub-10ms Live Tracking Engine, Dynamic DAW Delay Compensation (PDC), McLeod Pitch Method (MPM) Tracking with Schmitt-Trigger Scale Quantization, 12-Tone Scale Heatmap Keyboard, Vocal Doubler, and Live Monophonic Tone Reference Audition.",
-                        "packages":  {
-                                         "windows_x64":  {
-                                                             "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/wwq0xy.zip",
-                                                             "sha256":  "67e705d6e1557bb22511b178b65643e49485c688a896368f8e14fa075bd65a0f",
-                                                             "size_bytes":  4649457
-                                                         },
-                                         "macos_universal":  {
-                                                                 "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
-                                                                 "size_bytes":  6566210
                                                              }
                                      }
                     }
