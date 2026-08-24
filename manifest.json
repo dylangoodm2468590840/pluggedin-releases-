@@ -1,17 +1,17 @@
 {
     "schema_version":  "1.0.0",
     "channel":  "production",
-    "hub_version":  "2.2.0",
+    "hub_version":  "2.3.0",
     "manager":  {
-                    "version":  "2.2.0",
+                    "version":  "2.3.0",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "release_notes":  "Official PluggedIN Central v2.2.0: Added PlugTune v1.0.0 Real-Time AutoTune Suite, Dynamic Cloud Catalog Auto-Discovery, Sub-10ms Live Recording Engine, and Enhanced Multi-DAW Verification.",
+                    "release_notes":  "Official PluggedIN Central v2.3.0: Added PlugTune v1.0.0 Real-Time AutoTune Suite (DEV-1059), UNDERGROUND v4.2.2, PLUGGED 1 v1.0.0, dynamic cloud catalog auto-discovery, and stability improvements.",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  "https://files.catbox.moe/vr1x7b.zip",
-                                                         "sha256":  "b3fd07f6b081697195893feffc5f3162c9264c3d255f2909675d8da50fd0f635",
-                                                         "size_bytes":  32511737
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.3.0/PluggedIN_Central_v2.3.0_Windows.zip",
+                                                         "sha256":  "697b62b4c03b477b1694898ee538a9a3c7420d1504962432aabb11dfdb789645",
+                                                         "size_bytes":  3675794
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PluggedIN_Central_Mac.zip",
@@ -30,7 +30,7 @@
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_v1.0.0_DEV1059_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_Mac_Universal.vst3.zip",
-                        "changelog":  "PLUGTUNE v1.0.0 (DEV-1059) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite.",
+                        "changelog":  "PLUGTUNE v1.0.0 (DEV-1059) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite: Sub-10ms Live Tracking Engine, Dynamic DAW Delay Compensation (PDC), McLeod Pitch Method (MPM) Tracking with Schmitt-Trigger Scale Quantization, 12-Tone Scale Heatmap Keyboard, Vocal Doubler, and Live Monophonic Tone Reference Audition.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
@@ -53,15 +53,15 @@
                         "subtitle":  "Flagship Hybrid Synthesizer \u0026 808",
                         "category":  "Instrument",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://files.catbox.moe/wk8jyf.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/wk8jyf.zip",
-                                                             "sha256":  "dd1bc69a4aff20a76b05d5755a4ed15d9a799b947c84a0c68dc4a8ac23f7a26f",
-                                                             "size_bytes":  9860452
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                                                             "sha256":  "a0ee03923fc02f330f8fcf87c8ff98fe9c60bbbff5e0801db9e6a06bdaf32791",
+                                                             "size_bytes":  9618939
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
