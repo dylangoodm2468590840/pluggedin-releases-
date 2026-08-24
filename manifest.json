@@ -62,8 +62,8 @@
                                          "macos_universal":  {
                                                                  "format":  "vst3",
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "1fe67a1401d18dd62dd1e7ac8672185f6d4fbac01bd327813a1b17e3482641a2",
-                                                                 "size_bytes":  6357286
+                                                                 "sha256":  "b83596f870cf3c21dcdceacae0fc011ec27e7ef3f4ba7a371eb60b3055f1a9d6",
+                                                                 "size_bytes":  6345602
                                                              }
                                      }
                     }
