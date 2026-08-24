@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
     - name: Check out repository
@@ -28,10 +28,14 @@ jobs:
 
     - name: Configure CMake for Universal macOS (arm64 + x86_64)
       run: |
+        export CFLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new"
+        export CXXFLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new"
         cmake -B build -G "Ninja" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET="10.13"
+          -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0" \
+          -DCMAKE_C_FLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new" \
+          -DCMAKE_CXX_FLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new"
 
     - name: Build macOS VST3, AU & PlugTune
       run: |
