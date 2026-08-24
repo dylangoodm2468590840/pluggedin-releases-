@@ -522,15 +522,22 @@ private:
 
                         // macOS Step 4: Fix Mach-O permissions (chmod 755), clear Gatekeeper quarantine (xattr -cr), and ad-hoc sign
                         updateState(0.93f, "Configuring macOS security & permissions...");
-                        auto fixBundlePermissions = [](const juce::File& bundle)
+                        auto runShellCmd = [](const juce::String& cmd)
+                        {
+                            juce::ChildProcess cp;
+                            if (cp.start(cmd))
+                                cp.waitForProcessToFinish(10000);
+                        };
+
+                        auto fixBundlePermissions = [&](const juce::File& bundle)
                         {
                             if (bundle.exists())
                             {
                                 juce::String p = bundle.getFullPathName();
-                                juce::ChildProcess::startAndReadProcessOutput("chmod -R 755 \"" + p + "\"");
-                                juce::ChildProcess::startAndReadProcessOutput("xattr -cr \"" + p + "\"");
-                                juce::ChildProcess::startAndReadProcessOutput("xattr -rd com.apple.quarantine \"" + p + "\" 2>/dev/null");
-                                juce::ChildProcess::startAndReadProcessOutput("codesign --force --deep --sign - \"" + p + "\" 2>/dev/null");
+                                runShellCmd("chmod -R 755 \"" + p + "\"");
+                                runShellCmd("xattr -cr \"" + p + "\"");
+                                runShellCmd("xattr -rd com.apple.quarantine \"" + p + "\" 2>/dev/null");
+                                runShellCmd("codesign --force --deep --sign - \"" + p + "\" 2>/dev/null");
                             }
                         };
 
@@ -540,7 +547,7 @@ private:
                         fixBundlePermissions(sysAuDir);
 
                         // Reset macOS audio unit daemon cache for immediate DAW recognition
-                        juce::ChildProcess::startAndReadProcessOutput("killall -9 AudioComponentRegistrar 2>/dev/null");
+                        runShellCmd("killall -9 AudioComponentRegistrar 2>/dev/null");
 
 #else // Windows
                         // Elevated PowerShell install for C:\Program Files\Common Files\VST3
