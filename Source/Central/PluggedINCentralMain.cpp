@@ -7,7 +7,7 @@ public:
     PluggedINCentralApplication() = default;
 
     const juce::String getApplicationName() override { return "PluggedIN Central"; }
-    const juce::String getApplicationVersion() override { return "2.1.0"; }
+    const juce::String getApplicationVersion() override { return "2.2.0"; }
     bool moreThanOneInstanceAllowed() override { return false; }
 
     void initialise(const juce::String&) override
