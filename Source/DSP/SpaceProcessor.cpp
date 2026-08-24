@@ -170,25 +170,31 @@ void SpaceProcessor::process(const juce::dsp::ProcessContextReplacing<float>& co
         tankDelayL1[tankIdxL1] = diffOutL;
         tankIdxL1 = (tankIdxL1 + 1) % static_cast<int>(tankDelayL1.size());
 
-        // One-pole high damping absorption (silky top-end roll-off)
+        // Bug #6 Fix: Capture the READ index BEFORE advancing the write pointer.
+        // The old code advanced tankIdxL2, then read the just-written sample into
+        // the right tank input — creating a zero-sample self-feedback loop.
+        int readL2BeforeAdvance = tankIdxL2;
         dampingFilterL = dampingFilterL * 0.45f + tankDelayL1[readIdxL1] * 0.55f;
         tankDelayL2[tankIdxL2] = dampingFilterL;
         tankIdxL2 = (tankIdxL2 + 1) % static_cast<int>(tankDelayL2.size());
 
         // Right Tank Branch with opposite LFO modulation
         int readIdxR1 = (tankIdxR1 - static_cast<int>(modSamples) + static_cast<int>(tankDelayR1.size())) % static_cast<int>(tankDelayR1.size());
-        float tankInR = d + tankDelayL2[tankIdxL2] * decayDecay;
+        // Bug #6 Fix: Use readL2BeforeAdvance to read L2 output from BEFORE the current write,
+        // breaking the zero-sample feedback that was causing reverb self-oscillation.
+        float tankInR = d + tankDelayL2[readL2BeforeAdvance] * decayDecay;
         float diffOutR = tankDiff2.process(tankInR);
         tankDelayR1[tankIdxR1] = diffOutR;
         tankIdxR1 = (tankIdxR1 + 1) % static_cast<int>(tankDelayR1.size());
 
+        int readR2BeforeAdvance = tankIdxR2;
         dampingFilterR = dampingFilterR * 0.45f + tankDelayR1[readIdxR1] * 0.55f;
         tankDelayR2[tankIdxR2] = dampingFilterR;
         tankIdxR2 = (tankIdxR2 + 1) % static_cast<int>(tankDelayR2.size());
 
-        // Stereo Reverb Output Taps
-        float reverbOutL = (tankDelayL1[readIdxL1] + tankDelayL2[tankIdxL2] - tankDelayR1[readIdxR1]) * 0.45f;
-        float reverbOutR = (tankDelayR1[readIdxR1] + tankDelayR2[tankIdxR2] - tankDelayL1[readIdxL1]) * 0.45f;
+        // Stereo Reverb Output Taps (use pre-advance indices for consistent read snapshot)
+        float reverbOutL = (tankDelayL1[readIdxL1] + tankDelayL2[readL2BeforeAdvance] - tankDelayR1[readIdxR1]) * 0.45f;
+        float reverbOutR = (tankDelayR1[readIdxR1] + tankDelayR2[readR2BeforeAdvance] - tankDelayL1[readIdxL1]) * 0.45f;
 
         // Pro-Calibrated Reverb Mix Curve (Parabolic scaling: 0.05 is a subtle 2% halo, 0.30 is 12% plate)
         float revScale = curRevMix * curRevMix * 0.55f;
