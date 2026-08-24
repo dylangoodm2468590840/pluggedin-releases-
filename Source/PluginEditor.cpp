@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "BuildInfo.h"
 
 UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
@@ -34,6 +35,12 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
         "08. SUBTERRANEAN 808",
         "09. VINTAGE TAPE / MELLOTRON",
         "10. HYPERPOP / WARP",
+        "11. TRAVIS SUB-DEMON",
+        "12. EVIL DRILL 5TH",
+        "13. ABYSS MONSTER",
+        "14. CYBORG DRONE",
+        "15. CHIPMUNK / ANIME LEAD",
+        "16. GHOST HARMONY BED",
         "CUSTOM"
     };
 
@@ -130,18 +137,36 @@ UndergroundAudioProcessorEditor::UndergroundAudioProcessorEditor (UndergroundAud
 
 
     // 4. 15 Module Knobs across 5 Channels (Matching Sketch Photo 1:1)
-    // Column 1: SUB BASS
-    setupRotary(subDriveSlider, subDriveLabel, "DRIVE");
-    subDriveAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_DRIVE, subDriveSlider);
+    // Column 1: DEMON / PITCH ENGINE (Pitch, Formant/Throat, Drive, Mix, Link, Mode)
+    setupRotary(demonPitchSlider, demonPitchLabel, "PITCH");
+    demonPitchAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_PITCH, demonPitchSlider);
 
-    setupRotary(subWidthSlider, subWidthLabel, "BLEND");
-    subWidthAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_MIX, subWidthSlider);
+    setupRotary(demonFormantSlider, demonFormantLabel, "THROAT");
+    demonFormantAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_FORMANT, demonFormantSlider);
 
-    setupRotary(subCompSlider, subCompLabel, "DEPTH");
-    subCompAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
-        audioProcessor.getAPVTS(), ParameterIDs::SHADOW_FORMANT, subCompSlider);
+    setupRotary(demonMixSlider, demonMixLabel, "MIX");
+    demonMixAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_MIX, demonMixSlider);
+
+    setupRotary(demonDriveSlider, demonDriveLabel, "DRIVE");
+    demonDriveAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_DRIVE, demonDriveSlider);
+
+    demonLinkButton.setClickingTogglesState(true);
+    demonLinkButton.setColour(juce::TextButton::buttonColourId, juce::Colour(0xff18181f));
+    demonLinkButton.setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xffffa800));
+    demonLinkButton.setColour(juce::TextButton::textColourOnId, juce::Colours::black);
+    demonLinkButton.setColour(juce::TextButton::textColourOffId, juce::Colour(0xffa0a0b0));
+    addAndMakeVisible(demonLinkButton);
+    demonLinkAttach = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_LINK, demonLinkButton);
+
+    demonModeBox.addItemList({ "TRANSPOSE", "ROBOT", "TUNE" }, 1);
+    addAndMakeVisible(demonModeBox);
+    demonModeAttach = std::make_unique<juce::AudioProcessorValueTreeState::ComboBoxAttachment>(
+        audioProcessor.getAPVTS(), ParameterIDs::DEMON_MODE, demonModeBox);
 
     // Column 2: GRIT (Crush Engine & 5-Circuit Saturation)
     setupRotary(gritFuzzSlider, gritFuzzLabel, "DRIVE");
@@ -335,7 +360,7 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour(juce::Colour(0xff00ff66));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("PluggedIN AUDIO  |  v" JucePlugin_VersionString " VST3 64-BIT", 28, 34, 250, 14, juce::Justification::left, true);
+    g.drawText("PluggedIN AUDIO  |  v" JucePlugin_VersionString " VST3  •  " UNDERGROUND_BUILD_ID, 28, 34, 320, 14, juce::Justification::left, true);
 
     // SQUEEZE & DE-ESS Mini Gain Reduction (GR) Meters
     auto drawMiniGrMeter = [&](float meterX, float meterY, float grDb) {
@@ -379,7 +404,7 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
     // Top-Right Version Stamp
     g.setColour(juce::Colour(0xff7f8b98));
     g.setFont(juce::Font(10.0f, juce::Font::bold));
-    g.drawText("BUILD: v" JucePlugin_VersionString, getLocalBounds().getWidth() - 120, 14, 100, 16, juce::Justification::right, true);
+    g.drawText(UNDERGROUND_BUILD_ID, getLocalBounds().getWidth() - 140, 14, 120, 16, juce::Justification::right, true);
 
 
 
@@ -454,7 +479,7 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
     float colY = 338.0f;
     float colH = 172.0f;
 
-    const char* colTitles[] = { "1. SUB BASS", "2. GRIT", "3. MODULATION", "4. DELAY", "5. REVERB" };
+    const char* colTitles[] = { "1. DEMON", "2. GRIT", "3. MODULATION", "4. DELAY", "5. REVERB" };
     const juce::Colour colColours[] = { juce::Colour(0xff00ff66), juce::Colour(0xffff0055), juce::Colour(0xff00f0ff), juce::Colour(0xffffa800), juce::Colour(0xffff00aa) };
 
     for (int i = 0; i < 5; ++i)
@@ -536,7 +561,7 @@ void UndergroundAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour(juce::Colour(0xff606f7b));
     g.setFont(juce::Font(9.0f, juce::Font::plain));
-    g.drawText("VST3 64-BIT | CYBER-CRYPT RACK V2.0", (int)deckCard.getRight() - 220, (int)deckCard.getY() + 14, 210, 14, juce::Justification::right);
+    g.drawText("UNDERGROUND v4.2.4 | VST3 64-BIT", (int)deckCard.getRight() - 220, (int)deckCard.getY() + 14, 210, 14, juce::Justification::right);
 }
 
 void UndergroundAudioProcessorEditor::resized()
@@ -576,6 +601,22 @@ void UndergroundAudioProcessorEditor::resized()
     delayEnableToggle.setBounds((int)(startX + 3 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
     reverbEnableToggle.setBounds((int)(startX + 4 * (colW + colGap) + colW - 32.0f), (int)colY + 4, 20, 20);
 
+    // Column 1: DEMON / PITCH ENGINE (Dual-Row 4-Knob Matrix + Link + Mode)
+    float col1X = startX;
+    demonPitchSlider.setBounds((int)col1X + 8, (int)colY + 22, 46, 46);
+    demonPitchLabel.setBounds((int)col1X + 4, (int)colY + 66, 54, 10);
+
+    demonFormantSlider.setBounds((int)col1X + 62, (int)colY + 22, 46, 46);
+    demonFormantLabel.setBounds((int)col1X + 58, (int)colY + 66, 54, 10);
+
+    demonMixSlider.setBounds((int)col1X + 8, (int)colY + 76, 46, 46);
+    demonMixLabel.setBounds((int)col1X + 4, (int)colY + 120, 54, 10);
+
+    demonDriveSlider.setBounds((int)col1X + 62, (int)colY + 76, 46, 46);
+    demonDriveLabel.setBounds((int)col1X + 58, (int)colY + 120, 54, 10);
+
+    demonLinkButton.setBounds((int)col1X + 8, (int)colY + 138, 44, 22);
+    demonModeBox.setBounds((int)col1X + 56, (int)colY + 138, 58, 22);
 
     auto layoutCol = [&](int colIdx, juce::Slider& s1, juce::Label& l1, juce::Slider& s2, juce::Label& l2, juce::Slider& s3, juce::Label& l3) {
         float x = startX + colIdx * (colW + colGap);
@@ -592,7 +633,6 @@ void UndergroundAudioProcessorEditor::resized()
         l3.setBounds((int)x + 4, (int)colY + 160, 112, 10);
     };
 
-    layoutCol(0, subDriveSlider, subDriveLabel, subWidthSlider, subWidthLabel, subCompSlider, subCompLabel);
     layoutCol(1, gritFuzzSlider, gritFuzzLabel, gritDustSlider, gritDustLabel, gritBitSlider, gritBitLabel);
     layoutCol(2, modChorusSlider, modChorusLabel, modPhaseSlider, modPhaseLabel, modVibeSlider, modVibeLabel);
     layoutCol(3, delayTimeSlider, delayTimeLabel, delayFbSlider, delayFbLabel, delayMixSlider, delayMixLabel);
