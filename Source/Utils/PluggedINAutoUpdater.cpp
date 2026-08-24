@@ -19,49 +19,90 @@ void PluggedINAutoUpdater::checkForUpdatesAsync(const juce::String& currentVersi
     }
 }
 
+void PluggedINAutoUpdater::clearUpdateState() noexcept
+{
+    updateAvailable.store(false);
+    const juce::ScopedLock sl(cacheLock);
+    for (auto& pair : pluginCatalogCache)
+    {
+        pair.second.updateAvailable = false;
+    }
+}
+
 bool PluggedINAutoUpdater::isPluginUpdateAvailable(const juce::String& pluginId) const noexcept
 {
-    if (pluginId == "pluggedin_underground")
-        return undergroundUpdateAvailable.load();
-    if (pluginId == "pluggedin_plugged1")
-        return plugged1UpdateAvailable.load();
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end())
+        return it->second.updateAvailable;
     return false;
 }
 
 juce::String PluggedINAutoUpdater::getPluginLatestVersion(const juce::String& pluginId) const noexcept
 {
-    if (pluginId == "pluggedin_underground")
-        return undergroundLatestVersion;
-    if (pluginId == "pluggedin_plugged1")
-        return plugged1LatestVersion;
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end() && it->second.latestVersion.isNotEmpty())
+        return it->second.latestVersion;
     return "1.0.0";
 }
 
 juce::String PluggedINAutoUpdater::getPluginDownloadUrl(const juce::String& pluginId) const noexcept
 {
-    if (pluginId == "pluggedin_underground")
-        return undergroundDownloadUrl;
-    if (pluginId == "pluggedin_plugged1")
-        return plugged1DownloadUrl;
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end())
+        return it->second.downloadUrl;
     return "";
 }
 
 juce::String PluggedINAutoUpdater::getPluginSha256(const juce::String& pluginId) const noexcept
 {
-    if (pluginId == "pluggedin_underground")
-        return undergroundSha256;
-    if (pluginId == "pluggedin_plugged1")
-        return plugged1Sha256;
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end())
+        return it->second.sha256;
     return "";
 }
 
 juce::String PluggedINAutoUpdater::getPluginChangelog(const juce::String& pluginId) const noexcept
 {
-    if (pluginId == "pluggedin_underground")
-        return undergroundChangelog;
-    if (pluginId == "pluggedin_plugged1")
-        return plugged1Changelog;
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end())
+        return it->second.changelog;
     return "";
+}
+
+juce::String PluggedINAutoUpdater::getPluginName(const juce::String& pluginId) const noexcept
+{
+    const juce::ScopedLock sl(cacheLock);
+    auto it = pluginCatalogCache.find(pluginId);
+    if (it != pluginCatalogCache.end())
+        return it->second.name;
+    return "";
+}
+
+std::vector<juce::String> PluggedINAutoUpdater::getDiscoveredPluginIds() const noexcept
+{
+    std::vector<juce::String> ids;
+    const juce::ScopedLock sl(cacheLock);
+    for (const auto& pair : pluginCatalogCache)
+    {
+        ids.push_back(pair.first);
+    }
+    return ids;
+}
+
+std::vector<CloudPluginEntry> PluggedINAutoUpdater::getAllDiscoveredPlugins() const noexcept
+{
+    std::vector<CloudPluginEntry> list;
+    const juce::ScopedLock sl(cacheLock);
+    for (const auto& pair : pluginCatalogCache)
+    {
+        list.push_back(pair.second);
+    }
+    return list;
 }
 
 void PluggedINAutoUpdater::parseManifestJson(const juce::String& jsonText)
@@ -129,12 +170,13 @@ void PluggedINAutoUpdater::parseManifestJson(const juce::String& jsonText)
                 {
                     juce::String id = pObj->getProperty("id").toString();
                     if (id.isEmpty()) id = pObj->getProperty("plugin_id").toString();
+                    if (id.isEmpty()) continue;
 
                     juce::String latest = pObj->getProperty("latest_version").toString();
                     juce::String pChangelog = pObj->getProperty("changelog").toString();
 
-                    juce::String pWinUrl = "";
-                    juce::String pWinSha = "";
+                    juce::String pUrl = "";
+                    juce::String pSha = "";
 
                     if (pObj->hasProperty("packages"))
                     {
@@ -151,42 +193,43 @@ void PluggedINAutoUpdater::parseManifestJson(const juce::String& jsonText)
                                 auto platVar = pkgObj->getProperty(platformKey);
                                 if (auto* platObj = platVar.getDynamicObject())
                                 {
-                                    pWinUrl = platObj->getProperty("url").toString();
-                                    pWinSha = platObj->getProperty("sha256").toString();
+                                    pUrl = platObj->getProperty("url").toString();
+                                    pSha = platObj->getProperty("sha256").toString();
                                 }
                             }
                         }
                     }
-                    else if (pObj->hasProperty("download_url_win"))
+                    
+                    if (pUrl.isEmpty())
                     {
 #if JUCE_MAC
-                        pWinUrl = pObj->getProperty("download_url_mac").toString();
+                        if (pObj->hasProperty("download_url_mac"))
+                            pUrl = pObj->getProperty("download_url_mac").toString();
+                        else if (pObj->hasProperty("download_url_win"))
+                            pUrl = pObj->getProperty("download_url_win").toString();
 #else
-                        pWinUrl = pObj->getProperty("download_url_win").toString();
+                        if (pObj->hasProperty("download_url_win"))
+                            pUrl = pObj->getProperty("download_url_win").toString();
 #endif
                     }
 
-                    if (id == "pluggedin_underground")
-                    {
-                        undergroundLatestVersion = latest;
-                        undergroundDownloadUrl = pWinUrl;
-                        undergroundSha256 = pWinSha;
-                        undergroundChangelog = pChangelog;
+                    CloudPluginEntry entry;
+                    entry.id = id;
+                    entry.name = pObj->getProperty("name").toString();
+                    entry.subtitle = pObj->getProperty("subtitle").toString();
+                    entry.category = pObj->getProperty("category").toString();
+                    entry.description = pObj->getProperty("description").toString();
+                    entry.latestVersion = latest.isNotEmpty() ? latest : "1.0.0";
+                    entry.downloadUrl = pUrl;
+                    entry.sha256 = pSha;
+                    entry.changelog = pChangelog;
 
-                        juce::String installed = InstalledRegistry::getInstalledVersion(id);
-                        bool needsPluginUpdate = (installed.isNotEmpty() && InstalledRegistry::compareVersions(installed, latest) < 0);
-                        undergroundUpdateAvailable.store(needsPluginUpdate);
-                    }
-                    else if (id == "pluggedin_plugged1")
-                    {
-                        plugged1LatestVersion = latest;
-                        plugged1DownloadUrl = pWinUrl;
-                        plugged1Sha256 = pWinSha;
-                        plugged1Changelog = pChangelog;
+                    juce::String installed = InstalledRegistry::getInstalledVersion(id);
+                    entry.updateAvailable = (installed.isNotEmpty() && InstalledRegistry::compareVersions(installed, entry.latestVersion) < 0);
 
-                        juce::String installed = InstalledRegistry::getInstalledVersion(id);
-                        bool needsPluginUpdate = (installed.isNotEmpty() && InstalledRegistry::compareVersions(installed, latest) < 0);
-                        plugged1UpdateAvailable.store(needsPluginUpdate);
+                    {
+                        const juce::ScopedLock sl(cacheLock);
+                        pluginCatalogCache[id] = entry;
                     }
                 }
             }
