@@ -1,4 +1,4 @@
-﻿{
+{
     "schema_version":  "1.0.0",
     "channel":  "production",
     "hub_version":  "2.2.0",
@@ -28,21 +28,21 @@
                         "subtitle":  "Real-Time AutoTune and Formant Suite",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://files.catbox.moe/wwq0xy.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_v1.0.0_DEV1059_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGTUNE v1.0.0 (DEV-1059) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite: Sub-10ms Live Tracking Engine, Dynamic DAW Delay Compensation (PDC), McLeod Pitch Method (MPM) Tracking with Schmitt-Trigger Scale Quantization, 12-Tone Scale Heatmap Keyboard, Vocal Doubler, and Live Monophonic Tone Reference Audition.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/wwq0xy.zip",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_v1.0.0_DEV1059_Win64_VST3.zip",
                                                              "sha256":  "67e705d6e1557bb22511b178b65643e49485c688a896368f8e14fa075bd65a0f",
                                                              "size_bytes":  4649457
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PlugTune_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
-                                                                 "size_bytes":  6566210
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1059/PlugTune_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "PENDING_CI_BUILD",
+                                                                 "size_bytes":  0
                                                              }
                                      }
                     },
