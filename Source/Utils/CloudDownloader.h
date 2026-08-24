@@ -158,8 +158,7 @@ private:
         bool success = false;
         juce::String errorMsg = "";
 
-        juce::String pluginFolder = (pluginId == "pluggedin_plugged1") ? "Plugged 1.vst3" :
-                                    (pluginId == "pluggedin_crush")    ? "CRUSH.vst3"     : "UNDERGROUND.vst3";
+        juce::String pluginFolder = InstalledRegistry::getPluginBundleName(pluginId);
         juce::File userVst3Dir = InstalledRegistry::getUserVst3Directory().getChildFile(pluginFolder);
         juce::File sysVst3Dir  = InstalledRegistry::getSystemVst3Directory().getChildFile(pluginFolder);
 
@@ -467,8 +466,7 @@ private:
                         appSupport.createDirectory();
 
                         // Discover AU .component if present
-                        juce::String auFolder = (pluginId == "pluggedin_plugged1") ? "Plugged 1.component" :
-                                                (pluginId == "pluggedin_crush")    ? "CRUSH.component"     : "UNDERGROUND.component";
+                        juce::String auFolder = InstalledRegistry::getPluginAuName(pluginId);
                         juce::File unpackedAu = stageExtract.getChildFile(auFolder);
                         if (!unpackedAu.exists())
                         {
