@@ -31,8 +31,10 @@ UndergroundAudioProcessor::UndergroundAudioProcessor()
 
     shadowEnableParam = apvts.getRawParameterValue(ParameterIDs::SHADOW_ENABLE);
     shadowMixParam    = apvts.getRawParameterValue(ParameterIDs::SHADOW_MIX);
-    shadowPitchParam  = apvts.getRawParameterValue(ParameterIDs::SHADOW_PITCH);
-    shadowFormantParam= apvts.getRawParameterValue(ParameterIDs::SHADOW_FORMANT);
+    shadowPitchParam  = apvts.getRawParameterValue(ParameterIDs::DEMON_PITCH);
+    shadowFormantParam= apvts.getRawParameterValue(ParameterIDs::DEMON_FORMANT);
+    shadowLinkParam   = apvts.getRawParameterValue(ParameterIDs::DEMON_LINK);
+    shadowModeParam   = apvts.getRawParameterValue(ParameterIDs::DEMON_MODE);
     shadowDarkParam   = apvts.getRawParameterValue(ParameterIDs::SHADOW_DARKNESS);
     shadowDriveParam  = apvts.getRawParameterValue(ParameterIDs::SHADOW_DRIVE);
 
@@ -89,6 +91,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
         "05. DESTROYED / CRUSHED",
         "06. TELEPHONE / DEVICE",
         "07. FUTURISTIC / ALIEN",
+        "08. SUBTERRANEAN 808",
+        "09. VINTAGE TAPE / MELLOTRON",
+        "10. HYPERPOP / WARP",
+        "11. TRAVIS SUB-DEMON",
+        "12. EVIL DRILL 5TH",
+        "13. ABYSS MONSTER",
+        "14. CYBORG DRONE",
+        "15. CHIPMUNK / ANIME LEAD",
+        "16. GHOST HARMONY BED",
         "CUSTOM"
     };
 
@@ -210,15 +221,36 @@ juce::AudioProcessorValueTreeState::ParameterLayout UndergroundAudioProcessor::c
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::MACRO_GHOST, 1 }, "Macro Ghost", 0.0f, 1.0f, 0.0f));
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::MACRO_TONE, 1 }, "Macro Tone", 0.0f, 1.0f, 0.5f));
 
-    // Shadow Module Parameters
-    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID { ParameterIDs::SHADOW_ENABLE, 1 }, "Shadow Enable", true));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_MIX, 1 }, "Shadow Mix", 0.0f, 1.0f, 0.0f));
+    // DEMON / PITCH & FORMANT Module Parameters
+    layout.add(std::make_unique<juce::AudioParameterBool>(juce::ParameterID { ParameterIDs::SHADOW_ENABLE, 1 }, "Demon Enable", true));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_MIX, 1 }, "Demon Mix", 0.0f, 1.0f, 0.0f));
 
-    juce::StringArray pitchIntervalChoices { "OCTAVE DOWN (-12)", "FIFTH DOWN (-7)", "FOURTH DOWN (-5)", "TWO OCTAVES (-24)" };
-    layout.add(std::make_unique<juce::AudioParameterChoice>(juce::ParameterID { ParameterIDs::SHADOW_PITCH, 1 }, "Shadow Pitch", pitchIntervalChoices, 0));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_FORMANT, 1 }, "Shadow Formant", 0.0f, 1.0f, 0.5f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DARKNESS, 1 }, "Shadow Darkness", 0.0f, 1.0f, 0.5f));
-    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DRIVE, 1 }, "Shadow Drive", 0.0f, 1.0f, 0.2f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::DEMON_PITCH, 1 },
+        "Demon Pitch",
+        juce::NormalisableRange<float>(-24.0f, 24.0f, 0.5f),
+        -12.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        juce::ParameterID { ParameterIDs::DEMON_FORMANT, 1 },
+        "Demon Formant",
+        juce::NormalisableRange<float>(-12.0f, 12.0f, 0.5f),
+        0.0f));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID { ParameterIDs::DEMON_LINK, 1 },
+        "Pitch Formant Link",
+        false));
+
+    juce::StringArray demonModeChoices { "TRANSPOSE", "ROBOT", "HARD TUNE" };
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        juce::ParameterID { ParameterIDs::DEMON_MODE, 1 },
+        "Demon Mode",
+        demonModeChoices,
+        0));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DARKNESS, 1 }, "Demon Tone", 0.0f, 1.0f, 0.5f));
+    layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::SHADOW_DRIVE, 1 }, "Demon Drive", 0.0f, 1.0f, 0.25f));
 
     // CRUSH Module Parameters (5-Circuit Analog Suite)
     layout.add(std::make_unique<juce::AudioParameterFloat>(juce::ParameterID { ParameterIDs::CRUSH_AMOUNT, 1 }, "Crush Amount", 0.0f, 1.0f, 0.60f));
@@ -345,7 +377,7 @@ void UndergroundAudioProcessor::prepareToPlay(double sampleRate, int samplesPerB
     signalChain.prepare(spec);
 
     // Trigger non-blocking cloud update check
-    autoUpdater.checkForUpdatesAsync("3.0.0");
+    autoUpdater.checkForUpdatesAsync("4.2.4");
 }
 
 
@@ -396,14 +428,16 @@ void UndergroundAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, j
     float aTop     = airTopParam ? airTopParam->load() : 0.0f;
     float sDuck    = spaceDuckingParam ? spaceDuckingParam->load() : 0.50f;
 
-    // Update Shadow Settings
+    // Update Shadow / Demon Settings
     shadowProcessor.setEnabled(shadowEnableParam ? (shadowEnableParam->load() > 0.5f) : true);
     shadowProcessor.setMix(shadowMixParam ? shadowMixParam->load() : 0.0f);
-    int pIdx = shadowPitchParam ? juce::roundToInt(shadowPitchParam->load()) : 0;
-    shadowProcessor.setPitchInterval(static_cast<ShadowProcessor::PitchInterval>(pIdx));
-    shadowProcessor.setFormantShift(shadowFormantParam ? shadowFormantParam->load() : 0.5f);
+    shadowProcessor.setPitchSemitones(shadowPitchParam ? shadowPitchParam->load() : -12.0f);
+    shadowProcessor.setFormantSemitones(shadowFormantParam ? shadowFormantParam->load() : 0.0f);
+    shadowProcessor.setLink(shadowLinkParam ? (shadowLinkParam->load() > 0.5f) : false);
+    int sMode = shadowModeParam ? juce::roundToInt(shadowModeParam->load()) : 0;
+    shadowProcessor.setMode(static_cast<ShadowProcessor::DemonMode>(sMode));
     shadowProcessor.setDarkness(shadowDarkParam ? shadowDarkParam->load() : 0.5f);
-    shadowProcessor.setDrive(shadowDriveParam ? shadowDriveParam->load() : 0.2f);
+    shadowProcessor.setDrive(shadowDriveParam ? shadowDriveParam->load() : 0.25f);
 
     // Update Crush Settings (5 Analog Topologies & PUNISH Mode)
     int charIdx = crushCharParam ? juce::roundToInt(crushCharParam->load()) : 0;
