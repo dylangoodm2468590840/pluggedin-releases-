@@ -79,7 +79,7 @@ if [ -d "UNDERGROUND.component" ]; then
 fi
 
 # ── 4. PLUGGED 1 Installation (VST3 + AU) ──────────────────────────────────────
-echo "[4/6] Installing PLUGGED 1 Hybrid Instrument..."
+echo "[4/7] Installing PLUGGED 1 Hybrid Instrument..."
 if [ -d "Plugged 1.vst3" ]; then
     rm -rf "$USER_VST3/Plugged 1.vst3"
     cp -R "Plugged 1.vst3" "$USER_VST3/"
@@ -101,17 +101,44 @@ if [ -d "Plugged 1.component" ]; then
     echo "  ✓ PLUGGED 1 AU component installed → $USER_AU/Plugged 1.component"
 fi
 
-# ── 5. Gatekeeper Quarantine & Permissions Self-Healing ────────────────────────
-echo "[5/6] Self-healing macOS permissions, Gatekeeper quarantine & code signing..."
+# ── 5. PLUGTUNE Installation (VST3 + AU) ───────────────────────────────────────
+echo "[5/7] Installing PLUGTUNE AutoTune & Formant Suite..."
+if [ -d "PlugTune.vst3" ]; then
+    rm -rf "$USER_VST3/PlugTune.vst3"
+    cp -R "PlugTune.vst3" "$USER_VST3/"
+    
+    if [ -d "$SYS_VST3" ]; then
+        cp -R "PlugTune.vst3" "$SYS_VST3/" 2>/dev/null
+    fi
+    echo "  ✓ PLUGTUNE VST3 installed → $USER_VST3/PlugTune.vst3"
+    INSTALLED_PLUGTUNE=true
+fi
+
+if [ -d "PlugTune.component" ]; then
+    rm -rf "$USER_AU/PlugTune.component"
+    cp -R "PlugTune.component" "$USER_AU/"
+    
+    if [ -d "$SYS_AU" ]; then
+        cp -R "PlugTune.component" "$SYS_AU/" 2>/dev/null
+    fi
+    echo "  ✓ PLUGTUNE AU component installed → $USER_AU/PlugTune.component"
+fi
+
+# ── 6. Gatekeeper Quarantine & Permissions Self-Healing ────────────────────────
+echo "[6/7] Self-healing macOS permissions, Gatekeeper quarantine & code signing..."
 # Ensure Mach-O executable permissions (+x / 755)
 chmod -R 755 "$USER_VST3/UNDERGROUND.vst3" 2>/dev/null
 chmod -R 755 "$USER_AU/UNDERGROUND.component" 2>/dev/null
 chmod -R 755 "$USER_VST3/Plugged 1.vst3" 2>/dev/null
 chmod -R 755 "$USER_AU/Plugged 1.component" 2>/dev/null
+chmod -R 755 "$USER_VST3/PlugTune.vst3" 2>/dev/null
+chmod -R 755 "$USER_AU/PlugTune.component" 2>/dev/null
 chmod -R 755 "$SYS_VST3/UNDERGROUND.vst3" 2>/dev/null
 chmod -R 755 "$SYS_AU/UNDERGROUND.component" 2>/dev/null
 chmod -R 755 "$SYS_VST3/Plugged 1.vst3" 2>/dev/null
 chmod -R 755 "$SYS_AU/Plugged 1.component" 2>/dev/null
+chmod -R 755 "$SYS_VST3/PlugTune.vst3" 2>/dev/null
+chmod -R 755 "$SYS_AU/PlugTune.component" 2>/dev/null
 chmod -R 755 "/Applications/PluggedIN Central.app" 2>/dev/null
 
 # Strip Apple Gatekeeper quarantine flag
@@ -123,6 +150,10 @@ xattr -cr "$USER_VST3/Plugged 1.vst3" 2>/dev/null
 xattr -rd com.apple.quarantine "$USER_VST3/Plugged 1.vst3" 2>/dev/null
 xattr -cr "$USER_AU/Plugged 1.component" 2>/dev/null
 xattr -rd com.apple.quarantine "$USER_AU/Plugged 1.component" 2>/dev/null
+xattr -cr "$USER_VST3/PlugTune.vst3" 2>/dev/null
+xattr -rd com.apple.quarantine "$USER_VST3/PlugTune.vst3" 2>/dev/null
+xattr -cr "$USER_AU/PlugTune.component" 2>/dev/null
+xattr -rd com.apple.quarantine "$USER_AU/PlugTune.component" 2>/dev/null
 
 xattr -cr "$SYS_VST3/UNDERGROUND.vst3" 2>/dev/null
 xattr -rd com.apple.quarantine "$SYS_VST3/UNDERGROUND.vst3" 2>/dev/null
@@ -132,6 +163,10 @@ xattr -cr "$SYS_VST3/Plugged 1.vst3" 2>/dev/null
 xattr -rd com.apple.quarantine "$SYS_VST3/Plugged 1.vst3" 2>/dev/null
 xattr -cr "$SYS_AU/Plugged 1.component" 2>/dev/null
 xattr -rd com.apple.quarantine "$SYS_AU/Plugged 1.component" 2>/dev/null
+xattr -cr "$SYS_VST3/PlugTune.vst3" 2>/dev/null
+xattr -rd com.apple.quarantine "$SYS_VST3/PlugTune.vst3" 2>/dev/null
+xattr -cr "$SYS_AU/PlugTune.component" 2>/dev/null
+xattr -rd com.apple.quarantine "$SYS_AU/PlugTune.component" 2>/dev/null
 
 xattr -cr "/Applications/PluggedIN Central.app" 2>/dev/null
 xattr -rd com.apple.quarantine "/Applications/PluggedIN Central.app" 2>/dev/null
@@ -141,6 +176,8 @@ codesign --force --deep --sign - "$USER_VST3/UNDERGROUND.vst3" 2>/dev/null
 codesign --force --deep --sign - "$USER_AU/UNDERGROUND.component" 2>/dev/null
 codesign --force --deep --sign - "$USER_VST3/Plugged 1.vst3" 2>/dev/null
 codesign --force --deep --sign - "$USER_AU/Plugged 1.component" 2>/dev/null
+codesign --force --deep --sign - "$USER_VST3/PlugTune.vst3" 2>/dev/null
+codesign --force --deep --sign - "$USER_AU/PlugTune.component" 2>/dev/null
 codesign --force --deep --sign - "/Applications/PluggedIN Central.app" 2>/dev/null
 
 # Reset audio component registrar daemon
