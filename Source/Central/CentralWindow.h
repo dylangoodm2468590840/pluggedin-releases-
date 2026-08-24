@@ -187,7 +187,26 @@ public:
         p1.changelog = "• Dual-Layer Sampler + PolyBLEP Multi-Wave Synthesizer.\n• Dedicated 808 Machine with Pitch Dive and Legato Glide.\n• Studio ZDF Ladder Filter, Ping-Pong Tape Delay & Reverb.\n• 100+ Production Factory Presets.";
         products.push_back(p1);
 
-        // 3. CRUSH (Future Ecosystem Product)
+        // 3. PLUGTUNE
+        PluginProduct pt;
+        pt.id = "pluggedin_plugtune";
+        pt.name = "PLUGTUNE";
+        pt.subtitle = "Real-Time AutoTune & Formant Suite";
+        pt.category = "Vocal Multi-FX";
+        pt.description = "Studio Vocal Pitch Correction & Formant Manipulation Suite featuring Sub-10ms Live Tracking Engine, Dynamic DAW Delay Compensation (PDC), Schmitt-Trigger Scale Quantization, 12-Tone Scale Heatmap Keyboard, Vocal Doubler, and Live Monophonic Tone Reference Audition.";
+        pt.dspHighlights = {
+            "Sub-10ms Live Tracking Mode with Automatic FL Studio / DAW Latency Compensation",
+            "McLeod Pitch Method (MPM) Pitch Tracker with Schmitt-Trigger Hysteresis Anti-Chatter",
+            "Continuous Retune Speed (0ms Hard Snap to 400ms Natural Glide)",
+            "Dynamic 12-Tone Scale Heatmap Keyboard & Live Reference Tone Audition",
+            "Vocal Doubler with Stereo Width Processor & Neutral Formant Filter"
+        };
+        pt.supportedFormats = { "VST3 64-Bit", "AU (macOS)", "Standalone" };
+        pt.latestVersion = "1.0.0";
+        pt.changelog = "• Initial Release (DEV-1059).\n• Sub-10ms Live Recording Monitoring Engine with dynamic PDC host sync.\n• Fast McLeod Pitch Method (MPM) Pitch Tracker with Anti-Chatter hysteresis.\n• 12-Tone Scale Heatmap Keyboard with live note visualization.\n• Integrated Vocal Doubler, Formant Shifter, and Reference Tone Generator.";
+        products.push_back(pt);
+
+        // 4. CRUSH (Future Ecosystem Product)
         PluginProduct crush;
         crush.id = "pluggedin_crush";
         crush.name = "CRUSH";
@@ -401,6 +420,37 @@ public:
 
     void checkInstallationStatus()
     {
+        // 1. Ingest any new cloud plugins discovered dynamically from manifest.json
+        for (const auto& cloudPlug : autoUpdater.getAllDiscoveredPlugins())
+        {
+            if (cloudPlug.id.isEmpty()) continue;
+            bool exists = false;
+            for (const auto& p : products)
+            {
+                if (p.id == cloudPlug.id)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists)
+            {
+                PluginProduct newProd;
+                newProd.id = cloudPlug.id;
+                newProd.name = cloudPlug.name.isNotEmpty() ? cloudPlug.name : cloudPlug.id;
+                newProd.subtitle = cloudPlug.subtitle;
+                newProd.category = cloudPlug.category.isNotEmpty() ? cloudPlug.category : "Audio Plugin";
+                newProd.description = cloudPlug.description;
+                newProd.latestVersion = cloudPlug.latestVersion;
+                newProd.downloadUrl = cloudPlug.downloadUrl;
+                newProd.sha256 = cloudPlug.sha256;
+                newProd.changelog = cloudPlug.changelog;
+                newProd.supportedFormats = { "VST3 64-Bit", "AU (macOS)" };
+                products.push_back(newProd);
+            }
+        }
+
         int updatesCount = 0;
 
         for (auto& p : products)
@@ -573,7 +623,15 @@ public:
 
     void handleUninstallPlugin(const juce::String& pluginId)
     {
-        juce::String pluginName = (pluginId == "pluggedin_plugged1") ? "PLUGGED 1" : "UNDERGROUND";
+        juce::String pluginName = "Plugin";
+        for (const auto& p : products)
+        {
+            if (p.id == pluginId)
+            {
+                pluginName = p.name;
+                break;
+            }
+        }
 
         juce::AlertWindow::showOkCancelBox(
             juce::AlertWindow::QuestionIcon,
