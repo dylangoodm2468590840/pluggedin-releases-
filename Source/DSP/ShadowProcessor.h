@@ -2,23 +2,32 @@
 
 #include <juce_audio_processors/juce_audio_processors.h>
 #include <juce_dsp/juce_dsp.h>
+#include "../../libs/signalsmith-stretch.h"
 #include "../Utils/AudioUtils.h"
-#include <array>
 #include <vector>
 
 /**
  * @class ShadowProcessor
- * @brief Studio-Grade Pitch-Synchronous (PSOLA) & LPC Formant Shifting Engine.
- * Features:
- * - Real-Time Glottal Period Pitch-Tracking PSOLA Engine (Eliminates Comb-Filter Flutter)
- * - 12th-Order Linear Predictive Coding (LPC) Spectral Envelope Extractor & Formant Warper
- * - Phase-Locked Sub-Octave Fundamental Synthesizer (Murda Melodies / Vocal Bender standard)
- * - Anatomical Chest Cavity Weight (+21dB @ 125Hz) & Anti-Boxiness Mud Cleaning (-3dB @ 350Hz)
- * - Zero Audio Thread Allocations & Complete Denormal/NaN Sanitization
+ * @brief Studio-Grade Vocal Pitch & Formant Shifter (Little AlterBoy / Murda Melodies caliber).
+ * Powered by vocal-optimized Signalsmith Stretch Phase Vocoder:
+ * - Low-latency 22ms analysis window (eliminates 120ms spectral phase smearing and white noise)
+ * - Decoupled pitch (-24 to +24 ST) and vocal-tract throat formant morphing (-12 to +12 ST)
+ * - High-frequency tonality preservation (protects sibilants and breath transients)
+ * - Delay-compensated dry/wet crossfading for 100% phase-coherent mixing
+ * - Transpose, Monotone Robot, and Hard-Tune vocal modes
+ * - 12AX7 tube saturation & dynamic vocal tone control
+ * - Zero audio-thread allocations, real-time safe
  */
 class ShadowProcessor
 {
 public:
+    enum class DemonMode
+    {
+        Transpose = 0,  // Musical pitch transposition
+        Robot     = 1,  // Locked robotic drone pitch
+        HardTune  = 2   // Semitone-quantized hard pitch
+    };
+
     enum class PitchInterval
     {
         OctaveDown = 0,  // -12 semitones
@@ -36,95 +45,81 @@ public:
     void setEnabled(bool shouldBeEnabled) noexcept { enabled = shouldBeEnabled; }
     bool isEnabled() const noexcept { return enabled; }
 
-    void setMix(float newMix) noexcept { mix = std::clamp(newMix, 0.0f, 1.0f); }
+    void setMix(float newMix) noexcept { mix = std::clamp(newMix, 0.0f, 1.0f); mixSmoother.setTargetValue(mix); }
     float getMix() const noexcept { return mix; }
-    void setPitchInterval(PitchInterval interval) noexcept { pitchInterval = interval; }
-    PitchInterval getPitchInterval() const noexcept { return pitchInterval; }
-    void setFormantShift(float newFormant) noexcept { formantShift = std::clamp(newFormant, 0.0f, 1.0f); formantSmoother.setTargetValue(formantShift); }
-    float getFormantShift() const noexcept { return formantShift; }
-    void setDarkness(float newDarkness) noexcept { darkness = std::clamp(newDarkness, 0.0f, 1.0f); }
-    float getDarkness() const noexcept { return darkness; }
+
+    // Direct Semitone Pitch Transposition (-24.0 to +24.0 ST)
+    void setPitchSemitones(float semis) noexcept { pitchSemitones = std::clamp(semis, -24.0f, 24.0f); pitchSmoother.setTargetValue(pitchSemitones); }
+    float getPitchSemitones() const noexcept { return pitchSemitones; }
+
+    // Direct Semitone Formant / Throat Shifter (-12.0 to +12.0 ST)
+    void setFormantSemitones(float semis) noexcept { formantSemitones = std::clamp(semis, -12.0f, 12.0f); formantSmoother.setTargetValue(formantSemitones); }
+    float getFormantSemitones() const noexcept { return formantSemitones; }
+
+    // Pitch & Formant Varispeed Link
+    void setLink(bool shouldLink) noexcept { linkEnabled = shouldLink; }
+    bool isLinked() const noexcept { return linkEnabled; }
+
+    // Demonic Voicing Mode
+    void setMode(DemonMode newMode) noexcept { mode = newMode; }
+    DemonMode getMode() const noexcept { return mode; }
+
+    // Drive & Tone
     void setDrive(float newDrive) noexcept { drive = std::clamp(newDrive, 0.0f, 1.0f); driveSmoother.setTargetValue(drive); }
     float getDrive() const noexcept { return drive; }
+
+    void setDarkness(float newDarkness) noexcept { darkness = std::clamp(newDarkness, 0.0f, 1.0f); }
+    float getDarkness() const noexcept { return darkness; }
+
     void setClarity(float newClarity) noexcept { clarity = std::clamp(newClarity, 0.0f, 1.0f); claritySmoother.setTargetValue(clarity); }
     float getClarity() const noexcept { return clarity; }
+
+    // Legacy compatibility helpers
+    void setPitchInterval(PitchInterval interval) noexcept;
+    PitchInterval getPitchInterval() const noexcept;
+    void setFormantShift(float normalizedShift) noexcept;
+    float getFormantShift() const noexcept;
+
+    int getLatencySamples() const noexcept { return latencySamples; }
 
     void process(juce::AudioBuffer<float>& buffer);
 
 private:
-    float processSample(float inputSample, int channel);
-    inline float readHermite(const float* buffer, float delaySamples, int writePos, int mask) noexcept;
-    
-    // Pitch detection helper
-    void updatePitchPeriod(float sample);
-    
-    // LPC solver helper
-    void computeLpcCoefficients(const float* windowedSignal, int length, float* outA, int order);
-
     bool enabled { true };
     float mix { 0.0f };
-    PitchInterval pitchInterval { PitchInterval::OctaveDown };
-    float formantShift { 0.5f };
+    float pitchSemitones { -12.0f };
+    float formantSemitones { 0.0f };
+    bool linkEnabled { false };
+    DemonMode mode { DemonMode::Transpose };
     float darkness { 0.5f };
-    float drive { 0.2f };
-    float clarity { 0.65f }; // Voiced/Unvoiced speech articulation preservation
+    float drive { 0.25f };
+    float clarity { 0.65f };
 
     double sampleRate { 44100.0 };
+    int numChannels { 2 };
+    int latencySamples { 0 };
 
-    // Circular delay buffer for PSOLA (32768 samples for ultra-smooth multi-octave windows)
-    static constexpr int BUFFER_SIZE = 32768;
-    static constexpr int BUFFER_MASK = BUFFER_SIZE - 1;
+    // Vocal-Optimized Signalsmith Stretch Phase Vocoder
+    signalsmith::stretch::SignalsmithStretch<float> stretchEngine;
 
-    std::vector<float> grainBufferL;
-    std::vector<float> grainBufferR;
-    int writeIndex { 0 };
+    // Pre-allocated non-allocating scratch buffers
+    juce::AudioBuffer<float> stretchScratchBuffer;
+    std::vector<const float*> inputChannelPointers;
+    std::vector<float*> outputChannelPointers;
 
-    // Real-Time Pitch Tracking
-    static constexpr int PITCH_BUF_SIZE = 2048;
-    float pitchBuffer[PITCH_BUF_SIZE] { 0.0f };
-    int pitchBufIdx { 0 };
-    int pitchAnalysisCounter { 0 };
-    float currentPitchPeriodSamples { 441.0f / 4.0f }; // Default ~400Hz/100Hz
-    float smoothedPitchPeriod { 441.0f / 4.0f };
-    float pitchConfidence { 0.0f };
+    // Delay compensation for dry alignment
+    juce::dsp::DelayLine<float, juce::dsp::DelayLineInterpolationTypes::Linear> dryDelayLine[2];
 
-    // PSOLA Grain Read Heads (4 heads per channel for seamless overlapping)
-    float grainPhase[2][4] { { 0.0f, 0.25f, 0.50f, 0.75f }, { 0.0f, 0.25f, 0.50f, 0.75f } };
-    float activeGrainLength[2][4] { { 1024.0f, 1024.0f, 1024.0f, 1024.0f }, { 1024.0f, 1024.0f, 1024.0f, 1024.0f } };
-
-    // 12th-Order LPC Formant Filter State with Continuous Coefficient Interpolation
-    static constexpr int LPC_ORDER = 12;
-    float lpcA[LPC_ORDER + 1] { 1.0f, 0.0f };
-    float lpcGammaA_Target[LPC_ORDER + 1] { 1.0f, 0.0f };
-    float lpcGammaA_Current[LPC_ORDER + 1] { 1.0f, 0.0f };
-    float lpcHistory[2][LPC_ORDER + 1] { { 0.0f }, { 0.0f } };
-    float lpcAnalysisBuffer[512] { 0.0f };
-    int lpcAnalysisIdx { 0 };
-    int lpcUpdateCounter { 0 };
-
+    // Parameter Smoothers (Zipper-free transitions)
     juce::SmoothedValue<float> mixSmoother;
+    juce::SmoothedValue<float> pitchSmoother;
+    juce::SmoothedValue<float> formantSmoother;
     juce::SmoothedValue<float> driveSmoother;
-    juce::SmoothedValue<float> formantSmoother; // 80ms ramp — prevents LPC click on DEGENERATE macro
     juce::SmoothedValue<float> claritySmoother;
 
-    // Phase-Locked Sub-Octave Oscillator
-    float subPhase { 0.0f };
-    float subEnvFollower { 0.0f };
-    float subFreqSmoothed { 0.0f }; // One-pole smoothed sub frequency — prevents pop on voiced/unvoiced transitions
-
-    // Acoustic Chest & Mud Correction Filters (Derived from Murda Melodies Reference)
-    juce::dsp::StateVariableTPTFilter<float> chestWeightFilter[2]; // 125Hz low-shelf warmth
-    juce::dsp::StateVariableTPTFilter<float> antiMudFilter[2];      // 350Hz dynamic dip
-    juce::dsp::StateVariableTPTFilter<float> darknessFilter[2];     // Smooth high-cut tone
-    juce::dsp::StateVariableTPTFilter<float> consonantFilter[2];    // 4.5kHz highpass for unvoiced detection
-
-    // Anatomical Human Formant Resonators (F1 = Chest 520Hz, F2 = Throat 1450Hz, F3 = Mouth 2600Hz)
-    juce::dsp::StateVariableTPTFilter<float> formantF1[2];
-    juce::dsp::StateVariableTPTFilter<float> formantF2[2];
-    juce::dsp::StateVariableTPTFilter<float> formantF3[2];
-    float consonantEnv[2] { 0.0f, 0.0f };
-
-    // DC Blocker per channel
+    // Post-processing Analog Filters
+    juce::dsp::StateVariableTPTFilter<float> toneDarknessFilter[2];
+    juce::dsp::StateVariableTPTFilter<float> subRumbleHighpass[2];
     AudioUtils::DCBlocker dcBlocker[2];
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ShadowProcessor)
