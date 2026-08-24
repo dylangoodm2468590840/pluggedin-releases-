@@ -1,71 +1,71 @@
 {
-    "schema_version":  "1.0.0",
-    "channel":  "production",
-    "hub_version":  "2.1.0",
-    "manager":  {
-                    "version":  "2.1.0",
-                    "minimum_supported_version":  "1.0.0",
-                    "critical_update":  false,
-                    "release_notes":  "Official PluggedIN Central v2.1.0: Added Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synthesizer \u0026 Sampler engine, 808 machine with pitch dive and legato glide, and 100+ production presets.",
-                    "packages":  {
-                                     "windows_x64":  {
-                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip",
-                                                         "sha256":  "4a23800178f7a52730689a7fb850a16ea9b5d08762a749a127ae726cb7a07f90",
-                                                         "size_bytes":  4650147
-                                                     },
-                                     "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PluggedIN_Central_Mac.zip",
-                                                             "sha256":  "f4ffc2a9d8841d683c7b4eae663e4b549be5ed8e728953c0785a15ab4634b01d",
-                                                             "size_bytes":  5070315
-                                                         }
-                                 }
+    "schema_version": "1.0.0",
+    "channel": "production",
+    "hub_version": "2.1.0",
+    "manager": {
+        "version": "2.1.0",
+        "minimum_supported_version": "1.0.0",
+        "critical_update": false,
+        "release_notes": "Official PluggedIN Central v2.1.0: Added Plugged 1 Flagship Hybrid Instrument, Dual-Layer Synthesizer and Sampler engine, 808 machine with pitch dive and legato glide, and 100+ production presets.",
+        "packages": {
+            "windows_x64": {
+                "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.1.0/PluggedIN_Central_v2.1.0_Windows.zip",
+                "sha256": "4a23800178f7a52730689a7fb850a16ea9b5d08762a749a127ae726cb7a07f90",
+                "size_bytes": 4650147
+            },
+            "macos_universal": {
+                "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PluggedIN_Central_Mac.zip",
+                "sha256": "f4ffc2a9d8841d683c7b4eae663e4b549be5ed8e728953c0785a15ab4634b01d",
+                "size_bytes": 5070315
+            }
+        }
+    },
+    "plugins": [
+        {
+            "id": "pluggedin_plugged1",
+            "plugin_id": "pluggedin_plugged1",
+            "name": "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
+            "latest_version": "1.0.0",
+            "download_url_win": "https://files.catbox.moe/wk8jyf.zip",
+            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
+            "changelog": "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
+            "packages": {
+                "windows_x64": {
+                    "format": "vst3",
+                    "url": "https://files.catbox.moe/wk8jyf.zip",
+                    "sha256": "dd1bc69a4aff20a76b05d5755a4ed15d9a799b947c84a0c68dc4a8ac23f7a26f",
+                    "size_bytes": 9860452
                 },
-    "plugins":  [
-                    {
-                        "id":  "pluggedin_plugged1",
-                        "plugin_id":  "pluggedin_plugged1",
-                        "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
-                        "latest_version":  "1.0.0",
-                        "download_url_win":  "https://files.catbox.moe/wk8jyf.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
-                        "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive & Legato Glide, Studio ZDF Filter & Saturation Suite, and 100+ Production Presets.",
-                        "packages":  {
-                                         "windows_x64":  {
-                                                             "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/wk8jyf.zip",
-                                                             "sha256":  "dd1bc69a4aff20a76b05d5755a4ed15d9a799b947c84a0c68dc4a8ac23f7a26f",
-                                                             "size_bytes":  9860452
-                                                         },
-                                         "macos_universal":  {
-                                                                 "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
-                                                                 "size_bytes":  6566210
-                                                             }
-                                     }
-                    },
-                    {
-                        "id":  "pluggedin_underground",
-                        "plugin_id":  "pluggedin_underground",
-                        "name":  "UNDERGROUND v4.1 (Platinum Studio Suite)",
-                        "latest_version":  "4.1.0",
-                        "download_url_win":  "https://files.catbox.moe/oe2sq6.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-                        "changelog":  "UNDERGROUND v4.1.0 Platinum DSP Update: Active Speech-Gated Auto-Level Loudness Engine, 4x Polyphase Anti-Aliased Air Exciter, 100% Mono-Safe Mid/Side 3D Width, Linkwitz-Riley ZDF Dynamic De-Esser, and Local Spectral Resonance Tracking.",
-                        "packages":  {
-                                         "windows_x64":  {
-                                                             "format":  "vst3",
-                                                             "url":  "https://files.catbox.moe/oe2sq6.zip",
-                                                             "sha256":  "16738536d865473645c719638329e9eeb06f8b8608f7e8b422ea1c9651347825",
-                                                             "size_bytes":  9778248
-                                                         },
-                                         "macos_universal":  {
-                                                                 "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "b83596f870cf3c21dcdceacae0fc011ec27e7ef3f4ba7a371eb60b3055f1a9d6",
-                                                                 "size_bytes":  6345602
-                                                             }
-                                     }
-                    }
-                ]
+                "macos_universal": {
+                    "format": "vst3",
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                    "sha256": "3abd35aa7fa4d85ce1d3e069bd69f2e51385570227c6578d69f2c92ff7a6ad61",
+                    "size_bytes": 6566210
+                }
+            }
+        },
+        {
+            "id": "pluggedin_underground",
+            "plugin_id": "pluggedin_underground",
+            "name": "UNDERGROUND v4.1 (Platinum Studio Suite)",
+            "latest_version": "4.1.0",
+            "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.1.0/UNDERGROUND_v4.1.0_Win64_VST3.zip",
+            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
+            "changelog": "UNDERGROUND v4.1.0 Platinum DSP Update: Active Speech-Gated Auto-Level Loudness Engine, 4x Polyphase Anti-Aliased Air Exciter, 100% Mono-Safe Mid/Side 3D Width, Linkwitz-Riley ZDF Dynamic De-Esser, and Local Spectral Resonance Tracking.",
+            "packages": {
+                "windows_x64": {
+                    "format": "vst3",
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.1.0/UNDERGROUND_v4.1.0_Win64_VST3.zip",
+                    "sha256": "edcaad0370b3031ee42772190fc943c0ae438c68cc5a886b173277641a9bcfae",
+                    "size_bytes": 4898798
+                },
+                "macos_universal": {
+                    "format": "vst3",
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
+                    "sha256": "b83596f870cf3c21dcdceacae0fc011ec27e7ef3f4ba7a371eb60b3055f1a9d6",
+                    "size_bytes": 6345602
+                }
+            }
+        }
+    ]
 }
