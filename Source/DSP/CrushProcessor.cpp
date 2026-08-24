@@ -205,12 +205,15 @@ void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
     bool isPunished = punishEnabled.load();
     float transProt = transientProtection.load();
 
+    // Use getTargetValue() only as a lightweight early-exit guard (avoids per-block cost).
+    // Actual per-sample smoothed values are fetched via getNextValue() inside the loops.
     float curAmount = amountSmoother.getTargetValue();
-    float curTone   = toneSmoother.getTargetValue();
-    float curMix    = mixSmoother.getTargetValue();
 
     if (curAmount <= 0.001f && !isPunished)
         return;
+
+    // Bug #3 Fix: Don't read getTargetValue() here — that bypasses the smoother entirely.
+    // We'll call getNextValue() per-sample inside the loops instead.
 
     if (oversamplingEnabled.load() && oversampler)
     {
@@ -220,21 +223,13 @@ void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
         const size_t osSamples = oversampledBlock.getNumSamples();
         const size_t osChannels = oversampledBlock.getNumChannels();
 
-        float startAmt  = amountSmoother.getCurrentValue();
-        float targetAmt = amountSmoother.getTargetValue();
-        float startTone = toneSmoother.getCurrentValue();
-        float targetTone= toneSmoother.getTargetValue();
-        float startMix  = mixSmoother.getCurrentValue();
-        float targetMix = mixSmoother.getTargetValue();
-
-        float invOs = (osSamples > 1) ? (1.0f / static_cast<float>(osSamples - 1)) : 1.0f;
-
+        // Bug #3 Fix: Use getNextValue() per OS sample so the smoother advances
+        // correctly and provides true zipper-free parameter interpolation.
         for (size_t sample = 0; sample < osSamples; ++sample)
         {
-            float t = static_cast<float>(sample) * invOs;
-            float amt  = startAmt + t * (targetAmt - startAmt);
-            float tone = startTone + t * (targetTone - startTone);
-            float mix  = startMix + t * (targetMix - startMix);
+            float amt  = amountSmoother.getNextValue();
+            float tone = toneSmoother.getNextValue();
+            float mix  = mixSmoother.getNextValue();
 
             for (size_t ch = 0; ch < osChannels; ++ch)
             {
@@ -243,10 +238,6 @@ void CrushProcessor::process(juce::AudioBuffer<float>& buffer)
                 oversampledBlock.setSample(ch, sample, dry * (1.0f - mix) + wet * mix);
             }
         }
-
-        amountSmoother.setCurrentAndTargetValue(targetAmt);
-        toneSmoother.setCurrentAndTargetValue(targetTone);
-        mixSmoother.setCurrentAndTargetValue(targetMix);
 
         oversampler->processSamplesDown(block);
     }
