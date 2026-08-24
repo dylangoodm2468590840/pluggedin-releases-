@@ -174,13 +174,14 @@ public:
     void copyDiagnosticsReport()
     {
         juce::String report = "=== PLUGGEDIN BETA TESTER DIAGNOSTIC REPORT ===\n";
-        report += "Central App Version: 2.1.0\n";
+        report += "Central App Version: 2.2.0\n";
         report += "OS: " + juce::SystemStats::getOperatingSystemName() + " (" + (juce::SystemStats::isOperatingSystem64Bit() ? "64-bit" : "32-bit") + ")\n";
         report += "CPU: " + juce::SystemStats::getCpuVendor() + " | Cores: " + juce::String(juce::SystemStats::getNumCpus()) + "\n";
         report += "System VST3 Dir: " + InstalledRegistry::getSystemVst3Directory().getFullPathName() + "\n";
         report += "User VST3 Dir: " + InstalledRegistry::getUserVst3Directory().getFullPathName() + "\n";
         report += "UNDERGROUND Version: " + InstalledRegistry::getInstalledVersion("pluggedin_underground") + "\n";
-        report += "PLUGGED 1 Version: " + InstalledRegistry::getInstalledVersion("pluggedin_plugged1") + "\n";
+        report += "PLUGGED 1 Version:    " + InstalledRegistry::getInstalledVersion("pluggedin_plugged1") + "\n";
+        report += "PLUGTUNE Version:     " + InstalledRegistry::getInstalledVersion("pluggedin_plugtune") + "\n";
         report += "\nInstalled DAWs:\n";
         for (const auto& daw : detectedDaws)
         {
