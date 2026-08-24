@@ -173,12 +173,26 @@ public:
         return "";
     }
 
+    static juce::String getPluginBundleName(const juce::String& pluginId)
+    {
+        if (pluginId == "pluggedin_plugged1") return "Plugged 1.vst3";
+        if (pluginId == "pluggedin_plugtune") return "PlugTune.vst3";
+        if (pluginId == "pluggedin_crush")    return "CRUSH.vst3";
+        return "UNDERGROUND.vst3";
+    }
+
+    static juce::String getPluginAuName(const juce::String& pluginId)
+    {
+        if (pluginId == "pluggedin_plugged1") return "Plugged 1.component";
+        if (pluginId == "pluggedin_plugtune") return "PlugTune.component";
+        if (pluginId == "pluggedin_crush")    return "CRUSH.component";
+        return "UNDERGROUND.component";
+    }
+
     static std::vector<juce::File> getCandidateDirectories(const juce::String& pluginId)
     {
-        juce::String bundleName = (pluginId == "pluggedin_plugged1") ? "Plugged 1.vst3" :
-                                  (pluginId == "pluggedin_crush")    ? "CRUSH.vst3"     : "UNDERGROUND.vst3";
-        juce::String auName     = (pluginId == "pluggedin_plugged1") ? "Plugged 1.component" :
-                                  (pluginId == "pluggedin_crush")    ? "CRUSH.component"     : "UNDERGROUND.component";
+        juce::String bundleName = getPluginBundleName(pluginId);
+        juce::String auName     = getPluginAuName(pluginId);
 
         std::vector<juce::File> candidates;
         // Priority 1: System VST3 Directory (Scanned by FL Studio, Ableton, Reaper, Pro Tools)
@@ -199,63 +213,42 @@ public:
 
     static juce::String getInstalledVersion(const juce::String& pluginId)
     {
-        // 1. LIVE ON-DISK SCAN (Find highest version across all candidate paths)
+        // Tier 1: Authoritative live on-disk physical bundle inspection
         auto candidates = getCandidateDirectories(pluginId);
-        juce::String highestVersion = "";
-        juce::String highestPath = "";
-
         for (const auto& candidate : candidates)
         {
             if (candidate.exists())
             {
-                juce::String onDiskVersion = extractVersionFromBundle(candidate);
-                if (onDiskVersion.isNotEmpty())
-                {
-                    if (highestVersion.isEmpty() || compareVersions(onDiskVersion, highestVersion) > 0)
-                    {
-                        highestVersion = onDiskVersion;
-                        highestPath = candidate.getFullPathName();
-                    }
-                }
+                juce::String diskVer = extractVersionFromBundle(candidate);
+                if (diskVer.isNotEmpty())
+                    return diskVer;
             }
         }
 
-        if (highestVersion.isNotEmpty())
-        {
-            setInstalledVersion(pluginId, highestVersion, highestPath);
-            return highestVersion;
-        }
-
-        // 2. Cached registry manifest check (if plugin moved or offline)
+        // Tier 2: Registry fallback
         auto registry = readRegistry();
         if (auto* obj = registry.getDynamicObject())
         {
             if (obj->hasProperty(pluginId))
             {
-                auto pluginObj = obj->getProperty(pluginId);
-                if (auto* pObj = pluginObj.getDynamicObject())
+                auto pluginVar = obj->getProperty(pluginId);
+                if (auto* pObj = pluginVar.getDynamicObject())
                 {
-                    juce::String regVer = pObj->getProperty("installed_version").toString().trim();
-                    if (regVer.isNotEmpty())
-                        return regVer;
+                    return pObj->getProperty("installed_version").toString();
                 }
             }
         }
-
         return "";
     }
 
-    /**
-     * @brief Strict on-disk verification: Returns true if ANY candidate directory
-     * contains the expected version in its moduleinfo.json.
-     * Checks all candidates — does NOT stop at the first one found (old version may be
-     * sitting in system dir at priority 1 from a previous failed install).
-     */
-    static bool verifyOnDiskInstallation(const juce::String& pluginId, const juce::String& expectedVersion, juce::String& outVerifiedPath)
+    static bool isPluginInstalled(const juce::String& pluginId)
     {
-        outVerifiedPath = "";
-        auto candidates = getCandidateDirectories(pluginId);
+        return getInstalledVersion(pluginId).isNotEmpty();
+    }
 
+    static bool verifyInstalledVersionOnDisk(const juce::String& pluginId, const juce::String& expectedVersion, juce::String& outVerifiedPath)
+    {
+        auto candidates = getCandidateDirectories(pluginId);
         for (const auto& candidate : candidates)
         {
             if (candidate.exists())
@@ -264,7 +257,6 @@ public:
                 if (diskVer.isNotEmpty() && diskVer == expectedVersion)
                 {
                     outVerifiedPath = candidate.getFullPathName();
-                    // Sync verified version into local registry
                     setInstalledVersion(pluginId, diskVer, outVerifiedPath);
                     return true;
                 }
@@ -273,8 +265,7 @@ public:
 
         // Secondary check: if a stale old-version bundle is in system dir blocking verification,
         // check user dir explicitly as authoritative fallback before declaring failure
-        juce::String bundleName = (pluginId == "pluggedin_plugged1") ? "Plugged 1.vst3" :
-                                  (pluginId == "pluggedin_crush")    ? "CRUSH.vst3"     : "UNDERGROUND.vst3";
+        juce::String bundleName = getPluginBundleName(pluginId);
         juce::File userBundle = getUserVst3Directory().getChildFile(bundleName);
         if (userBundle.exists())
         {
