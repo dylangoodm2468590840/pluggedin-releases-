@@ -47,21 +47,21 @@
         {
             "id": "pluggedin_underground",
             "plugin_id": "pluggedin_underground",
-            "name": "UNDERGROUND v4.2.1 (Studio Pitch & Formant Demon Suite)",
-            "latest_version": "4.2.1",
-            "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.1/UNDERGROUND_v4.2.1_Win64_VST3.zip",
-            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.1/UNDERGROUND_Mac_Universal.vst3.zip",
-            "changelog": "UNDERGROUND v4.2.1 Definitive Studio Update: High-Precision NSDF Sub-Sample Pitch Tracking, Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches), Series 3-Band Parametric Formant Warper, Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer, and 16 Flagship Vocal Presets.",
+            "name": "UNDERGROUND v4.2.2 (Studio Pitch & Formant Demon Suite)",
+            "latest_version": "4.2.2",
+            "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
+            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_Mac_Universal.vst3.zip",
+            "changelog": "UNDERGROUND v4.2.2 Definitive Studio Update: Decimated NSDF Pitch Tracking (<0.05% CPU, zero buffer underruns), 64-Sample Lookahead Noise Protection, Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches), Series 3-Band Parametric Formant Warper, Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer, and 16 Flagship Vocal Presets.",
             "packages": {
                 "windows_x64": {
                     "format": "vst3",
-                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.1/UNDERGROUND_v4.2.1_Win64_VST3.zip",
-                    "sha256": "f6205a7d901cd42d890947984670e2a3bcdb73763b37a5ff0b5c713112ed763e",
-                    "size_bytes": 4906804
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
+                    "sha256": "442a040d19e7f3e53473c481cd100dc7b030592863cd967ae39da15353872743",
+                    "size_bytes": 4907884
                 },
                 "macos_universal": {
                     "format": "vst3",
-                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.1/UNDERGROUND_Mac_Universal.vst3.zip",
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_Mac_Universal.vst3.zip",
                     "sha256": "1ebecb43b77d29dc78d916f2b8eac2929322d38485f221ca604d9eadd9d501c3",
                     "size_bytes": 6345609
                 }
