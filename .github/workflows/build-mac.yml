@@ -26,6 +26,16 @@ jobs:
     - name: Set up CMake and Ninja
       uses: lukka/get-cmake@latest
 
+    - name: Download signalsmith DSP headers
+      run: |
+        mkdir -p libs/signalsmith-linear
+        curl -sL https://raw.githubusercontent.com/Signalsmith-Audio/signalsmith-stretch/main/signalsmith-stretch.h -o libs/signalsmith-stretch.h
+        curl -sL https://raw.githubusercontent.com/Signalsmith-Audio/signalsmith-stretch/main/signalsmith-linear/fft.h -o libs/signalsmith-linear/fft.h
+        curl -sL https://raw.githubusercontent.com/Signalsmith-Audio/signalsmith-stretch/main/signalsmith-linear/stft.h -o libs/signalsmith-linear/stft.h
+        mkdir -p Source/PlugTune
+        cp libs/signalsmith-stretch.h Source/PlugTune/
+        cp -r libs/signalsmith-linear Source/PlugTune/
+
     - name: Configure CMake for Universal macOS (arm64 + x86_64)
       run: |
         export CFLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new"
@@ -37,31 +47,13 @@ jobs:
           -DCMAKE_C_FLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new" \
           -DCMAKE_CXX_FLAGS="-Wno-error -Wno-deprecated-declarations -Wno-unguarded-availability-new"
 
-    - name: Build macOS VST3, AU & PlugTune
+    - name: Build macOS PlugTune VST3
       run: |
-        cmake --build build --config Release --target UNDERGROUND_VST3 UNDERGROUND_AU PluggedIN_Central PlugTune_VST3
+        cmake --build build --config Release --target PlugTune_VST3
 
     - name: Package macOS Artifacts
       run: |
         mkdir -p dist/mac
-        cd build/UNDERGROUND_artefacts/Release
-        if [ -d "VST3/UNDERGROUND.vst3" ]; then
-          zip -r -y ../../../dist/mac/UNDERGROUND_Mac_Universal.vst3.zip VST3/UNDERGROUND.vst3
-        fi
-        if [ -d "AU/UNDERGROUND.component" ]; then
-          zip -r -y ../../../dist/mac/UNDERGROUND_Mac_Universal.component.zip AU/UNDERGROUND.component
-        fi
-        cd ../../../
-        if [ -d "build/PluggedIN_Central_artefacts/Release/PluggedIN Central.app" ]; then
-          cd "build/PluggedIN_Central_artefacts/Release"
-          zip -r -y ../../../dist/mac/PluggedIN_Central_Mac.zip "PluggedIN Central.app"
-          cd ../../../
-        fi
-        if [ -d "build/Plugged_1_artefacts/Release/VST3/Plugged 1.vst3" ]; then
-          cd "build/Plugged_1_artefacts/Release"
-          zip -r -y ../../../dist/mac/PLUGGED_1_Mac_Universal.vst3.zip "VST3/Plugged 1.vst3"
-          cd ../../../
-        fi
         if [ -d "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" ]; then
           cd "build/PlugTune_artefacts/Release"
           zip -r -y ../../../dist/mac/PlugTune_Mac_Universal.vst3.zip "VST3/PlugTune.vst3"
@@ -87,10 +79,6 @@ jobs:
         draft: false
         prerelease: true
         files: |
-          dist/mac/UNDERGROUND_Mac_Universal.vst3.zip
-          dist/mac/UNDERGROUND_Mac_Universal.component.zip
-          dist/mac/PluggedIN_Central_Mac.zip
-          dist/mac/PLUGGED_1_Mac_Universal.vst3.zip
           dist/mac/PlugTune_Mac_Universal.vst3.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
