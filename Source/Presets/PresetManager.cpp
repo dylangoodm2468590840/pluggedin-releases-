@@ -5,18 +5,24 @@ const char* PresetManager::getPresetName(PresetIndex preset)
 {
     switch (preset)
     {
-        case Ref1_PolishedCrisp:     return "01. POLISHED / CRISP";
-        case Ref2_DarkUnderground:   return "02. DARK / UNDERGROUND";
-        case Ref3_DemonDeep:         return "03. DEMON / DEEP";
-        case Ref4_WideFloating:      return "04. WIDE / FLOATING";
-        case Ref5_DestroyedCrushed:  return "05. DESTROYED / CRUSHED";
-        case Ref6_TelephoneDevice:   return "06. TELEPHONE / DEVICE";
-        case Ref7_FuturisticAlien:   return "07. FUTURISTIC / ALIEN";
-        case Ref8_Subterranean808:   return "08. SUBTERRANEAN 808";
+        case Ref1_PolishedCrisp:        return "01. POLISHED / CRISP";
+        case Ref2_DarkUnderground:      return "02. DARK / UNDERGROUND";
+        case Ref3_DemonDeep:            return "03. DEMON / DEEP";
+        case Ref4_WideFloating:         return "04. WIDE / FLOATING";
+        case Ref5_DestroyedCrushed:     return "05. DESTROYED / CRUSHED";
+        case Ref6_TelephoneDevice:      return "06. TELEPHONE / DEVICE";
+        case Ref7_FuturisticAlien:      return "07. FUTURISTIC / ALIEN";
+        case Ref8_Subterranean808:      return "08. SUBTERRANEAN 808";
         case Ref9_VintageTapeMellotron: return "09. VINTAGE TAPE / MELLOTRON";
-        case Ref10_HyperpopWarp:     return "10. HYPERPOP / WARP";
-        case Custom:                 return "CUSTOM USER";
-        default:                     return "UNKNOWN";
+        case Ref10_HyperpopWarp:        return "10. HYPERPOP / WARP";
+        case Ref11_TravisSubDemon:      return "11. TRAVIS SUB-DEMON";
+        case Ref12_EvilDrill5th:        return "12. EVIL DRILL 5TH";
+        case Ref13_AbyssMonster:        return "13. ABYSS MONSTER";
+        case Ref14_CyborgDrone:         return "14. CYBORG DRONE";
+        case Ref15_ChipmunkAnimeLead:   return "15. CHIPMUNK / ANIME LEAD";
+        case Ref16_GhostHarmonyBed:     return "16. GHOST HARMONY BED";
+        case Custom:                    return "CUSTOM USER";
+        default:                        return "UNKNOWN";
     }
 }
 
@@ -64,10 +70,12 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
     setP(ParameterIDs::SHADOW_ENABLE, 0.0f);
     setP(ParameterIDs::SHADOW_MIX, 0.0f);
-    setP(ParameterIDs::SHADOW_PITCH, 0.0f);
-    setP(ParameterIDs::SHADOW_FORMANT, 0.5f);
+    setP(ParameterIDs::DEMON_PITCH, -12.0f);
+    setP(ParameterIDs::DEMON_FORMANT, 0.0f);
+    setP(ParameterIDs::DEMON_LINK, 0.0f);
+    setP(ParameterIDs::DEMON_MODE, 0.0f);
     setP(ParameterIDs::SHADOW_DARKNESS, 0.5f);
-    setP(ParameterIDs::SHADOW_DRIVE, 0.2f);
+    setP(ParameterIDs::SHADOW_DRIVE, 0.25f);
 
     setP(ParameterIDs::WIDTH_AMOUNT, 0.0f);
     setP(ParameterIDs::MOD_RATE, 0.35f);
@@ -144,11 +152,12 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
             setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setP(ParameterIDs::SHADOW_MIX,    0.45f);  // Raised from 0.22 — was inaudible before fix
-            setP(ParameterIDs::SHADOW_PITCH,  0.0f);   // Octave Down
-            setP(ParameterIDs::SHADOW_FORMANT, 0.35f); // Deep resonant male chest cavity
+            setP(ParameterIDs::DEMON_MIX,     0.40f);
+            setP(ParameterIDs::DEMON_PITCH,  -12.0f);  // -12st Octave Down
+            setP(ParameterIDs::DEMON_FORMANT, -3.5f);  // Deep resonant male chest cavity
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
             setP(ParameterIDs::SHADOW_DARKNESS, 0.78f);
-            setP(ParameterIDs::SHADOW_DRIVE,  0.20f);
+            setP(ParameterIDs::DEMON_DRIVE,   0.20f);
             break;
 
         // =========================================================================
@@ -170,11 +179,12 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
             setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setP(ParameterIDs::SHADOW_MIX,    0.55f);  // Raised to actually be heard
-            setP(ParameterIDs::SHADOW_PITCH,  0.0f);   // Octave Down (-12st)
-            setP(ParameterIDs::SHADOW_FORMANT, 0.28f); // Deep resonant LPC male chest tract
+            setP(ParameterIDs::DEMON_MIX,     0.65f);  // Thick, authoritative demon lead
+            setP(ParameterIDs::DEMON_PITCH,  -12.0f);  // -12st Octave Down
+            setP(ParameterIDs::DEMON_FORMANT, -6.0f);  // Titan deep throat morphing
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
             setP(ParameterIDs::SHADOW_DARKNESS, 0.55f);
-            setP(ParameterIDs::SHADOW_DRIVE,  0.22f);
+            setP(ParameterIDs::DEMON_DRIVE,   0.35f);  // Tube saturation
 
             setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
             setP(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium Preamp
@@ -279,10 +289,11 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
             setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setP(ParameterIDs::SHADOW_MIX,    0.55f);  // Raised from 0.35 — now actually audible
-            setP(ParameterIDs::SHADOW_PITCH,  2.0f);   // FourthDown (-5 semitones)
-            setP(ParameterIDs::SHADOW_FORMANT, 0.78f); // High-pitched alien cavity (capped at 0.88 gamma now)
-            setP(ParameterIDs::SHADOW_DRIVE,  0.18f);
+            setP(ParameterIDs::DEMON_MIX,     0.55f);
+            setP(ParameterIDs::DEMON_PITCH,  -5.0f);   // FourthDown (-5 semitones)
+            setP(ParameterIDs::DEMON_FORMANT, 6.0f);   // Bright futuristic throat resonance
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
+            setP(ParameterIDs::DEMON_DRIVE,   0.20f);
 
             setP(ParameterIDs::AIR_MID, 0.22f);
             setP(ParameterIDs::AIR_TOP, 0.35f);
@@ -318,11 +329,12 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
 
             setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
-            setP(ParameterIDs::SHADOW_MIX,    0.60f);  // Sub voice prominent
-            setP(ParameterIDs::SHADOW_PITCH,  0.0f);   // Octave Down (-12st)
-            setP(ParameterIDs::SHADOW_FORMANT, 0.25f); // Deep resonant chest
+            setP(ParameterIDs::DEMON_MIX,     0.60f);  // Sub voice prominent
+            setP(ParameterIDs::DEMON_PITCH,  -12.0f);  // Octave Down (-12st)
+            setP(ParameterIDs::DEMON_FORMANT, -5.0f);  // Deep resonant chest
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
             setP(ParameterIDs::SHADOW_DARKNESS, 0.60f);
-            setP(ParameterIDs::SHADOW_DRIVE,  0.30f);
+            setP(ParameterIDs::DEMON_DRIVE,   0.30f);
 
             setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
             setP(ParameterIDs::CRUSH_CHARACTER, 2.0f); // Ampex Tape Warmth
@@ -386,8 +398,9 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
             setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
             setP(ParameterIDs::SHADOW_MIX,    0.40f);
-            setP(ParameterIDs::SHADOW_PITCH,  2.0f);   // Fourth down
-            setP(ParameterIDs::SHADOW_FORMANT, 0.85f); // High alien throat
+            setP(ParameterIDs::DEMON_PITCH,   12.0f);  // +12st high pitch octave
+            setP(ParameterIDs::DEMON_FORMANT, 7.0f);   // High alien throat
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
 
             setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
             setP(ParameterIDs::CRUSH_CHARACTER, 4.0f); // Cyber Fuzz
@@ -399,6 +412,187 @@ void PresetManager::applyPreset(juce::AudioProcessorValueTreeState& apvts, Prese
             setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
             setP(ParameterIDs::SPACE_REVERB,  0.30f);
             setP(ParameterIDs::SPACE_DUCKING, 0.80f);
+            break;
+
+        // =========================================================================
+        // 11. TRAVIS SUB-DEMON — The Definitive Modern Billboard Rap Demon Layer
+        // -12st Sub Pitch + -5st Deep Chest Throat + Fast FET Compression + Tube Grit
+        // =========================================================================
+        case Ref11_TravisSubDemon:
+            setP(ParameterIDs::EQ_LOW_CUT,   40.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN,   3.0f);   // 100Hz chest weight
+            setP(ParameterIDs::EQ_MID_GAIN,   1.5f);   // 2.5kHz voice clarity
+            setP(ParameterIDs::EQ_HIGH_GAIN,  2.0f);
+            setP(ParameterIDs::EQ_HIGH_CUT,   17000.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.65f);  // Heavy leveling
+            setP(ParameterIDs::COMP_CHARACTER, 0.0f);  // Fast FET 1176 style
+            setP(ParameterIDs::DEESS_AMOUNT,  0.50f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.60f);  // Prominent demon vocal
+            setP(ParameterIDs::DEMON_PITCH,  -12.0f);  // -12st Octave Down
+            setP(ParameterIDs::DEMON_FORMANT, -5.0f);  // Thick 8-foot monster throat
+            setP(ParameterIDs::DEMON_LINK,    0.0f);
+            setP(ParameterIDs::DEMON_MODE,    0.0f);   // Transpose
+            setP(ParameterIDs::SHADOW_DRIVE,  0.35f);  // Analog preamp heat
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 0.0f); // 12AX7 Tube
+            setP(ParameterIDs::CRUSH_AMOUNT,  0.25f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT,  0.45f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB,  0.25f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.75f);
+            break;
+
+        // =========================================================================
+        // 12. EVIL DRILL 5TH — Dark UK / NY Drill Vocal Chant Harmony
+        // -7st Perfect 5th Down + Hard Tune Quantize + Tube Saturation
+        // =========================================================================
+        case Ref12_EvilDrill5th:
+            setP(ParameterIDs::EQ_LOW_CUT,   55.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN,   1.5f);
+            setP(ParameterIDs::EQ_MID_GAIN,   2.5f);
+            setP(ParameterIDs::EQ_HIGH_GAIN,  1.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.55f);
+            setP(ParameterIDs::DEESS_AMOUNT,  0.40f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.55f);
+            setP(ParameterIDs::DEMON_PITCH,   -7.0f);  // -7st Perfect 5th Down
+            setP(ParameterIDs::DEMON_FORMANT, -3.0f);  // Dark resonant throat
+            setP(ParameterIDs::DEMON_LINK,    0.0f);
+            setP(ParameterIDs::DEMON_MODE,    2.0f);   // HARD TUNE / QUANTIZE
+            setP(ParameterIDs::SHADOW_DRIVE,  0.30f);
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 1.0f); // EL34 Pentode
+            setP(ParameterIDs::CRUSH_AMOUNT,  0.30f);
+
+            setP(ParameterIDs::MODULE_DELAY_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_DELAY,   0.25f);
+            setP(ParameterIDs::DELAY_FEEDBACK, 0.35f);
+            setP(ParameterIDs::DELAY_MIX,     0.20f);
+            break;
+
+        // =========================================================================
+        // 13. ABYSS MONSTER — Subterranean Demonic Titan Voice
+        // -24st 2-Octaves Down + -10st Titan Throat + Iron Saturation
+        // =========================================================================
+        case Ref13_AbyssMonster:
+            setP(ParameterIDs::EQ_LOW_CUT,   25.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN,   5.0f);   // Sub bass dominance
+            setP(ParameterIDs::EQ_MID_GAIN,   1.0f);
+            setP(ParameterIDs::EQ_HIGH_GAIN,  0.0f);
+            setP(ParameterIDs::EQ_HIGH_CUT,   12000.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.70f);  // Dense dynamics
+            setP(ParameterIDs::COMP_CHARACTER, 1.0f);  // Optical LA-2A
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.75f);  // Monster dominance
+            setP(ParameterIDs::DEMON_PITCH,  -24.0f);  // -24st Subterranean
+            setP(ParameterIDs::DEMON_FORMANT,-10.0f);  // Massive titan cavity
+            setP(ParameterIDs::DEMON_MODE,    0.0f);
+            setP(ParameterIDs::SHADOW_DARKNESS, 0.65f);
+            setP(ParameterIDs::SHADOW_DRIVE,  0.45f);
+
+            setP(ParameterIDs::MODULE_GRIT_ENABLE, 1.0f);
+            setP(ParameterIDs::CRUSH_CHARACTER, 3.0f); // Germanium
+            setP(ParameterIDs::CRUSH_AMOUNT,  0.35f);
+            break;
+
+        // =========================================================================
+        // 14. CYBORG DRONE — Robotic Monotone Horror Vocal Layer
+        // Fixed C3 Monotone Drone Mode + 100% Stereo Chorus Spread
+        // =========================================================================
+        case Ref14_CyborgDrone:
+            setP(ParameterIDs::EQ_LOW_CUT,   70.0f);
+            setP(ParameterIDs::EQ_MID_GAIN,   2.0f);
+            setP(ParameterIDs::EQ_HIGH_GAIN,  2.5f);
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.60f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.60f);
+            setP(ParameterIDs::DEMON_PITCH,    0.0f);
+            setP(ParameterIDs::DEMON_FORMANT, -2.0f);
+            setP(ParameterIDs::DEMON_MODE,    1.0f);   // ROBOT MONOTONE DRONE
+            setP(ParameterIDs::SHADOW_DRIVE,  0.25f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT,  0.80f);  // Wide chorus aura
+            setP(ParameterIDs::MOD_RATE,      0.40f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB,  0.35f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.70f);
+            break;
+
+        // =========================================================================
+        // 15. CHIPMUNK / ANIME LEAD — Pitch-Shifted High Lead Doubling
+        // +12st Pitch Octave Up + +8st Formant + Varispeed Link + Fresh Air
+        // =========================================================================
+        case Ref15_ChipmunkAnimeLead:
+            setP(ParameterIDs::EQ_LOW_CUT,   130.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN,  -2.5f);
+            setP(ParameterIDs::EQ_MID_GAIN,   3.0f);
+            setP(ParameterIDs::EQ_HIGH_GAIN,  5.0f);   // High air sparkle
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.50f);
+            setP(ParameterIDs::AIR_MID,       0.40f);
+            setP(ParameterIDs::AIR_TOP,       0.60f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.50f);
+            setP(ParameterIDs::DEMON_PITCH,   12.0f);  // +12st High Octave
+            setP(ParameterIDs::DEMON_FORMANT,  8.0f);  // Bright small throat
+            setP(ParameterIDs::DEMON_LINK,    1.0f);   // Linked Varispeed
+            setP(ParameterIDs::DEMON_MODE,    0.0f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT,  0.60f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB,  0.30f);
+            break;
+
+        // =========================================================================
+        // 16. GHOST HARMONY BED — Ambient Suspended 4th Vocal Reverb Layer
+        // -5st 4th Down + Large Lexicon Space + Ducking
+        // =========================================================================
+        case Ref16_GhostHarmonyBed:
+            setP(ParameterIDs::EQ_LOW_CUT,   85.0f);
+            setP(ParameterIDs::EQ_LOW_GAIN,  -1.0f);
+            setP(ParameterIDs::EQ_MID_GAIN,   1.0f);
+            setP(ParameterIDs::EQ_HIGH_GAIN,  3.0f);
+
+            setP(ParameterIDs::COMP_SQUEEZE,  0.45f);
+
+            setP(ParameterIDs::MODULE_SUB_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_ENABLE, 1.0f);
+            setP(ParameterIDs::SHADOW_MIX,    0.45f);
+            setP(ParameterIDs::DEMON_PITCH,   -5.0f);  // -5st Suspended 4th Down
+            setP(ParameterIDs::DEMON_FORMANT, -2.0f);
+            setP(ParameterIDs::DEMON_MODE,    0.0f);
+
+            setP(ParameterIDs::MODULE_MOD_ENABLE, 1.0f);
+            setP(ParameterIDs::WIDTH_AMOUNT,  0.70f);
+
+            setP(ParameterIDs::MODULE_REVERB_ENABLE, 1.0f);
+            setP(ParameterIDs::SPACE_REVERB,  0.60f);  // Huge ambient hall
+            setP(ParameterIDs::REVERB_DECAY,  0.75f);
+            setP(ParameterIDs::SPACE_DUCKING, 0.80f);  // Heavy ducking behind lead
             break;
 
         case Custom:
