@@ -47,17 +47,17 @@
         {
             "id": "pluggedin_underground",
             "plugin_id": "pluggedin_underground",
-            "name": "UNDERGROUND v4.2 (Pitch & Formant Demon Suite)",
+            "name": "UNDERGROUND v4.2 (Studio Pitch & Formant Demon Suite)",
             "latest_version": "4.2.0",
             "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_v4.2.0_Win64_VST3.zip",
             "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_Mac_Universal.vst3.zip",
-            "changelog": "UNDERGROUND v4.2.0 Platinum Update: Real-Time Semitone Pitch Transposition (-24 to +24 ST), Anatomical Throat Formant Shifting (-12 to +12 ST), Varispeed Link Mode, 3 Production Modes (Transpose, Robot Drone, Hard Tune Quantize), and 16 Flagship Vocal Presets.",
+            "changelog": "UNDERGROUND v4.2.0 Definitive Studio Update: High-Precision NSDF Sub-Sample Pitch Tracking, Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches), Series 3-Band Parametric Formant Warper, Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer, and 16 Flagship Vocal Presets.",
             "packages": {
                 "windows_x64": {
                     "format": "vst3",
                     "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.0/UNDERGROUND_v4.2.0_Win64_VST3.zip",
-                    "sha256": "52218eaad2223e29eebf6e1edf253ff2dfaa7b351d755e6e0984a1568168a91f",
-                    "size_bytes": 4908150
+                    "sha256": "03567bfda21cda83051a927259f6611ec4b32f9f50e496db9a31c5f4b972290f",
+                    "size_bytes": 4906804
                 },
                 "macos_universal": {
                     "format": "vst3",
