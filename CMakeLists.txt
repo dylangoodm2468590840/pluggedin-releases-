@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(UNDERGROUND VERSION 4.1.0 LANGUAGES C CXX)
+project(UNDERGROUND VERSION 4.2.4 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -88,7 +88,7 @@ juce_add_gui_app(PluggedIN_Central
     PRODUCT_NAME "PluggedIN Central"
     COMPANY_NAME "PluggedIN Audio Systems"
     BUNDLE_ID "com.pluggedin.central"
-    VERSION "2.1.0"
+    VERSION "2.2.0"
 )
 
 target_sources(PluggedIN_Central
@@ -164,14 +164,70 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1/PluginProcessor.cpp")
     )
 
     juce_generate_juce_header(Plugged_1)
+endif()
 
-    # Ensure Plugged 1 VST3 and AU are always compiled whenever plugins are built
-    if (TARGET Plugged_1_VST3)
-        add_dependencies(UNDERGROUND_VST3 Plugged_1_VST3)
-    endif()
-    if (TARGET Plugged_1_AU)
-        add_dependencies(UNDERGROUND_VST3 Plugged_1_AU)
-    endif()
+# PlugTune Real-Time AutoTune & Formant Suite Plugin Target
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/PlugTune/PluginProcessor.cpp")
+    juce_add_plugin(PlugTune
+        COMPANY_NAME "Plugged In Central"
+        IS_SYNTH FALSE
+        NEEDS_MIDI_INPUT TRUE
+        NEEDS_MIDI_OUTPUT FALSE
+        IS_MIDI_EFFECT FALSE
+        EDITOR_WANTS_KEYBOARD_FOCUS TRUE
+        PLUGIN_MANUFACTURER_CODE Plug
+        PLUGIN_CODE PT01
+        FORMATS VST3 AU Standalone
+        PRODUCT_NAME "PlugTune"
+        DESCRIPTION "PlugTune - Real-Time AutoTune and Formant Suite"
+        VERSION "1.0.0"
+    )
+
+    target_sources(PlugTune PRIVATE
+        Source/PlugTune/PluginProcessor.cpp
+        Source/PlugTune/PluginProcessor.h
+        Source/PlugTune/PluginEditor.cpp
+        Source/PlugTune/PluginEditor.h
+        Source/PlugTune/DSP/FormantFilter.cpp
+        Source/PlugTune/DSP/FormantFilter.h
+        Source/PlugTune/DSP/KeyDetector.cpp
+        Source/PlugTune/DSP/KeyDetector.h
+        Source/PlugTune/DSP/PitchDetector.cpp
+        Source/PlugTune/DSP/PitchDetector.h
+        Source/PlugTune/DSP/PitchShifter.cpp
+        Source/PlugTune/DSP/PitchShifter.h
+        Source/PlugTune/DSP/ScaleQuantizer.cpp
+        Source/PlugTune/DSP/ScaleQuantizer.h
+        Source/PlugTune/DSP/StereoDoubler.cpp
+        Source/PlugTune/DSP/StereoDoubler.h
+        Source/PlugTune/UI/HeatMapKeyboard.cpp
+        Source/PlugTune/UI/HeatMapKeyboard.h
+        Source/PlugTune/UI/PlugTuneLookFeel.cpp
+        Source/PlugTune/UI/PlugTuneLookFeel.h
+        Source/PlugTune/UI/ToneGenerator.cpp
+        Source/PlugTune/UI/ToneGenerator.h
+    )
+
+    target_include_directories(PlugTune PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}/Source/PlugTune"
+    )
+
+    target_compile_definitions(PlugTune
+        PUBLIC
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+            JUCE_VST3_CAN_REPLACE_VST2=0
+    )
+
+    target_link_libraries(PlugTune PRIVATE
+        juce::juce_audio_utils
+        juce::juce_audio_processors
+        juce::juce_dsp
+        juce::juce_gui_basics
+        juce::juce_gui_extra
+    )
+
+    juce_generate_juce_header(PlugTune)
 endif()
 
 # Automated Test Harness Executable
@@ -245,5 +301,67 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/diagnostic_runner.cpp")
             juce::juce_core
     )
 endif()
+
+# Vocal Demon Audio Renderer
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/render_vocal_demon.cpp")
+    add_executable(RenderVocalDemon
+        tools/render_vocal_demon.cpp
+        Source/DSP/ShadowProcessor.cpp
+        Source/DSP/CrushProcessor.cpp
+        Source/DSP/WidthProcessor.cpp
+        Source/DSP/SpaceProcessor.cpp
+        Source/DSP/DeviceProcessor.cpp
+        Source/DSP/EQEngine.cpp
+        Source/DSP/VocalCompressor.cpp
+        Source/DSP/DeEsserProcessor.cpp
+        Source/DSP/AirExciterProcessor.cpp
+        Source/DSP/VocalResonanceProcessor.cpp
+        Source/DSP/StudioMicroDetuner.cpp
+        Source/DSP/AnalogTransformerCore.cpp
+        Source/DSP/SignalChain.cpp
+        Source/Presets/PresetManager.cpp
+    )
+
+    target_compile_definitions(RenderVocalDemon
+        PUBLIC
+            JUCE_STANDALONE_APPLICATION=0
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+    )
+
+    target_link_libraries(RenderVocalDemon
+        PRIVATE
+            juce::juce_audio_utils
+            juce::juce_audio_formats
+            juce::juce_dsp
+            juce::juce_gui_extra
+            juce::juce_gui_basics
+            juce::juce_core
+    )
+endif()
+
+# Spectral Audio Analyzer
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tools/analyze_spectral_audio.cpp")
+    add_executable(AnalyzeSpectralAudio
+        tools/analyze_spectral_audio.cpp
+    )
+
+    target_compile_definitions(AnalyzeSpectralAudio
+        PUBLIC
+            JUCE_STANDALONE_APPLICATION=0
+            JUCE_WEB_BROWSER=0
+            JUCE_USE_CURL=0
+    )
+
+    target_link_libraries(AnalyzeSpectralAudio
+        PRIVATE
+            juce::juce_audio_utils
+            juce::juce_audio_formats
+            juce::juce_dsp
+            juce::juce_core
+    )
+endif()
+
+
 
 
