@@ -47,11 +47,11 @@
                     {
                         "id":  "pluggedin_underground",
                         "plugin_id":  "pluggedin_underground",
-                        "name":  "UNDERGROUND v1.0 (Master Studio Suite)",
-                        "latest_version":  "4.0.0",
+                        "name":  "UNDERGROUND v4.1 (Platinum Studio Suite)",
+                        "latest_version":  "4.1.0",
                         "download_url_win":  "https://files.catbox.moe/oe2sq6.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/mac-v4.0.0/UNDERGROUND_Mac_Universal.vst3.zip",
-                        "changelog":  "Official UNDERGROUND v1.0 / v4.0 Master Studio Suite: 6 Rebuilt Pro DSP Engines (Glottal Epoch Alignment \u0026 3-Pole Formant Resonators, SPICE Triode Saturation with Bias Sag, Dolby-A Chebyshev Exciter, 3D Detuner, 28ms Pre-Delay Dattorro Reverb, Dual-Stage Leveler) and 10 Vault Presets.",
+                        "changelog":  "UNDERGROUND v4.1.0 Platinum DSP Update: Active Speech-Gated Auto-Level Loudness Engine, 4x Polyphase Anti-Aliased Air Exciter, 100% Mono-Safe Mid/Side 3D Width, Linkwitz-Riley ZDF Dynamic De-Esser, and Local Spectral Resonance Tracking.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
