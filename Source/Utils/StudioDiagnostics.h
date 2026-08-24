@@ -276,15 +276,22 @@ public:
         report += "    - " + userVst3.getFullPathName() + "\n";
         report += "    - " + userAu.getFullPathName() + "\n";
 
+        auto runShellCmd = [](const juce::String& cmd)
+        {
+            juce::ChildProcess cp;
+            if (cp.start(cmd))
+                cp.waitForProcessToFinish(10000);
+        };
+
         auto fixBundle = [&](const juce::File& bundle, const juce::String& name)
         {
             if (bundle.exists())
             {
                 juce::String path = bundle.getFullPathName();
-                juce::ChildProcess::startAndReadProcessOutput("chmod -R 755 \"" + path + "\"");
-                juce::ChildProcess::startAndReadProcessOutput("xattr -cr \"" + path + "\"");
-                juce::ChildProcess::startAndReadProcessOutput("xattr -rd com.apple.quarantine \"" + path + "\" 2>/dev/null");
-                juce::ChildProcess::startAndReadProcessOutput("codesign --force --deep --sign - \"" + path + "\" 2>/dev/null");
+                runShellCmd("chmod -R 755 \"" + path + "\"");
+                runShellCmd("xattr -cr \"" + path + "\"");
+                runShellCmd("xattr -rd com.apple.quarantine \"" + path + "\" 2>/dev/null");
+                runShellCmd("codesign --force --deep --sign - \"" + path + "\" 2>/dev/null");
                 report += "  [✓] " + name + " permissions, quarantine cleared & codesigned.\n";
             }
         };
@@ -299,7 +306,12 @@ public:
         fixBundle(userAu.getChildFile("Plugged 1.component"), "PLUGGED 1 AU (User)");
         fixBundle(sysAu.getChildFile("Plugged 1.component"), "PLUGGED 1 AU (System)");
 
-        juce::ChildProcess::startAndReadProcessOutput("killall -9 AudioComponentRegistrar 2>/dev/null");
+        fixBundle(userVst3.getChildFile("PlugTune.vst3"), "PLUGTUNE VST3 (User)");
+        fixBundle(sysVst3.getChildFile("PlugTune.vst3"), "PLUGTUNE VST3 (System)");
+        fixBundle(userAu.getChildFile("PlugTune.component"), "PLUGTUNE AU (User)");
+        fixBundle(sysAu.getChildFile("PlugTune.component"), "PLUGTUNE AU (System)");
+
+        runShellCmd("killall -9 AudioComponentRegistrar 2>/dev/null");
         report += "\n[✓] AudioComponentRegistrar cache reset.\n";
         report += "\nNEXT STEPS IN FL STUDIO MAC:\n";
         report += "1. Open FL Studio -> Options -> Manage plugins\n";
@@ -307,7 +319,7 @@ public:
         report += "   - 'Rescan previously verified plugins' (ON)\n";
         report += "   - 'Rescan plugins with errors' (ON)\n";
         report += "3. Click 'Find installed plugins' in the top-left corner.\n";
-        report += "4. UNDERGROUND is an Effect -> Available in Mixer FX slots.\n";
+        report += "4. UNDERGROUND & PLUGTUNE are Effects -> Available in Mixer FX slots.\n";
         report += "5. PLUGGED 1 is an Instrument -> Available in Channel Rack (+).\n";
 
         return report;
