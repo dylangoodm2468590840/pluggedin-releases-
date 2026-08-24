@@ -149,41 +149,52 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
     if (numSamples == 0 || numChannels == 0)
         return;
 
-    // 1. Input Conditioning & Sub-DC Cleaning & Soft Headroom Protection
+    // Early silence gate: If incoming signal is pure silence/below -100 dBFS, zero and return immediately!
+    // This eliminates all background hiss, phase vocoder idling, and compressor makeup noise on silence.
+    float inPeakRaw = buffer.getMagnitude(0, numSamples);
+    if (inPeakRaw < 1.0e-5f)
+    {
+        buffer.clear();
+        inputLevelPeak.store(0.0f);
+        outputLevelPeak.store(0.0f);
+        return;
+    }
+
+    // =========================================================================
+    // STAGE 1: Input Conditioning & Sub-Rumble Protection
+    // =========================================================================
     float inputLinear = juce::Decibels::decibelsToGain(inputGainDb);
     inputConditioner.process(buffer, inputLinear);
     inputLevelPeak.store(inputConditioner.getPeakLevel());
 
-    // 2. Analog Transformer Iron Core Preamp Saturation (Neve 1073 / Tube-Tech Warmth)
-    analogTransformerCore.setWarmth(0.50f + 0.35f * compSqueeze);
-    analogTransformerCore.process(buffer);
-
-    // 3. Save pre-allocated Dry Buffer copy for clean dry/wet blend & auto-loudness tracking
+    // Save bit-exact Dry Buffer copy for parallel wet/dry blending & loudness tracking
     for (int ch = 0; ch < numChannels; ++ch)
         dryBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);
 
-    // 4. Process Unified 64-Bit Transposed Direct Form II Master EQ Engine
+    // =========================================================================
+    // STAGE 2: 5-Band High-Definition Master EQ Engine (64-Bit TDF-II)
+    // =========================================================================
     {
         float safeLowQ  = std::clamp(eqLowQ, 0.10f, 50.0f);
         float safeMidQ  = std::clamp(eqMidQ, 0.10f, 50.0f);
         float safeHighQ = std::clamp(eqHighQ, 0.10f, 50.0f);
 
-        // Fixed Band 0: Low Cut (High Pass)
+        // Fixed Band 0: Low Cut (High Pass - Clears mud and protects 808 subs)
         masterEQEngine.updateBand(0, TransposedDirectFormIIBiquad::LowCut, std::clamp((double)eqLowCutFreq, 20.0, 500.0), 0.0, 0.707, eqLowCutFreq > 21.0f);
 
         // Fixed Band 1: Low Bell (200Hz warm punch)
         masterEQEngine.updateBand(1, TransposedDirectFormIIBiquad::Peaking, 200.0, (double)eqLowGainDb, (double)safeLowQ, std::abs(eqLowGainDb) > 0.05f);
 
-        // Fixed Band 2: Mid Bell (2200Hz clarity)
+        // Fixed Band 2: Mid Bell (2200Hz presence & intelligibility)
         masterEQEngine.updateBand(2, TransposedDirectFormIIBiquad::Peaking, 2200.0, (double)eqMidGainDb, (double)safeMidQ, std::abs(eqMidGainDb) > 0.05f);
 
-        // Fixed Band 3: High Shelf (8000Hz air)
+        // Fixed Band 3: High Shelf (8000Hz air sheen)
         masterEQEngine.updateBand(3, TransposedDirectFormIIBiquad::HighShelf, 8000.0, (double)eqHighGainDb, (double)safeHighQ, std::abs(eqHighGainDb) > 0.05f);
 
         // Fixed Band 4: High Cut (Low Pass)
         masterEQEngine.updateBand(4, TransposedDirectFormIIBiquad::HighCut, std::clamp((double)eqHighCutFreq, 500.0, 20000.0), 0.0, 0.707, eqHighCutFreq < 19500.0f);
 
-        // Dynamic Interactive UI Bands (Bands 5..15)
+        // Dynamic Interactive UI EQ Bands (Bands 5..15)
         juce::ScopedLock sl(nodeLock);
         int numDyn = std::min((int)activeNodes.size(), maxDynamicNodes);
         for (int i = 0; i < maxDynamicNodes; ++i)
@@ -214,7 +225,9 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         masterEQEngine.processBlock(buffer);
     }
 
-    // 6. Dynamic Split-Band De-Esser (Silk Vocal / Pro-DS caliber)
+    // =========================================================================
+    // STAGE 3: Vocal Dynamics & Air (De-Esser, FET Compressor, Fresh Air)
+    // =========================================================================
     if (deEssAmount > 0.001f)
     {
         deEssModule.setAmount(deEssAmount);
@@ -222,17 +235,12 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         deEssModule.process(buffer);
     }
 
-    // 7. Dual-Stage Vocal Dynamics & Leveling Engine (R-Vox / 1176 FET / LA-2A)
     if (compSqueeze > 0.001f)
     {
         compModule.setSqueeze(compSqueeze);
         compModule.process(buffer);
     }
 
-    // 8. Dynamic Vocal Resonance & Harshness Suppression Engine
-    vocalResonanceProcessor.process(buffer);
-
-    // 9. Psychoacoustic Fresh Air Exciter (Mid-Air & Top-Air Sheen)
     if (airMid > 0.001f || airTop > 0.001f)
     {
         airModule.setMidAir(airMid);
@@ -240,42 +248,36 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         airModule.process(buffer);
     }
 
-    // 10. Transient & Consonant Attack Protection Analysis
-    float transProt = transientPreserver.analyze(buffer);
-    crushModule.setTransientProtection(transProt);
-
-    // 11. Non-Linear DEGENERATE Demonic Vocal Multi-FX Matrix (Parabolic Morphing)
+    // =========================================================================
+    // DEGENERATE Signature Macro (Deterministic, Single Musical Transformation)
+    // =========================================================================
     float degenVal = std::clamp(degenerateMacro, 0.0f, 1.0f);
-
     if (degenVal > 0.01f)
     {
-        float degenCurve = degenVal * degenVal;
+        // 0.0 -> 0.35: Deepens pitch transposition (-12 semitones) and pulls formants down
+        float pitchTarget = (subEnable > 0.5f) ? (-12.0f * std::clamp(degenVal * 2.85f, 0.0f, 1.0f)) : 0.0f;
+        float formantTarget = (subEnable > 0.5f) ? (-5.0f * std::clamp(degenVal * 2.5f, 0.0f, 1.0f)) : 0.0f;
+        float shadowMixTarget = (subEnable > 0.5f) ? std::clamp(degenVal * 0.85f, 0.0f, 0.85f) : 0.0f;
 
-        // Smoothly pull formant down into the deep resonant chest cavity without phase distortion
-        float currentFormant = shadowModule.getFormantShift();
-        float deeperFormant = std::clamp(currentFormant - 0.25f * degenVal, 0.15f, 1.0f);
-        shadowModule.setFormantShift(deeperFormant);
+        shadowModule.setPitchSemitones(pitchTarget);
+        shadowModule.setFormantSemitones(formantTarget);
+        shadowModule.setMix(std::max(shadowModule.getMix(), shadowMixTarget));
 
-        shadowModule.setDrive(std::clamp(shadowModule.getDrive() + 0.20f * degenCurve, 0.0f, 0.70f));
-        shadowModule.setMix(std::clamp(shadowModule.getMix() + 0.25f * degenVal, 0.0f, 0.85f));
+        // 0.35 -> 0.70: Injects 12AX7 tube saturation drive
+        float driveTarget = std::clamp((degenVal - 0.20f) * 0.85f, 0.0f, 0.75f);
+        crushModule.setAmount(std::max(crushModule.getAmount(), driveTarget));
 
-        widthModule.setAmount(std::clamp(widthModule.getAmount() + 0.25f * degenVal, 0.0f, 0.90f));
-        studioMicroDetuner.setAmount(std::clamp(studioMicroDetuner.getAmount() + 0.25f * degenVal, 0.0f, 0.80f));
+        // 0.70 -> 1.00: Expands stereo width aura
+        float widthTarget = std::clamp((degenVal - 0.30f) * 0.90f, 0.0f, 0.85f);
+        widthModule.setAmount(std::max(widthModule.getAmount(), widthTarget));
     }
 
-    // 12. Parallel Texture Processing (Shadow sub-harmonics & Crush analog saturation)
+    // =========================================================================
+    // STAGE 4: Boutique Pitch & Formant Demon Engine (Shadow Processor)
+    // =========================================================================
     if (subEnable > 0.5f && shadowModule.getMix() > 0.001f)
     {
-        for (int ch = 0; ch < numChannels; ++ch)
-            parallelShadowBuffer.copyFrom(ch, 0, buffer, ch, 0, numSamples);
-        
-        shadowModule.process(parallelShadowBuffer);
-
-        // Transient-aware consonant protection: reduce shadow during hard plosives only
-        // NOTE: 0.65 scalar removed — was causing SHADOW_MIX to deliver only ~14% of dialed-in level
-        float shadowGain = 1.0f - transProt * 0.35f;
-        for (int ch = 0; ch < numChannels; ++ch)
-            buffer.addFrom(ch, 0, parallelShadowBuffer, ch, 0, numSamples, shadowGain);
+        shadowModule.process(buffer);
     }
 
     if (gritEnable > 0.5f && (crushModule.getAmount() > 0.001f || crushModule.isPunishEnabled()))
@@ -283,27 +285,31 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         crushModule.process(buffer);
     }
 
+    // =========================================================================
+    // STAGE 5: 3D Spatial Aura Engine (Stereo Width + Auto-Ducking Plate/Delay)
+    // =========================================================================
     juce::dsp::AudioBlock<float> block(buffer);
     juce::dsp::ProcessContextReplacing<float> context(block);
 
-    // 13. Stereo Dimension & Soundtoys MicroShift 3D Aura Detuner
     if (modEnable > 0.5f && (widthModule.getAmount() > 0.001f || degenVal > 0.05f))
     {
         widthModule.process(context);
-        if (studioMicroDetuner.getAmount() > 0.001f)
-            studioMicroDetuner.process(buffer);
     }
-    
-    // 14. Space Processor with Auto-Ducking Envelope Follower & Transducer Box
+
     spaceModule.setDucking(spaceDucking);
     if (delayEnable > 0.5f || reverbEnable > 0.5f)
+    {
         spaceModule.process(context);
+    }
+
     deviceModule.process(context);
 
-    // 14.5. Auto-Level Loudness Matching Engine (Compensates perceived loudness transparently)
+    // =========================================================================
+    // STAGE 6: Auto-Level Matching, Global Dry/Wet, Trim & Limiter
+    // =========================================================================
     autoLevelCompensator.process(dryBuffer, buffer);
 
-    // 15. Global Dry/Wet Mix
+    // Global Dry/Wet Mix
     globalMixSmoother.setTargetValue(globalMix);
     for (int sample = 0; sample < numSamples; ++sample)
     {
@@ -317,7 +323,7 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         }
     }
 
-    // 16. Output Trim Gain & Pro Limiter
+    // Output Trim Gain
     outputGainSmoother.setTargetValue(juce::Decibels::decibelsToGain(outputGainDb));
     for (int sample = 0; sample < numSamples; ++sample)
     {
@@ -329,9 +335,10 @@ void SignalChain::process(juce::AudioBuffer<float>& buffer,
         }
     }
 
+    // Safety Mastering Limiter
     outputLimiter.process(context);
 
-    // 17. Output Peak Level & Push Audio Samples to 2048-Point FFT FIFO
+    // FFT Spectrum Visualizer FIFO
     float outPeak = 0.0f;
     const float* channelData = buffer.getReadPointer(0);
     for (int i = 0; i < numSamples; ++i)
