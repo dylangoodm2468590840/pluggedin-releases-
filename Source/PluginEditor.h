@@ -81,14 +81,19 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> mixGlobalAttach;
 
 
-    // 15 Module Knobs & Controls (3 Per Column matching 1:1 Sketch Photo)
-    // Column 1: SUB BASS (Shadow Engine)
-    juce::Slider subDriveSlider;  juce::Label subDriveLabel;
-    juce::Slider subWidthSlider;  juce::Label subWidthLabel;
-    juce::Slider subCompSlider;   juce::Label subCompLabel;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> subDriveAttach;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> subWidthAttach;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> subCompAttach;
+    // Column 1: DEMON / PITCH ENGINE (Shadow & Formant Engine)
+    juce::Slider demonPitchSlider;   juce::Label demonPitchLabel;
+    juce::Slider demonFormantSlider; juce::Label demonFormantLabel;
+    juce::Slider demonMixSlider;     juce::Label demonMixLabel;
+    juce::Slider demonDriveSlider;   juce::Label demonDriveLabel;
+    juce::TextButton demonLinkButton { "LINK" };
+    juce::ComboBox   demonModeBox;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> demonPitchAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> demonFormantAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> demonMixAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> demonDriveAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> demonLinkAttach;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> demonModeAttach;
 
     // Column 2: GRIT (Crush Engine & 5-Circuit Saturation)
     juce::Slider gritFuzzSlider;  juce::Label gritFuzzLabel;
