@@ -197,8 +197,19 @@ public:
         std::vector<juce::File> candidates;
         // Priority 1: System VST3 Directory (Scanned by FL Studio, Ableton, Reaper, Pro Tools)
         candidates.push_back(getSystemVst3Directory().getChildFile(bundleName));
+        if (pluginId == "pluggedin_plugged1")
+        {
+            candidates.push_back(getSystemVst3Directory().getChildFile("Plugged1.vst3"));
+            candidates.push_back(getSystemVst3Directory().getChildFile("Plugged 1.vst3"));
+        }
+        
         // Priority 2: User VST3 Directory
         candidates.push_back(getUserVst3Directory().getChildFile(bundleName));
+        if (pluginId == "pluggedin_plugged1")
+        {
+            candidates.push_back(getUserVst3Directory().getChildFile("Plugged1.vst3"));
+            candidates.push_back(getUserVst3Directory().getChildFile("Plugged 1.vst3"));
+        }
 
 #if JUCE_WINDOWS || defined(_WIN32)
         candidates.push_back(juce::File("C:\\Program Files (x86)\\Common Files\\VST3").getChildFile(bundleName));
