@@ -55,10 +55,10 @@ private:
     void run() override;
     void parseManifestJson(const juce::String& jsonText);
 
-    juce::String currentVersion { "2.2.0" };
+    juce::String currentVersion { "2.4.0" };
     std::atomic<bool> updateAvailable { false };
 
-    juce::String latestVersion { "2.2.0" };
+    juce::String latestVersion { "2.4.0" };
     juce::String managerSha256 { "" };
     juce::String changelog { "" };
     juce::String downloadUrl { "" };
