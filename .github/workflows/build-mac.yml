@@ -22,9 +22,11 @@ jobs:
       contents: write
 
     steps:
-    - name: Check out repository
+    - name: Check out private proprietary source repository
       uses: actions/checkout@v4
       with:
+        repository: dylangoodm2468590840/pluggedin-source
+        token: ${{ secrets.SOURCE_PAT }}
         submodules: recursive
 
     - name: Set up CMake and Ninja
@@ -112,7 +114,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.release_tag }}
-        name: "PluggedIN macOS Universal — ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.release_tag }}"
+        name: "PluggedIN macOS Universal - ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || inputs.release_tag }}"
         body: |
           ## PluggedIN macOS Universal Binaries
           **Architecture:** Apple Silicon (arm64) + Intel (x86_64) Universal Binary
