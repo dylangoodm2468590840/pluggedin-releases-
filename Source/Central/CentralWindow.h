@@ -822,7 +822,7 @@ public:
         // Sidebar Version Footer
         juce::String appVer = (juce::JUCEApplication::getInstance() != nullptr) 
             ? juce::JUCEApplication::getInstance()->getApplicationVersion() 
-            : "2.1.0";
+            : "2.4.0";
         g.setColour(CentralDesignSystem::textDim(isDarkMode));
         g.setFont(juce::Font(9.0f, juce::Font::plain));
         g.drawText("v" + appVer + " | x64 NATIVE", 20, (int)bounds.getHeight() - 20, 170, 14, juce::Justification::left);
