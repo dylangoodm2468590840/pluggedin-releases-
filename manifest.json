@@ -14,9 +14,15 @@
                                                          "size_bytes":  3676112
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PluggedIN_Central_Mac.zip",
-                                                             "sha256":  "613cb3f2aae2b92a257185c0efa1f9b51b1bce0074044337457991f6422c317a",
-                                                             "size_bytes":  5148154
+                                                             "url":  [
+                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PluggedIN_Central_Mac.zip",
+                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PlugTune_Mac_Universal.vst3.zip",
+                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/UNDERGROUND_Mac_Universal.component.zip",
+                                                                         "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/UNDERGROUND_Mac_Universal.vst3.zip"
+                                                                     ],
+                                                             "sha256":  null,
+                                                             "size_bytes":  0
                                                          }
                                  }
                 },
