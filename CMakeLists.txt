@@ -83,6 +83,12 @@ target_link_libraries(UNDERGROUND
         juce::juce_gui_extra
 )
 
+target_include_directories(UNDERGROUND
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs
+)
+
 # PluggedIN Central Standalone Desktop Application Executable Target
 juce_add_gui_app(PluggedIN_Central
     PRODUCT_NAME "PluggedIN Central"
