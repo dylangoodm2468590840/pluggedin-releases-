@@ -10,8 +10,8 @@
                     "packages":  {
                                      "windows_x64":  {
                                                          "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PluggedIN_Central_v2.4.0_Windows.zip",
-                                                         "sha256":  "2effd201f5269ab13526b9f9fa8a2aef68fc65f9132f31132c75e2ba6e779616",
-                                                         "size_bytes":  3675876
+                                                         "sha256":  "1ba06db64d725555b7f7049519f2edbcea5a912f400dd62fbf3d31d1034a6048",
+                                                         "size_bytes":  3676112
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PluggedIN_Central_Mac.zip",
