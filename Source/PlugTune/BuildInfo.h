@@ -1,9 +1,0 @@
-﻿#pragma once
-
-#ifndef PLUGTUNE_BUILD_ID
-#define PLUGTUNE_BUILD_ID "DEV-1059"
-#endif
-
-#ifndef PLUGTUNE_BUILD_TIMESTAMP
-#define PLUGTUNE_BUILD_TIMESTAMP "2026-08-24 11:34:27"
-#endif
