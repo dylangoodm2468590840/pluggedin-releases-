@@ -132,6 +132,7 @@ public:
         {
             InstalledRegistry::selfHealInstallations("pluggedin_underground");
             InstalledRegistry::selfHealInstallations("pluggedin_plugged1");
+            InstalledRegistry::selfHealInstallations("pluggedin_plugtune");
         });
 
         applyThemeColors();
@@ -165,8 +166,8 @@ public:
             "Zero-Latency Tracking Mode & 7 Master Flagship Presets"
         };
         ug.supportedFormats = { "VST3 64-Bit", "AU (macOS)", "Standalone" };
-        ug.latestVersion = "3.5.0";
-        ug.changelog = "• Adaptive Optical Noise Squelch (< -62 dBFS) eliminates floor hiss.\n• Dynamic Silence Downward Expansion in VocalCompressor.\n• Zero-bypass micro-gating for top-air exciter.\n• 14/14 automated DSP adversarial audit passed.";
+        ug.latestVersion = "4.2.2";
+        ug.changelog = "• Decimated NSDF Pitch Tracking (<0.05% CPU, zero buffer underruns).\n• 64-Sample Lookahead Noise Protection.\n• Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches).\n• Series 3-Band Parametric Formant Warper.\n• Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer.\n• 16 Flagship Vocal Presets.";
         products.push_back(ug);
 
         // 2. PLUGGED 1
@@ -183,7 +184,7 @@ public:
             "100+ Production Factory Presets across 8 Instrument Categories"
         };
         p1.supportedFormats = { "VST3 64-Bit", "AU (macOS)", "Standalone" };
-        p1.latestVersion = "1.2.0";
+        p1.latestVersion = "1.0.0";
         p1.changelog = "• Dual-Layer Sampler + PolyBLEP Multi-Wave Synthesizer.\n• Dedicated 808 Machine with Pitch Dive and Legato Glide.\n• Studio ZDF Ladder Filter, Ping-Pong Tape Delay & Reverb.\n• 100+ Production Factory Presets.";
         products.push_back(p1);
 
