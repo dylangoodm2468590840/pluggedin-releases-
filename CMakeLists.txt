@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(UNDERGROUND VERSION 4.2.4 LANGUAGES C CXX)
+project(UNDERGROUND VERSION 4.2.2 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -88,7 +88,7 @@ juce_add_gui_app(PluggedIN_Central
     PRODUCT_NAME "PluggedIN Central"
     COMPANY_NAME "PluggedIN Audio Systems"
     BUNDLE_ID "com.pluggedin.central"
-    VERSION "2.2.0"
+    VERSION "2.4.0"
 )
 
 target_sources(PluggedIN_Central
@@ -112,6 +112,7 @@ target_link_libraries(PluggedIN_Central
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/Plugged1/PluginProcessor.cpp")
     juce_add_plugin(Plugged_1
         COMPANY_NAME "Plugged In Central"
+        BUNDLE_ID "com.pluggedin.plugged1"
         IS_SYNTH TRUE
         NEEDS_MIDI_INPUT TRUE
         NEEDS_MIDI_OUTPUT FALSE
@@ -169,14 +170,15 @@ endif()
 # PlugTune Real-Time AutoTune & Formant Suite Plugin Target
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/PlugTune/PluginProcessor.cpp")
     juce_add_plugin(PlugTune
-        COMPANY_NAME "Plugged In Central"
+        COMPANY_NAME "PluggedIN AUDIO"
+        BUNDLE_ID "com.pluggedin.plugtune"
         IS_SYNTH FALSE
         NEEDS_MIDI_INPUT TRUE
         NEEDS_MIDI_OUTPUT FALSE
         IS_MIDI_EFFECT FALSE
         EDITOR_WANTS_KEYBOARD_FOCUS TRUE
-        PLUGIN_MANUFACTURER_CODE Plug
-        PLUGIN_CODE PT01
+        PLUGIN_MANUFACTURER_CODE Undg
+        PLUGIN_CODE PTun
         FORMATS VST3 AU Standalone
         PRODUCT_NAME "PlugTune"
         DESCRIPTION "PlugTune - Real-Time AutoTune and Formant Suite"
@@ -210,6 +212,8 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/PlugTune/PluginProcessor.cpp")
 
     target_include_directories(PlugTune PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/Source/PlugTune"
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/libs"
     )
 
     target_compile_definitions(PlugTune
