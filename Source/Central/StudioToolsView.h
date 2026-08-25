@@ -174,7 +174,7 @@ public:
     void copyDiagnosticsReport()
     {
         juce::String report = "=== PLUGGEDIN BETA TESTER DIAGNOSTIC REPORT ===\n";
-        report += "Central App Version: 2.2.0\n";
+        report += "Central App Version: 2.3.0\n";
         report += "OS: " + juce::SystemStats::getOperatingSystemName() + " (" + (juce::SystemStats::isOperatingSystem64Bit() ? "64-bit" : "32-bit") + ")\n";
         report += "CPU: " + juce::SystemStats::getCpuVendor() + " | Cores: " + juce::String(juce::SystemStats::getNumCpus()) + "\n";
         report += "System VST3 Dir: " + InstalledRegistry::getSystemVst3Directory().getFullPathName() + "\n";
