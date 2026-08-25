@@ -493,14 +493,34 @@ private:
                             unpackedVst3.copyDirectoryTo(userVst3Dir);
                             systemInstallOk = userVst3Dir.exists();
 
-                            // Also copy to System /Library/Audio/Plug-Ins/VST3 if writable
+                            // Also copy to System /Library/Audio/Plug-Ins/VST3
+                            // Try direct write first; if that fails (no root), escalate via osascript
+                            bool sysVst3WrittenOk = false;
                             try {
                                 if (sysVst3Parent.exists())
                                 {
                                     if (sysVst3Dir.exists()) sysVst3Dir.deleteRecursively();
                                     unpackedVst3.copyDirectoryTo(sysVst3Dir);
+                                    sysVst3WrittenOk = sysVst3Dir.exists();
                                 }
                             } catch (...) {}
+
+                            // Elevated fallback: osascript with administrator privileges
+                            if (!sysVst3WrittenOk && unpackedVst3.exists())
+                            {
+                                juce::String src = unpackedVst3.getFullPathName();
+                                juce::String dst = sysVst3Dir.getParentDirectory().getFullPathName();
+                                juce::String rmCmd  = "rm -rf '" + sysVst3Dir.getFullPathName() + "'";
+                                juce::String cpCmd  = "cp -R '" + src + "' '" + dst + "'";
+                                juce::String chmodCmd = "chmod -R 755 '" + sysVst3Dir.getFullPathName() + "'";
+                                juce::String fullScript = rmCmd + " && " + cpCmd + " && " + chmodCmd;
+                                juce::String osaCmd = "osascript -e 'do shell script \""
+                                    + fullScript.replace("\\", "\\\\").replace("\"", "\\\"")
+                                    + "\" with administrator privileges'";
+                                juce::ChildProcess osa;
+                                if (osa.start(osaCmd))
+                                    osa.waitForProcessToFinish(30000);
+                            }
                         }
 
                         // macOS Step 3: Install AU to User (~/Library/Audio/Plug-Ins/Components)
@@ -511,13 +531,32 @@ private:
                             if (userAuDir.exists()) userAuDir.deleteRecursively();
                             unpackedAu.copyDirectoryTo(userAuDir);
 
+                            // Try direct write to /Library/Audio/Plug-Ins/Components, then osascript fallback
+                            bool sysAuWrittenOk = false;
                             try {
                                 if (sysAuParent.exists())
                                 {
                                     if (sysAuDir.exists()) sysAuDir.deleteRecursively();
                                     unpackedAu.copyDirectoryTo(sysAuDir);
+                                    sysAuWrittenOk = sysAuDir.exists();
                                 }
                             } catch (...) {}
+
+                            if (!sysAuWrittenOk && unpackedAu.exists())
+                            {
+                                juce::String src = unpackedAu.getFullPathName();
+                                juce::String dst = sysAuDir.getParentDirectory().getFullPathName();
+                                juce::String rmCmd  = "rm -rf '" + sysAuDir.getFullPathName() + "'";
+                                juce::String cpCmd  = "cp -R '" + src + "' '" + dst + "'";
+                                juce::String chmodCmd = "chmod -R 755 '" + sysAuDir.getFullPathName() + "'";
+                                juce::String fullScript = rmCmd + " && " + cpCmd + " && " + chmodCmd;
+                                juce::String osaCmd = "osascript -e 'do shell script \""
+                                    + fullScript.replace("\\", "\\\\").replace("\"", "\\\"")
+                                    + "\" with administrator privileges'";
+                                juce::ChildProcess osa;
+                                if (osa.start(osaCmd))
+                                    osa.waitForProcessToFinish(30000);
+                            }
                         }
 
                         // macOS Step 4: Fix Mach-O permissions (chmod 755), clear Gatekeeper quarantine (xattr -cr), and ad-hoc sign
