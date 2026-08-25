@@ -39,13 +39,20 @@ namespace ParameterIDs
     inline constexpr auto MACRO_GHOST      = "macro_ghost";
     inline constexpr auto MACRO_TONE       = "macro_tone";
 
-    // SHADOW Module (Demonic Undertone Engine)
+    // DEMON / PITCH & FORMANT Module (Flagship Demonic Undertone Engine)
     inline constexpr auto SHADOW_ENABLE    = "shadow_enable";
+    inline constexpr auto DEMON_ENABLE     = "shadow_enable";
     inline constexpr auto SHADOW_MIX       = "shadow_mix";
-    inline constexpr auto SHADOW_PITCH     = "shadow_pitch";     // 0: -12, 1: -5, 2: -7, 3: -24
-    inline constexpr auto SHADOW_FORMANT   = "shadow_formant";   // 0.0 to 1.0 (formant shift lowering)
+    inline constexpr auto DEMON_MIX        = "shadow_mix";
+    inline constexpr auto DEMON_PITCH      = "demon_pitch";      // -24.0 to +24.0 Semitones
+    inline constexpr auto SHADOW_PITCH     = "demon_pitch";
+    inline constexpr auto DEMON_FORMANT    = "demon_formant";    // -12.0 to +12.0 Semitones (Throat/Chest size)
+    inline constexpr auto SHADOW_FORMANT   = "demon_formant";
+    inline constexpr auto DEMON_LINK       = "demon_link";       // bool: link pitch & formant
+    inline constexpr auto DEMON_MODE       = "demon_mode";       // 0: Transpose, 1: Robot, 2: Hard Tune
     inline constexpr auto SHADOW_DARKNESS  = "shadow_darkness";  // 0.0 to 1.0 (lowpass cutoff)
     inline constexpr auto SHADOW_DRIVE     = "shadow_drive";     // 0.0 to 1.0 (sub saturation)
+    inline constexpr auto DEMON_DRIVE      = "shadow_drive";
 
     // CRUSH Module
     inline constexpr auto CRUSH_AMOUNT     = "crush_amount";
