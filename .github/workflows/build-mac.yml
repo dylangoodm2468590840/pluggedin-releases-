@@ -97,11 +97,71 @@ jobs:
           cd ../../../
         fi
 
-        # Print SHA-256 for each file
-        echo "=== SHA-256 checksums ==="
-        for f in dist/mac/*.zip; do
-          shasum -a 256 "$f"
-        done
+    - name: Check out releases repo for atomic manifest update
+      uses: actions/checkout@v4
+      with:
+        repository: dylangoodm2468590840/pluggedin-releases-
+        token: ${{ secrets.SOURCE_PAT }}
+        path: releases-repo
+
+    - name: Automatically sync SHA-256 checksums to manifest.json
+      run: |
+        python3 - << 'EOF'
+        import hashlib, json, os
+
+        def get_file_info(filepath):
+            if not os.path.isfile(filepath):
+                return None, 0
+            hasher = hashlib.sha256()
+            with open(filepath, 'rb') as f:
+                while chunk := f.read(65536):
+                    hasher.update(chunk)
+            return hasher.hexdigest(), os.path.getsize(filepath)
+
+        manifest_path = "releases-repo/manifest.json"
+        with open(manifest_path, "r", encoding="utf-8") as f:
+            manifest = json.load(f)
+
+        # Central App
+        h, s = get_file_info("dist/mac/PluggedIN_Central_Mac.zip")
+        if h and "manager" in manifest and "packages" in manifest["manager"]:
+            manifest["manager"]["packages"]["macos_universal"]["sha256"] = h
+            manifest["manager"]["packages"]["macos_universal"]["size_bytes"] = s
+            print(f"[SYNC] Central Mac: {h} ({s} bytes)")
+
+        # Plugins
+        plugin_map = {
+            "pluggedin_plugtune": "dist/mac/PlugTune_Mac_Universal.vst3.zip",
+            "pluggedin_underground": "dist/mac/UNDERGROUND_Mac_Universal.vst3.zip",
+            "pluggedin_plugged1": "dist/mac/PLUGGED_1_Mac_Universal.vst3.zip"
+        }
+
+        for plugin in manifest.get("plugins", []):
+            pid = plugin.get("id")
+            if pid in plugin_map:
+                ph, ps = get_file_info(plugin_map[pid])
+                if ph and "packages" in plugin and "macos_universal" in plugin["packages"]:
+                    plugin["packages"]["macos_universal"]["sha256"] = ph
+                    plugin["packages"]["macos_universal"]["size_bytes"] = ps
+                    print(f"[SYNC] {pid} Mac: {ph} ({ps} bytes)")
+
+        with open(manifest_path, "w", encoding="utf-8") as f:
+            json.dump(manifest, f, indent=4)
+        print("[SYNC] Successfully updated manifest.json on runner!")
+        EOF
+
+        cd releases-repo
+        git config user.name "PluggedIN Automated Pipeline"
+        git config user.email "ci@pluggedinaudio.com"
+        git add manifest.json
+        if git diff --staged --quiet; then
+          echo "Manifest already in sync, no commit needed."
+        else
+          git commit -m "chore(manifest): auto-sync macOS SHA-256 checksums from CI build [skip ci]"
+          git push origin main
+          echo "Pushed updated manifest.json to releases repo successfully."
+        fi
+        cd ..
 
     - name: Upload Mac Artifacts to GitHub Actions
       uses: actions/upload-artifact@v4
