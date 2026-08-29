@@ -102,6 +102,7 @@ jobs:
       with:
         repository: dylangoodm2468590840/pluggedin-releases-
         token: ${{ secrets.SOURCE_PAT }}
+        ref: main
         path: releases-repo
 
     - name: Automatically sync SHA-256 checksums to manifest.json
@@ -158,7 +159,7 @@ jobs:
           echo "Manifest already in sync, no commit needed."
         else
           git commit -m "chore(manifest): auto-sync macOS SHA-256 checksums from CI build [skip ci]"
-          git push origin main
+          git push origin HEAD:main
           echo "Pushed updated manifest.json to releases repo successfully."
         fi
         cd ..
