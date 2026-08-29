@@ -29,7 +29,7 @@
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1061/PlugTune_v1.0.0_DEV1061_Win64_VST3.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PlugTune_Mac_Universal.vst3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1061/PlugTune_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGTUNE v1.0.0 (DEV-1061) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite.",
                         "packages":  {
                                          "windows_x64":  {
@@ -40,9 +40,9 @@
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PlugTune_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "ca1a082876e18f394dd7447b14d2a051d919a1850cf4fcf0bc00ac70f9cc9673",
-                                                                 "size_bytes":  5972282
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1061/PlugTune_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "f8646aaab378b13ae1d1ecfc766b61804ad82513ee17080b3cf053ac3a68e28a",
+                                                                 "size_bytes":  3014505
                                                              }
                                      }
                     },
