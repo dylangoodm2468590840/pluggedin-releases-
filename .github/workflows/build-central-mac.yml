@@ -33,7 +33,7 @@ jobs:
           import zipfile, os
           with zipfile.ZipFile('hub-source.zip') as z:
               for member in z.infolist():
-                  clean = member.filename.replace('\\', '/')
+                  clean = member.filename.replace(chr(92), '/')
                   target = os.path.join('hub', clean)
                   if clean.endswith('/'):
                       os.makedirs(target, exist_ok=True)
