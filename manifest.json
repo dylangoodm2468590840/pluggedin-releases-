@@ -3,18 +3,18 @@
     "channel":  "production",
     "hub_version":  "2.5.2",
     "manager":  {
-                    "version":  "2.5.2",
+                    "version":  "2.6.0",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
                     "release_notes":  "PluggedIN Central v2.5.2: Commercial-grade macOS installer with deep VST3/AU bundle discovery, native cp -R -p bundle deployment, and zero-hang UI.",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.4.0/PluggedIN_Central_v2.4.0_Windows.zip",
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN_Central_Setup_2.0.0.exe",
                                                          "sha256":  "1ba06db64d725555b7f7049519f2edbcea5a912f400dd62fbf3d31d1034a6048",
                                                          "size_bytes":  3676112
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PluggedIN_Central_Mac.zip",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN.Central_Mac_Universal_2.0.0.dmg",
                                                              "sha256":  "7d40e989bd58627244303fa668e1885fcaebf76b06d2c8eaa0c9544b776ed8c2",
                                                              "size_bytes":  5160034
                                                          }
