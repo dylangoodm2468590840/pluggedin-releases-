@@ -9,9 +9,9 @@
                     "release_notes":  "PluggedIN Central v2.1.3: Expanded universal compatibility for macOS 10.15 Catalina through macOS 15 Sequoia (Apple Silicon \u0026 Intel Universal).",
                     "packages":  {
                                      "windows_x64":  {
-                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.1/PluggedIN_Central_Setup_2.1.3.exe",
-                                                         "sha256":  "d5bf4dd4f194a2f0b978924e4bcfd1eed7f080b92152f4c48cf7085c827cbdd7",
-                                                         "size_bytes":  109098646
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.1/PluggedIN-Central_Setup_2.1.3.exe",
+                                                         "sha256":  "22ac2af76236f1de9760d780aae8375411fdc4d0f36a057f5bf7a3f748233bf4",
+                                                         "size_bytes":  109098795
                                                      },
                                      "macos_universal":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.1/PluggedIN.Central_Mac_Universal_2.1.3.dmg",
