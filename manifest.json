@@ -24,19 +24,19 @@
                     {
                         "id":  "pluggedin_plugtune",
                         "plugin_id":  "pluggedin_plugtune",
-                        "name":  "PLUGTUNE v1.0.0 (Real-Time AutoTune and Formant Suite)",
+                        "name":  "PLUGTUNE v1.0.0 (DEV-1062)",
                         "subtitle":  "Real-Time AutoTune and Formant Suite",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1061/PlugTune_v1.0.0_DEV1061_Win64_VST3.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1062/PlugTune_DEV-1062_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PlugTune_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGTUNE v1.0.0 (DEV-1061) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1061/PlugTune_v1.0.0_DEV1061_Win64_VST3.zip",
-                                                             "sha256":  "3fe663d1d289de8c691b405a3a2e681be059b07de3852383f914ecaaaa175971",
-                                                             "size_bytes":  4649460
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1062/PlugTune_DEV-1062_Win64_VST3.zip",
+                                                             "sha256":  "a38a0d2fcda119b9cd14154c72c9c6ec60b03af1cee7d8fc535fd81d2e42cbce",
+                                                             "size_bytes":  4649726
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "vst3",
