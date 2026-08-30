@@ -1,123 +1,123 @@
 {
-  "schema_version": "1.0.0",
-  "channel": "production",
-  "hub_version": "2.5.2",
-  "manager": {
-    "version": "2.6.0",
-    "minimum_supported_version": "1.0.0",
-    "critical_update": false,
-    "release_notes": "PluggedIN Central v2.5.2: Commercial-grade macOS installer with deep VST3/AU bundle discovery, native cp -R -p bundle deployment, and zero-hang UI.",
-    "packages": {
-      "windows_x64": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN_Central_Setup_2.0.0.exe",
-        "sha256": "1ba06db64d725555b7f7049519f2edbcea5a912f400dd62fbf3d31d1034a6048",
-        "size_bytes": 3676112
-      },
-      "macos_universal": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN.Central_Mac_Universal_2.0.0.dmg",
-        "sha256": "7d40e989bd58627244303fa668e1885fcaebf76b06d2c8eaa0c9544b776ed8c2",
-        "size_bytes": 5160034
-      }
-    }
-  },
-  "plugins": [
-    {
-      "id": "pluggedin_plugtune",
-      "plugin_id": "pluggedin_plugtune",
-      "name": "PLUGTUNE v1.0.0 (DEV-1063)",
-      "subtitle": "Real-Time AutoTune and Formant Suite",
-      "category": "Vocal Multi-FX",
-      "latest_version": "1.0.0",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip",
-      "changelog": "PLUGTUNE v1.0.0 (DEV-1061) Real-Time Vocal Pitch Correction & Formant Manipulation Suite.",
-      "packages": {
-        "windows_x64": {
-          "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
-          "sha256": "f5c4cec472d37502a53a30b6638c55e700d0f686950fb2a4983db0f529afeb0f",
-          "size_bytes": 4651285
-        },
-        "macos_universal": {
-          "format": "both",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip"
-        }
-      },
-      "dev_build": "DEV-1063"
-    },
-    {
-      "id": "pluggedin_plugged1",
-      "plugin_id": "pluggedin_plugged1",
-      "name": "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
-      "subtitle": "Flagship Hybrid Synthesizer & 808",
-      "category": "Instrument",
-      "latest_version": "1.0.0",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip",
-      "changelog": "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
-      "packages": {
-        "windows_x64": {
-          "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
-          "sha256": "9f52dde70b4c123ae97cad1420ada4ae10d85d5d8371d33f0a0c2beb57a46adb",
-          "size_bytes": 5039698
-        },
-        "macos_universal": {
-          "format": "both",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip"
-        }
-      },
-      "dev_build": "DEV-0100"
-    },
-    {
-      "id": "pluggedin_underground",
-      "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND v4.2.2 (Studio Pitch & Formant Demon Suite)",
-      "subtitle": "Boutique Vocal Multi-FX Suite",
-      "category": "Vocal Multi-FX",
-      "latest_version": "4.2.2",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/UNDERGROUND_Mac_Universal.vst3.zip",
-      "changelog": "UNDERGROUND v4.2.2 Definitive Studio Update: Decimated NSDF Pitch Tracking (<0.05% CPU, zero buffer underruns), 64-Sample Lookahead Noise Protection, Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches), Series 3-Band Parametric Formant Warper, Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer, and 16 Flagship Vocal Presets.",
-      "packages": {
-        "windows_x64": {
-          "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
-          "sha256": "8d51a5bea8ef118f4ed51ac9886e63f62603f94c2d2ebee32934a0b2c343b749",
-          "size_bytes": 4959802
-        },
-        "macos_universal": {
-          "format": "both",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/UNDERGROUND_Mac_Universal.vst3.zip"
-        }
-      },
-      "dev_build": "DEV-0107"
-    },
-    {
-      "id": "pluggedin_plugvox",
-      "plugin_id": "pluggedin_plugvox",
-      "name": "PLUG VOX v1.0.0 (DEV-1005)",
-      "subtitle": "Real-Time Vocal Doubler & Stereo Harmonic Processor",
-      "category": "Vocal Multi-FX",
-      "latest_version": "1.0.0",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugvox-dev1005/PlugVox_DEV-1005_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PlugVox_Mac_Universal.vst3.zip",
-      "changelog": "PLUG VOX v1.0.0 DEV-1005: Real-Time Vocal Doubler, Stereo Spreading, and Pitch Detuning Suite.",
-      "packages": {
-        "windows_x64": {
-          "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugvox-dev1005/PlugVox_DEV-1005_Win64_VST3.zip",
-          "sha256": "3f55865259ecb28f335f5ed0283e97b6a7549f2ef05a45b440ad9ace4779ff80",
-          "size_bytes": 4034536
-        },
-        "macos_universal": {
-          "format": "vst3",
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PlugVox_Mac_Universal.vst3.zip",
-          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-          "size_bytes": 5500000
-        }
-      },
-      "dev_build": "DEV-1005"
-    }
-  ]
+    "schema_version":  "1.0.0",
+    "channel":  "production",
+    "hub_version":  "2.5.2",
+    "manager":  {
+                    "version":  "2.6.0",
+                    "minimum_supported_version":  "1.0.0",
+                    "critical_update":  false,
+                    "release_notes":  "PluggedIN Central v2.5.2: Commercial-grade macOS installer with deep VST3/AU bundle discovery, native cp -R -p bundle deployment, and zero-hang UI.",
+                    "packages":  {
+                                     "windows_x64":  {
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN_Central_Setup_2.0.0.exe",
+                                                         "sha256":  "1ba06db64d725555b7f7049519f2edbcea5a912f400dd62fbf3d31d1034a6048",
+                                                         "size_bytes":  3676112
+                                                     },
+                                     "macos_universal":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PluggedIN.Central_Mac_Universal_2.0.0.dmg",
+                                                             "sha256":  "7d40e989bd58627244303fa668e1885fcaebf76b06d2c8eaa0c9544b776ed8c2",
+                                                             "size_bytes":  5160034
+                                                         }
+                                 }
+                },
+    "plugins":  [
+                    {
+                        "id":  "pluggedin_plugtune",
+                        "plugin_id":  "pluggedin_plugtune",
+                        "name":  "PLUGTUNE v1.0.0 (DEV-1063)",
+                        "subtitle":  "Real-Time AutoTune and Formant Suite",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "1.0.0",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip",
+                        "changelog":  "PLUGTUNE v1.0.0 (DEV-1061) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite.",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "format":  "vst3",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
+                                                             "sha256":  "2e5f796b499ae124401da2fb94e9cc58cdbee634c96034e60964d9acb2c7fd02",
+                                                             "size_bytes":  4651285
+                                                         },
+                                         "macos_universal":  {
+                                                                 "format":  "both",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip"
+                                                             }
+                                     },
+                        "dev_build":  "DEV-1063"
+                    },
+                    {
+                        "id":  "pluggedin_plugged1",
+                        "plugin_id":  "pluggedin_plugged1",
+                        "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
+                        "subtitle":  "Flagship Hybrid Synthesizer \u0026 808",
+                        "category":  "Instrument",
+                        "latest_version":  "1.0.0",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                        "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "format":  "vst3",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                                                             "sha256":  "9f52dde70b4c123ae97cad1420ada4ae10d85d5d8371d33f0a0c2beb57a46adb",
+                                                             "size_bytes":  5039698
+                                                         },
+                                         "macos_universal":  {
+                                                                 "format":  "both",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip"
+                                                             }
+                                     },
+                        "dev_build":  "DEV-0100"
+                    },
+                    {
+                        "id":  "pluggedin_underground",
+                        "plugin_id":  "pluggedin_underground",
+                        "name":  "UNDERGROUND v4.2.2 (Studio Pitch \u0026 Formant Demon Suite)",
+                        "subtitle":  "Boutique Vocal Multi-FX Suite",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "4.2.2",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/UNDERGROUND_Mac_Universal.vst3.zip",
+                        "changelog":  "UNDERGROUND v4.2.2 Definitive Studio Update: Decimated NSDF Pitch Tracking (\u003c0.05% CPU, zero buffer underruns), 64-Sample Lookahead Noise Protection, Synchronized 2-Head Quadrature Overlap-Add Engine (Zero Comb Notches), Series 3-Band Parametric Formant Warper, Organic Voiced-Gated Diplophonia Sub-Harmonic Synthesizer, and 16 Flagship Vocal Presets.",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "format":  "vst3",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
+                                                             "sha256":  "8d51a5bea8ef118f4ed51ac9886e63f62603f94c2d2ebee32934a0b2c343b749",
+                                                             "size_bytes":  4959802
+                                                         },
+                                         "macos_universal":  {
+                                                                 "format":  "both",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/UNDERGROUND_Mac_Universal.vst3.zip"
+                                                             }
+                                     },
+                        "dev_build":  "DEV-0107"
+                    },
+                    {
+                        "id":  "pluggedin_plugvox",
+                        "plugin_id":  "pluggedin_plugvox",
+                        "name":  "PLUG VOX v1.0.0 (DEV-1005)",
+                        "subtitle":  "Real-Time Vocal Doubler \u0026 Stereo Harmonic Processor",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "1.0.0",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugvox-dev1005/PlugVox_DEV-1005_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PlugVox_Mac_Universal.vst3.zip",
+                        "changelog":  "PLUG VOX v1.0.0 DEV-1005: Real-Time Vocal Doubler, Stereo Spreading, and Pitch Detuning Suite.",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "format":  "vst3",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugvox-dev1005/PlugVox_DEV-1005_Win64_VST3.zip",
+                                                             "sha256":  "3f55865259ecb28f335f5ed0283e97b6a7549f2ef05a45b440ad9ace4779ff80",
+                                                             "size_bytes":  4034536
+                                                         },
+                                         "macos_universal":  {
+                                                                 "format":  "vst3",
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.5.2/PlugVox_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "0000000000000000000000000000000000000000000000000000000000000000",
+                                                                 "size_bytes":  5500000
+                                                             }
+                                     },
+                        "dev_build":  "DEV-1005"
+                    }
+                ]
 }
