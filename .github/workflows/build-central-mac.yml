@@ -1,0 +1,60 @@
+name: Build PluggedIN Central Mac App
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Target GitHub release tag'
+        required: false
+        default: 'central-v2.6.0'
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Download Hub Source from Release
+        run: |
+          mkdir -p hub
+          curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://github.com/${{ github.repository }}/releases/download/${{ inputs.release_tag || 'central-v2.6.0' }}/hub-source.zip" \
+            -o hub.zip
+          unzip -q hub.zip -d hub
+          cd hub
+          ls -la
+
+      - name: Install dependencies
+        working-directory: hub
+        run: npm ci
+
+      - name: Build macOS Universal App (.dmg and .zip)
+        working-directory: hub
+        run: npm run dist:mac
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify Built Artifacts
+        run: ls -la hub/release/
+
+      - name: Upload Mac Binaries to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag || 'central-v2.6.0' }}
+          name: "PluggedIN Central v2.6.0"
+          files: |
+            hub/release/*.dmg
+            hub/release/*.zip
+            hub/release/*.yml
+            hub/release/*.blockmap
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
