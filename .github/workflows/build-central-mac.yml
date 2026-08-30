@@ -23,14 +23,25 @@ jobs:
         with:
           node-version: 22
 
-      - name: Download Hub Source from Release
+      - name: Download and Extract Hub Source
         run: |
           mkdir -p hub
           gh release download "${{ inputs.release_tag || 'central-v2.6.0' }}" -p "hub-source.zip" -R "${{ github.repository }}"
-          unzip -q hub-source.zip -d hub
+          python3 -c "
+          import zipfile, os
+          with zipfile.ZipFile('hub-source.zip') as z:
+              for member in z.infolist():
+                  clean = member.filename.replace('\\', '/')
+                  target = os.path.join('hub', clean)
+                  if clean.endswith('/'):
+                      os.makedirs(target, exist_ok=True)
+                  else:
+                      os.makedirs(os.path.dirname(target), exist_ok=True)
+                      with open(target, 'wb') as f:
+                          f.write(z.read(member))
+          "
+          echo "Extracted files:"
           ls -la hub
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         working-directory: hub
