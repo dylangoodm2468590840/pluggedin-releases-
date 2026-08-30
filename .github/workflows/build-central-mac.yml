@@ -26,12 +26,11 @@ jobs:
       - name: Download Hub Source from Release
         run: |
           mkdir -p hub
-          curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://github.com/${{ github.repository }}/releases/download/${{ inputs.release_tag || 'central-v2.6.0' }}/hub-source.zip" \
-            -o hub.zip
-          unzip -q hub.zip -d hub
-          cd hub
-          ls -la
+          gh release download "${{ inputs.release_tag || 'central-v2.6.0' }}" -p "hub-source.zip" -R "${{ github.repository }}"
+          unzip -q hub-source.zip -d hub
+          ls -la hub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
         working-directory: hub
