@@ -24,6 +24,8 @@ jobs:
           node-version: 22
 
       - name: Download and Extract Hub Source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p hub
           gh release download "${{ inputs.release_tag || 'central-v2.6.0' }}" -p "hub-source.zip" -R "${{ github.repository }}"
