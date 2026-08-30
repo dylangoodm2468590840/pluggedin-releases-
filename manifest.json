@@ -24,26 +24,26 @@
                     {
                         "id":  "pluggedin_plugtune",
                         "plugin_id":  "pluggedin_plugtune",
-                        "name":  "PLUGTUNE v1.0.0 (DEV-1063)",
+                        "name":  "PLUGTUNE v1.0.0 (DEV-1064)",
                         "subtitle":  "Real-Time AutoTune and Formant Suite",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1064/PlugTune_DEV-1064_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGTUNE v1.0.0 (DEV-1061) Real-Time Vocal Pitch Correction \u0026 Formant Manipulation Suite.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1063/PlugTune_DEV-1063_Win64_VST3.zip",
-                                                             "sha256":  "2e5f796b499ae124401da2fb94e9cc58cdbee634c96034e60964d9acb2c7fd02",
-                                                             "size_bytes":  4651285
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1064/PlugTune_DEV-1064_Win64_VST3.zip",
+                                                             "sha256":  "3ad778ea99d768c9420b8a4ae15645793a0cd7366e2cfe2090874f3a26b2ea24",
+                                                             "size_bytes":  4651207
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "both",
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PlugTune_Mac_Universal.vst3.zip"
                                                              }
                                      },
-                        "dev_build":  "DEV-1063"
+                        "dev_build":  "DEV-1064"
                     },
                     {
                         "id":  "pluggedin_plugged1",
