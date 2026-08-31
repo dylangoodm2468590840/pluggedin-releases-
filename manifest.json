@@ -50,26 +50,26 @@
                     {
                         "id":  "pluggedin_plugged1",
                         "plugin_id":  "pluggedin_plugged1",
-                        "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
+                        "name":  "PLUGGED 1 v1.0.0 (DEV-1020)",
                         "subtitle":  "Flagship Hybrid Synthesizer \u0026 808",
                         "category":  "Instrument",
                         "latest_version":  "1.0.0",
-                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-dev1020/Plugged 1_DEV-1020_Win64_VST3.zip",
                         "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
                                                              "format":  "vst3",
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
-                                                             "sha256":  "9f52dde70b4c123ae97cad1420ada4ae10d85d5d8371d33f0a0c2beb57a46adb",
-                                                             "size_bytes":  5039698
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-dev1020/Plugged 1_DEV-1020_Win64_VST3.zip",
+                                                             "sha256":  "22a56655ff66995ac3c0ec944a0753bbea56fb36ea0e4b47f7fe16cab2dc9478",
+                                                             "size_bytes":  5052533
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "both",
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip"
                                                              }
                                      },
-                        "dev_build":  "DEV-0100"
+                        "dev_build":  "DEV-1020"
                     },
                     {
                         "id":  "pluggedin_underground",
