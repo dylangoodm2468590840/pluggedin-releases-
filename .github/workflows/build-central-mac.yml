@@ -185,13 +185,12 @@ jobs:
       - name: Package macOS Universal Binaries
         working-directory: plugin
         run: |
-          mkdir -p ../dist_mac
+          mkdir -p "$GITHUB_WORKSPACE/dist_mac"
           cd build/PlugTune_artefacts/Release/
-          zip -r -y "../../../dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3 $([ -d "AU/PlugTune.component" ] && echo "AU/PlugTune.component")
-          cd ../../../
+          zip -r -y "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3
 
       - name: Upload Mac Assets to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ inputs.release_tag }}" dist_mac/PlugTune_Mac_Universal.vst3.zip --clobber -R "${{ github.repository }}"
+          gh release upload "${{ inputs.release_tag }}" "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" --clobber -R "${{ github.repository }}"
