@@ -1,12 +1,12 @@
 {
     "schema_version":  "1.0.0",
     "channel":  "production",
-    "hub_version":  "2.1.4",
+    "hub_version":  "2.1.5",
     "manager":  {
-                    "version":  "2.1.4",
+                    "version":  "2.1.5",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "release_notes":  "PluggedIN Central v2.1.4: Mac auto-updater fix, improved macOS Gatekeeper handling, and quarantine-free plugin installation.",
+                    "release_notes":  "PluggedIN Central v2.1.5: Built-in macOS startup self-healing, automated unquarantine, infinite update loop fix, and multi-version stability.",
                     "packages":  {
                                      "windows_x64":  {
                                                          "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.1/PluggedIN-Central_Setup_2.1.3.exe",
@@ -14,9 +14,9 @@
                                                          "size_bytes":  109098795
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.10.0/PluggedIN.Central_Mac_Universal_2.1.4.zip",
-                                                             "sha256":  "2439a2aa35eb4368cd7eb57586a95675d5aecaccddfae71f7c45859f0ee369a3",
-                                                             "size_bytes":  202826744
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.11.0/PluggedIN.Central_Mac_Universal_2.1.5.zip",
+                                                             "sha256":  "95d5bb9c0814d479e9d559e2c38f1fb2879206eb7ecd2399bd3df3766dd4f177",
+                                                             "size_bytes":  202827030
                                                          }
                                  }
                 },
@@ -51,7 +51,7 @@
                         "id":  "pluggedin_plugged1",
                         "plugin_id":  "pluggedin_plugged1",
                         "name":  "PLUGGED 1 v1.0 (Flagship Hybrid Instrument)",
-                        "subtitle":  "Flagship Hybrid Synthesizer & 808",
+                        "subtitle":  "Flagship Hybrid Synthesizer \u0026 808",
                         "category":  "Instrument",
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-v1.0.0/PLUGGED_1_v1.0.0_Win64_VST3.zip",
@@ -75,7 +75,7 @@
                     {
                         "id":  "pluggedin_underground",
                         "plugin_id":  "pluggedin_underground",
-                        "name":  "UNDERGROUND v4.2.2 (Studio Pitch & Formant Demon Suite)",
+                        "name":  "UNDERGROUND v4.2.2 (Studio Pitch \u0026 Formant Demon Suite)",
                         "subtitle":  "Boutique Vocal Multi-FX Suite",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "4.2.2",
@@ -101,7 +101,7 @@
                         "id":  "pluggedin_plugvox",
                         "plugin_id":  "pluggedin_plugvox",
                         "name":  "PLUG VOX v1.0.0 (DEV-1005)",
-                        "subtitle":  "Real-Time Vocal Doubler & Stereo Harmonic Processor",
+                        "subtitle":  "Real-Time Vocal Doubler \u0026 Stereo Harmonic Processor",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.0",
                         "dev_build":  "DEV-1005",
