@@ -80,7 +80,7 @@
             "name": "UNDERGROUND v4.2.2 (Studio Pitch & Formant Demon Suite)",
             "subtitle": "Boutique Vocal Multi-FX Suite",
             "category": "Vocal Multi-FX",
-            "latest_version": "4.2.3",
+            "latest_version": "4.2.2",
             "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
             "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.3/UNDERGROUND_Mac_Universal.vst3.zip",
             "changelog": "UNDERGROUND v4.2.3: Native macOS Universal build, resolved FL Studio scanner teardown crash (bundleExit patch), native Catalina 10.15+ & Apple Silicon support.",
