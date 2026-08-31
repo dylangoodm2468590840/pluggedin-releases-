@@ -119,7 +119,7 @@ jobs:
       - name: Patch JUCE bundleExit Teardown Bug
         working-directory: plugin
         run: |
-          python3 -c "
+          python3 << 'EOF'
           import os, re
           target_file = None
           for root, dirs, files in os.walk('build'):
@@ -140,7 +140,7 @@ jobs:
               print('JUCE bundleExit successfully patched!')
           else:
               print('Warning: juce_audio_plugin_client_VST3.cpp not found')
-          "
+          EOF
 
       - name: Compile PlugTune Targets
         working-directory: plugin
