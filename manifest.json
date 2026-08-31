@@ -55,7 +55,7 @@
                         "category":  "Instrument",
                         "latest_version":  "1.0.0",
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-dev1020/Plugged 1_DEV-1020_Win64_VST3.zip",
-                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-source/releases/download/mac-v4.1.0/PLUGGED_1_Mac_Universal.vst3.zip",
                         "changelog":  "PLUGGED 1 v1.0.0 Flagship Hybrid Instrument: Dual-Layer Sampler + PolyBLEP Synthesizer, 808/Sub Machine with Pitch Dive and Legato Glide, Studio ZDF Filter and Saturation Suite, and 100+ Production Presets.",
                         "packages":  {
                                          "windows_x64":  {
@@ -66,7 +66,7 @@
                                                          },
                                          "macos_universal":  {
                                                                  "format":  "both",
-                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.6.0/PLUGGED_1_Mac_Universal.vst3.zip"
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-source/releases/download/mac-v4.1.0/PLUGGED_1_Mac_Universal.vst3.zip"
                                                              }
                                      },
                         "dev_build":  "DEV-1020"
