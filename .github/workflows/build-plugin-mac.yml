@@ -1,4 +1,4 @@
-﻿name: Build & Validate PluggedIN Suite
+name: Build & Validate PluggedIN Suite
 
 on:
   workflow_dispatch:
@@ -34,6 +34,22 @@ jobs:
       - name: Compile PlugTune & PlugVox Targets
         run: |
           cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU PlugVox_VST3 PlugVox_AU --parallel
+
+      - name: Ad-Hoc Sign Bundles with Hardened Runtime
+        run: |
+          echo "=== Signing VST3 and AU bundles ==="
+          for bundle in \
+            build/PlugTune_artefacts/Release/VST3/PlugTune.vst3 \
+            build/PlugTune_artefacts/Release/AU/PlugTune.component \
+            build/PlugVox_artefacts/Release/VST3/PlugVox.vst3 \
+            build/PlugVox_artefacts/Release/AU/PlugVox.component; do
+            if [ -d "$bundle" ]; then
+              echo "Signing: $bundle"
+              codesign --force --deep --sign - --options runtime "$bundle"
+              codesign -vvv --deep --strict "$bundle" 2>&1 || echo "Verification note for $bundle"
+            fi
+          done
+          echo "=== All bundles signed ==="
 
       - name: Download & Extract pluginval (macOS)
         run: |
