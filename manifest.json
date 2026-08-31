@@ -61,7 +61,7 @@
                                          "windows_x64":  {
                                                              "format":  "vst3",
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugged1-dev1020/Plugged 1_DEV-1020_Win64_VST3.zip",
-                                                             "sha256":  "22a56655ff66995ac3c0ec944a0753bbea56fb36ea0e4b47f7fe16cab2dc9478",
+                                                             "sha256":  "8713bf10723f67a60ff4c9bb8f1d61a8fe4867381a8df2fbcecefb8faa14e815",
                                                              "size_bytes":  5052533
                                                          },
                                          "macos_universal":  {
