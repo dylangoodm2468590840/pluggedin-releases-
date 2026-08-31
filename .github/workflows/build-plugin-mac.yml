@@ -1,0 +1,70 @@
+﻿name: Build & Validate PluggedIN Suite
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Target GitHub release tag (e.g. plugtune-dev1062)'
+        required: true
+        default: 'plugtune-dev1062'
+
+jobs:
+  build-macos:
+    name: macOS Universal (VST3 + AU) & QA
+    runs-on: macos-14
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Ninja & Tools
+        run: brew install ninja
+
+      - name: Configure CMake for macOS Universal (arm64 + x86_64)
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0"
+
+      - name: Compile PlugTune & PlugVox Targets
+        run: |
+          cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU PlugVox_VST3 PlugVox_AU --parallel
+
+      - name: Download & Extract pluginval (macOS)
+        run: |
+          curl -L "https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip" -o pluginval.zip
+          unzip -q pluginval.zip
+          chmod +x pluginval.app/Contents/MacOS/pluginval
+
+      - name: Run Headless pluginval QA (Strictness 5 + Real-Time Check)
+        run: |
+          echo "Validating PlugTune VST3..."
+          ./pluginval.app/Contents/MacOS/pluginval \
+            --validate "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" \
+            --strictness-level 5 \
+            --rtcheck enabled \
+            --skip-gui-tests \
+            --validate-in-process \
+            --timeout-ms 60000 \
+            --output-dir test-results-mac/
+
+      - name: Package macOS Universal Binaries
+        run: |
+          mkdir -p dist_mac
+          cd build/PlugTune_artefacts/Release/
+          zip -r -y "../../../dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3 $([ -d "AU/PlugTune.component" ] && echo "AU/PlugTune.component")
+          cd ../../../
+
+      - name: Upload Mac Assets to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.release_tag }}
+          files: |
+            dist_mac/PlugTune_Mac_Universal.vst3.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
