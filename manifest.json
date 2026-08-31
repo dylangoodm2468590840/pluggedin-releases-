@@ -82,8 +82,8 @@
             "category": "Vocal Multi-FX",
             "latest_version": "4.2.3",
             "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.2/UNDERGROUND_v4.2.2_Win64_VST3.zip",
-            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1071/UNDERGROUND_Mac_Universal.vst3.zip",
-            "changelog": "UNDERGROUND v4.2.3: Resolved macOS teardown crash in FL Studio (bundleExit patch), native macOS 10.15+ Catalina & Apple Silicon Universal support.",
+            "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.3/UNDERGROUND_Mac_Universal.vst3.zip",
+            "changelog": "UNDERGROUND v4.2.3: Native macOS Universal build, resolved FL Studio scanner teardown crash (bundleExit patch), native Catalina 10.15+ & Apple Silicon support.",
             "packages": {
                 "windows_x64": {
                     "format": "vst3",
@@ -93,9 +93,9 @@
                 },
                 "macos_universal": {
                     "format": "vst3",
-                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1071/UNDERGROUND_Mac_Universal.vst3.zip",
-                    "sha256": "8ad878427d4459a4e5b1a08bb1b6a5faef382b25c928492997ad571852d0a805",
-                    "size_bytes": 6582878
+                    "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/underground-v4.2.3/UNDERGROUND_Mac_Universal.vst3.zip",
+                    "sha256": "b101df727cbf32c18eaca6bc9dea2271d99a4aeaec460653d5ecf22fd4c66134",
+                    "size_bytes": 28700381
                 }
             },
             "status": "available"
