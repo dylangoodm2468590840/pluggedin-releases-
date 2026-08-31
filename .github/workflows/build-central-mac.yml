@@ -142,18 +142,22 @@ jobs:
               print('Warning: juce_audio_plugin_client_VST3.cpp not found')
           EOF
 
-      - name: Compile PlugTune Targets
+      - name: Compile Targets
         working-directory: plugin
         run: |
-          cmake --build build --config Release --target PlugTune_VST3 --parallel
+          if [ -d "Source/DSP" ] && [ -f "Source/DSP/ShadowProcessor.cpp" ]; then
+            echo "=== Building UNDERGROUND VST3 ==="
+            cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
+          else
+            echo "=== Building PlugTune VST3 ==="
+            cmake --build build --config Release --target PlugTune_VST3 --parallel
+          fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
         working-directory: plugin
         run: |
           echo "=== Signing VST3 and AU bundles ==="
-          for bundle in \
-            build/PlugTune_artefacts/Release/VST3/PlugTune.vst3 \
-            build/PlugTune_artefacts/Release/AU/PlugTune.component; do
+          find build -name "*.vst3" -o -name "*.component" | while read -r bundle; do
             if [ -d "$bundle" ]; then
               echo "Signing: $bundle"
               codesign --force --deep --sign - --options runtime "$bundle"
@@ -172,25 +176,38 @@ jobs:
       - name: Run Headless pluginval QA (Strictness 5)
         working-directory: plugin
         run: |
-          echo "Validating PlugTune VST3..."
-          ./pluginval.app/Contents/MacOS/pluginval \
-            --validate "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" \
-            --strictness-level 5 \
-            --rtcheck enabled \
-            --skip-gui-tests \
-            --validate-in-process \
-            --timeout-ms 60000 \
-            --output-dir test-results-mac/ || echo "pluginval check finished"
+          target_vst3=$(find build -name "*.vst3" -type d | head -n 1)
+          if [ -d "$target_vst3" ]; then
+            echo "Validating $target_vst3..."
+            ./pluginval.app/Contents/MacOS/pluginval \
+              --validate "$target_vst3" \
+              --strictness-level 5 \
+              --rtcheck enabled \
+              --skip-gui-tests \
+              --validate-in-process \
+              --timeout-ms 60000 \
+              --output-dir test-results-mac/ || echo "pluginval check finished"
+          fi
 
       - name: Package macOS Universal Binaries
         working-directory: plugin
         run: |
           mkdir -p "$GITHUB_WORKSPACE/dist_mac"
-          cd build/PlugTune_artefacts/Release/
-          zip -r -y "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3
+          if [ -d "build/UNDERGROUND_artefacts/Release/VST3/UNDERGROUND.vst3" ]; then
+            cd build/UNDERGROUND_artefacts/Release/
+            zip -r -y "$GITHUB_WORKSPACE/dist_mac/UNDERGROUND_Mac_Universal.vst3.zip" VST3/UNDERGROUND.vst3
+          elif [ -d "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" ]; then
+            cd build/PlugTune_artefacts/Release/
+            zip -r -y "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3
+          fi
 
       - name: Upload Mac Assets to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "${{ inputs.release_tag }}" "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" --clobber -R "${{ github.repository }}"
+          cd "$GITHUB_WORKSPACE/dist_mac"
+          for z in *.zip; do
+            if [ -f "$z" ]; then
+              gh release upload "${{ inputs.release_tag }}" "$z" --clobber -R "${{ github.repository }}"
+            fi
+          done
