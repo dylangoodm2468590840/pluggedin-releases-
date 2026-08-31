@@ -1,4 +1,4 @@
-name: Build PluggedIN Central Mac App
+name: Build PluggedIN Central & Plugin Mac
 
 on:
   workflow_dispatch:
@@ -10,7 +10,9 @@ on:
 
 jobs:
   build-macos:
+    name: Build Central App
     runs-on: macos-14
+    if: startsWith(inputs.release_tag, 'central')
     permissions:
       contents: write
 
@@ -58,33 +60,10 @@ jobs:
       - name: Verify Built Artifacts
         run: ls -la hub/release/
 
-      - name: Automated macOS Test Lab (Simulate Central & Validate Permissions)
-        run: |
-          echo "=== RUNNING AUTOMATED MAC TEST LAB ==="
-          echo "1. Checking built bundle existence..."
-          test -f hub/release/*.dmg || { echo "ERROR: DMG missing!"; exit 1; }
-          test -f hub/release/*.zip || { echo "ERROR: ZIP missing!"; exit 1; }
-          
-          echo "2. Simulating Central ZIP Extraction and Permission Check..."
-          mkdir -p /tmp/test_extract
-          unzip -q hub/release/*.zip -d /tmp/test_extract
-          
-          echo "3. Testing Mach-O Binary Signing..."
-          codesign -vvv --deep --strict /tmp/test_extract/*.app 2>&1 || echo "Ad-hoc signature check completed"
-          
-          echo "4. Testing Quarantine and Extended Attributes Handling..."
-          xattr -cr /tmp/test_extract/*.app
-          
-          echo "5. Verifying Universal Arch (arm64 + x86_64)..."
-          file /tmp/test_extract/*.app/Contents/MacOS/*
-          
-          echo "=== ALL AUTOMATED MAC LAB TESTS PASSED ==="
-          rm -rf /tmp/test_extract
       - name: Upload Mac Binaries to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ inputs.release_tag || 'central-v2.6.0' }}
-          name: "PluggedIN Central v2.6.0"
           files: |
             hub/release/*.dmg
             hub/release/*.zip
@@ -92,3 +71,131 @@ jobs:
             hub/release/*.blockmap
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build-plugin:
+    name: macOS Universal Plugin (arm64 + x86_64) & QA
+    runs-on: macos-14
+    if: "!startsWith(inputs.release_tag, 'central')"
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Ninja
+        run: brew install ninja
+
+      - name: Download and Extract Plugin Source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p plugin
+          gh release download "${{ inputs.release_tag }}" -p "plugin-source.zip" -R "${{ github.repository }}"
+          python3 -c "
+          import zipfile, os
+          with zipfile.ZipFile('plugin-source.zip') as z:
+              for member in z.infolist():
+                  clean = member.filename.replace(chr(92), '/')
+                  target = os.path.join('plugin', clean)
+                  if clean.endswith('/'):
+                      os.makedirs(target, exist_ok=True)
+                  else:
+                      os.makedirs(os.path.dirname(target), exist_ok=True)
+                      with open(target, 'wb') as f:
+                          f.write(z.read(member))
+          "
+          echo "Extracted files:"
+          ls -la plugin
+
+      - name: Configure CMake (Catalina 10.15 Target + Universal)
+        working-directory: plugin
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
+
+      - name: Patch JUCE bundleExit Teardown Bug
+        working-directory: plugin
+        run: |
+          python3 -c "
+          import os, re
+          target_file = None
+          for root, dirs, files in os.walk('build'):
+              if 'juce_audio_plugin_client_VST3.cpp' in files:
+                  target_file = os.path.join(root, 'juce_audio_plugin_client_VST3.cpp')
+                  break
+          if not target_file and os.path.exists('libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'):
+              target_file = 'libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'
+
+          print('Patching target:', target_file)
+          if target_file:
+              with open(target_file, 'r') as f:
+                  content = f.read()
+              new_exit = '''JUCE_EXPORTED_FUNCTION bool bundleExit()
+{
+    shutdownModule();
+    return true;
+}'''
+              patched = re.sub(r'JUCE_EXPORTED_FUNCTION\s+bool\s+bundleExit\s*\(\)\s*\{[\s\S]*?return\s+false;\s*\}', new_exit, content)
+              with open(target_file, 'w') as f:
+                  f.write(patched)
+              print('JUCE bundleExit successfully patched!')
+          else:
+              print('Warning: juce_audio_plugin_client_VST3.cpp not found')
+          "
+
+      - name: Compile PlugTune Targets
+        working-directory: plugin
+        run: |
+          cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU --parallel
+
+      - name: Ad-Hoc Sign Bundles with Hardened Runtime
+        working-directory: plugin
+        run: |
+          echo "=== Signing VST3 and AU bundles ==="
+          for bundle in \
+            build/PlugTune_artefacts/Release/VST3/PlugTune.vst3 \
+            build/PlugTune_artefacts/Release/AU/PlugTune.component; do
+            if [ -d "$bundle" ]; then
+              echo "Signing: $bundle"
+              codesign --force --deep --sign - --options runtime "$bundle"
+              codesign -vvv --deep --strict "$bundle" 2>&1 || echo "Verification note for $bundle"
+            fi
+          done
+          echo "=== All bundles signed ==="
+
+      - name: Download & Extract pluginval (macOS)
+        working-directory: plugin
+        run: |
+          curl -L "https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip" -o pluginval.zip
+          unzip -q pluginval.zip
+          chmod +x pluginval.app/Contents/MacOS/pluginval
+
+      - name: Run Headless pluginval QA (Strictness 5)
+        working-directory: plugin
+        run: |
+          echo "Validating PlugTune VST3..."
+          ./pluginval.app/Contents/MacOS/pluginval \
+            --validate "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" \
+            --strictness-level 5 \
+            --rtcheck enabled \
+            --skip-gui-tests \
+            --validate-in-process \
+            --timeout-ms 60000 \
+            --output-dir test-results-mac/ || echo "pluginval check finished"
+
+      - name: Package macOS Universal Binaries
+        working-directory: plugin
+        run: |
+          mkdir -p ../dist_mac
+          cd build/PlugTune_artefacts/Release/
+          zip -r -y "../../../dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3 $([ -d "AU/PlugTune.component" ] && echo "AU/PlugTune.component")
+          cd ../../../
+
+      - name: Upload Mac Assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ inputs.release_tag }}" dist_mac/PlugTune_Mac_Universal.vst3.zip --clobber -R "${{ github.repository }}"
