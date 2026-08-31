@@ -1,11 +1,11 @@
-name: Build PluggedIN Suite Mac
+name: Build & Validate PluggedIN Suite
 
 on:
   workflow_dispatch:
     inputs:
       release_tag:
         description: 'Target GitHub release tag (e.g. plugtune-dev1071)'
-        required: false
+        required: true
         default: 'plugtune-dev1071'
 
 jobs:
