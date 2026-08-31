@@ -45,7 +45,8 @@
                                                                  "sha256":  "5f0f66f8750d8986e9ce99f5c64ee6a72452cb95347638e0fcf14d7267e578e5",
                                                                  "size_bytes":  11762288
                                                              }
-                                     }
+                                     },
+                        "status":  "available"
                     },
                     {
                         "id":  "pluggedin_plugged1",
@@ -70,7 +71,8 @@
                                                                  "sha256":  "4fc8b343568da111d47d87310c45fd13747aa85e9ca939c66554ee848d04f9d8",
                                                                  "size_bytes":  6564878
                                                              }
-                                     }
+                                     },
+                        "status":  "available"
                     },
                     {
                         "id":  "pluggedin_underground",
@@ -95,7 +97,8 @@
                                                                  "sha256":  "3af7d58123953d29fb9d72696dbad80950cf21a1539cf797e17673a05c16e42e",
                                                                  "size_bytes":  6448433
                                                              }
-                                     }
+                                     },
+                        "status":  "available"
                     },
                     {
                         "id":  "pluggedin_plugvox",
@@ -116,7 +119,251 @@
                                                              "size_bytes":  4034536
                                                          },
                                          "macos_universal":  null
-                                     }
+                                     },
+                        "status":  "available"
+                    },
+                    {
+                        "id":  "pluggedin_plugair",
+                        "name":  "PLUGAIR (Silk Vocal \u0026 Top-End Exciter)",
+                        "changelog":  "Analog-modeled air EQ, high-frequency harmonic exciter, and harshness suppressor.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Air Band Exciter \u0026 Dynamic High-End Smoother",
+                        "category":  "Vocal Multi-FX",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_demondeesser",
+                        "name":  "DEMON DE-ESSER (Surgical Frequency Tamer)",
+                        "changelog":  "Zero-latency split-band dynamic notch compressor with vocal formant tracking.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Split-Band Intelligent Dynamic Sibilance Processor",
+                        "category":  "Vocal Multi-FX",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_vocalchop",
+                        "name":  "VOCAL CHOP (Glitch \u0026 Stutter Engine)",
+                        "changelog":  "Sync-locked vocal buffer repeater, tape-stop emulator, and chromatic grain reshuffler.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Real-Time Rhythmic Buffer Repeater \u0026 Pitch Slicer",
+                        "category":  "Vocal Multi-FX",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_plugged2",
+                        "name":  "PLUGGED 2 (Next-Gen Hybrid Synthesizer)",
+                        "changelog":  "Dual wavetable oscillators, 400+ modern trap/electronic presets, and granular cloud generator.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Wavetable \u0026 Granular Sound Design Workstation",
+                        "category":  "Instrument",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_808demon",
+                        "name":  "808 DEMON (Sub Machine \u0026 Bass Designer)",
+                        "changelog":  "Dedicated 808 engine with pitch glide curves, sub-octave distortion, and punch phase-locking.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Harmonic 808 Synthesizer with Transient Kick Punch",
+                        "category":  "Instrument",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_velvetkeys",
+                        "name":  "VELVET KEYS (Neo-Soul \u0026 Lo-Fi Electric Piano)",
+                        "changelog":  "Multi-velocity Rhodes/Wurlitzer modeled keys with vinyl flutter, tremolo, and tube warmth.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Vintage Physical-Modeled Tine \u0026 Reed Piano Suite",
+                        "category":  "Instrument",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_submatrix",
+                        "name":  "SUBBASS MATRIX (Sub Reinforcement Engine)",
+                        "changelog":  "Zero-phase mono-locked sub-bass synthesizer for low-end reinforcement in modern mixes.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Pure Sine Sub Generator with Phase Alignment",
+                        "category":  "Instrument",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_crush",
+                        "name":  "CRUSH (Multiband Distortion \u0026 Hard Clipper)",
+                        "changelog":  "3-band saturation crossover with asymmetric clipping, tube bias, and transient preservation.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Aggressive Wavefolder \u0026 Punch Maximizer",
+                        "category":  "Distortion",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_tapedemon",
+                        "name":  "TAPE DEMON (Vintage Reel-to-Reel Saturation)",
+                        "changelog":  "Reel-to-reel magnetic saturation, continuous tape speed selector, tape stop, and bias push.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Analog Tape Emulation with Wow \u0026 Flutter",
+                        "category":  "Distortion",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_tubedemon",
+                        "name":  "TUBE DEMON (Triode Warmth Preamp)",
+                        "changelog":  "Warm odd/even harmonic exciter modeled on 12AX7 studio tube preamps.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Vintage Dual-Triode Preamp Modeler",
+                        "category":  "Distortion",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_heatwave",
+                        "name":  "HEATWAVE (Mastering Soft/Hard Clipper)",
+                        "changelog":  "16x oversampled mastering clipper designed to get mixes loud with zero digital distortion.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Zero-Latency True-Peak Brickwall Clipper",
+                        "category":  "Distortion",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_bitdemon",
+                        "name":  "BIT DEMON (Retro 12-Bit Sampler Emulation)",
+                        "changelog":  "Authentic SP-1200 and vintage digital sampler DAC emulation with variable sample rates.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Vintage Bitcrusher, Downsampler \u0026 Lo-Fi Jitter",
+                        "category":  "Distortion",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_plugverb",
+                        "name":  "PLUGVERB (Lush Algorithmic Studio Reverb)",
+                        "changelog":  "Algorithmic hall, plate, and chamber reverbs with integrated ducking and pitch shimmer.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "High-Density Reverb Engine with Shimmer \u0026 Freeze",
+                        "category":  "Spatial",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_delaydemon",
+                        "name":  "DELAY DEMON (Stereo Ping-Pong \u0026 Tape Echo)",
+                        "changelog":  "Tempo-synced dual delay with tape drift, resonant feedback filters, and automatic ducking.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Dual-Engine Modulated Delay with Filter Loops",
+                        "category":  "Spatial",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_plugdimension",
+                        "name":  "PLUG DIMENSION (Stereo Spatial Chorus)",
+                        "changelog":  "Analog bucket-brigade device (BBD) chorus with classic 4-button dimension mode.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "BBD Multi-Voice Chorus \u0026 Spatial Expander",
+                        "category":  "Spatial",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_phaserdemon",
+                        "name":  "PHASER DEMON (12-Stage Resonant Analog Phaser)",
+                        "changelog":  "12-stage allpass filter modulation with feedback drive and stereo phase offset.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Vintage Optical All-Pass Filter Sweeper",
+                        "category":  "Spatial",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_stereodemon",
+                        "name":  "STEREO DEMON (Mono-Safe Spatial Widener)",
+                        "changelog":  "Perceptual stereo field expander guaranteed 100% phase cancellation-free in mono.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Frequency-Targeted Stereo Imaging Utility",
+                        "category":  "Spatial",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_vcademon",
+                        "name":  "VCA DEMON (Punchy Modern Bus Compressor)",
+                        "changelog":  "High-impact drum and mix bus compressor with sidechain filter and auto-release curves.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Classic VCA Master Bus Glue Engine",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_optovocal",
+                        "name":  "OPTO VOCAL (Warm Vintage Optical Leveler)",
+                        "changelog":  "Two-knob musical leveling amplifier inspired by legendary T4 opto-attenuator circuits.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Electro-Optical Tube Leveling Amplifier",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_multidemon",
+                        "name":  "MULTI DEMON (4-Band Dynamic Spectral Leveler)",
+                        "changelog":  "Linear-phase 4-band dynamics processor with upward compression and spectral smoothing.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Precision Multiband Compressor \u0026 Transient Balancer",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_transientdemon",
+                        "name":  "TRANSIENT DEMON (Drum Attack \u0026 Punch Shaper)",
+                        "changelog":  "Fast punch enhancer for drums and plucks without increasing master ceiling levels.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Dual-Band Transient Attack \u0026 Sustain Designer",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_pluglimit",
+                        "name":  "PLUG LIMIT (True-Peak Mastering Limiter)",
+                        "changelog":  "Commercial mastering brickwall limiter with integrated EBU R128 real-time LUFS metering.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Transparent Lookahead Limiter with LUFS Metering",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_sidechaindemon",
+                        "name":  "SIDECHAIN DEMON (Rhythmic Volume Ducking)",
+                        "changelog":  "Instant 4-on-the-floor pump and customizable multi-point volume automation curves.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Curve-Based Pumping Volume Sequencer",
+                        "category":  "Dynamics",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_filterdemon",
+                        "name":  "FILTER DEMON (Dual Resonant Synth Filters)",
+                        "changelog":  "ZDF ladder filters with built-in tempo-synced modulation, envelope follower, and drive.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Modulated Lowpass/Highpass with Saturation Drive",
+                        "category":  "Utility",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_cleaneq",
+                        "name":  "CLEAN EQ (Surgical Dynamic Parametric EQ)",
+                        "changelog":  "Zero-latency 8-band dynamic EQ with mid/side modes and spectrum collision detection.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Dynamic 8-Band Equalizer with Real-Time Analyzer",
+                        "category":  "Utility",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_monomaker",
+                        "name":  "MONO MAKER (Low-End Phase \u0026 Mono Manager)",
+                        "changelog":  "Clean linear-phase low-frequency mono sum utility ensuring club-ready low-end translation.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Sub-Frequency Crossover \u0026 Bass Alignment Utility",
+                        "category":  "Utility",
+                        "status":  "coming_soon"
+                    },
+                    {
+                        "id":  "pluggedin_gainstage",
+                        "name":  "GAIN STAGE (A/B Matching \u0026 Studio Metering)",
+                        "changelog":  "Automatic level-matched A/B comparison utility and comprehensive RMS/Peak/Crest monitoring.",
+                        "latest_version":  "1.0.0",
+                        "subtitle":  "Loudness-Matched Reference \u0026 Gain Workflow Tool",
+                        "category":  "Utility",
+                        "status":  "coming_soon"
                     }
                 ]
 }
