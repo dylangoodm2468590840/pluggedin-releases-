@@ -133,11 +133,7 @@ jobs:
           if target_file:
               with open(target_file, 'r') as f:
                   content = f.read()
-              new_exit = '''JUCE_EXPORTED_FUNCTION bool bundleExit()
-{
-    shutdownModule();
-    return true;
-}'''
+              new_exit = "JUCE_EXPORTED_FUNCTION bool bundleExit()\n{\n    shutdownModule();\n    return true;\n}"
               patched = re.sub(r'JUCE_EXPORTED_FUNCTION\s+bool\s+bundleExit\s*\(\)\s*\{[\s\S]*?return\s+false;\s*\}', new_exit, content)
               with open(target_file, 'w') as f:
                   f.write(patched)
