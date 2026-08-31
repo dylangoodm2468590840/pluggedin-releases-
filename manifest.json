@@ -1,12 +1,12 @@
 {
     "schema_version":  "1.0.0",
     "channel":  "production",
-    "hub_version":  "2.1.5",
+    "hub_version":  "2.1.6",
     "manager":  {
-                    "version":  "2.1.5",
+                    "version":  "2.1.6",
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "release_notes":  "PluggedIN Central v2.1.5: Built-in macOS startup self-healing, automated unquarantine, infinite update loop fix, and multi-version stability.",
+                    "release_notes":  "PluggedIN Central v2.1.6: Native Manifest-Based Hub Updater for macOS, atomic staging \u0026 rollback installation pipeline, code seal protection, and FL Studio scan repair.",
                     "packages":  {
                                      "windows_x64":  {
                                                          "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.1/PluggedIN-Central_Setup_2.1.3.exe",
@@ -14,9 +14,9 @@
                                                          "size_bytes":  109098795
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.11.0/PluggedIN.Central_Mac_Universal_2.1.5.zip",
-                                                             "sha256":  "95d5bb9c0814d479e9d559e2c38f1fb2879206eb7ecd2399bd3df3766dd4f177",
-                                                             "size_bytes":  202827030
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.12.0/PluggedIN.Central_Mac_Universal_2.1.6.zip",
+                                                             "sha256":  "89fedab38f00eccd9d4e83f97134e6e08782bdd137f6ea71d9f098b439a85447",
+                                                             "size_bytes":  202829897
                                                          }
                                  }
                 },
