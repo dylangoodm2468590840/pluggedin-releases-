@@ -145,7 +145,7 @@ jobs:
       - name: Compile PlugTune Targets
         working-directory: plugin
         run: |
-          cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU --parallel
+          cmake --build build --config Release --target PlugTune_VST3 --parallel
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
         working-directory: plugin
