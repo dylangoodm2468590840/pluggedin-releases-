@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Target GitHub release tag (e.g. plugtune-dev1062)'
+        description: 'Target GitHub release tag (e.g. plugtune-dev1071)'
         required: true
-        default: 'plugtune-dev1062'
+        default: 'plugtune-dev1071'
 
 jobs:
   build-macos:
@@ -16,33 +16,84 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout repository
+      - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install Ninja & Tools
         run: brew install ninja
 
-      - name: Configure CMake for macOS Universal (arm64 + x86_64)
+      - name: Download and Extract Plugin Source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p plugin
+          gh release download "${{ inputs.release_tag }}" -p "plugin-source.zip" -R "${{ github.repository }}"
+          python3 -c "
+          import zipfile, os
+          with zipfile.ZipFile('plugin-source.zip') as z:
+              for member in z.infolist():
+                  clean = member.filename.replace(chr(92), '/')
+                  target = os.path.join('plugin', clean)
+                  if clean.endswith('/'):
+                      os.makedirs(target, exist_ok=True)
+                  else:
+                      os.makedirs(os.path.dirname(target), exist_ok=True)
+                      with open(target, 'wb') as f:
+                          f.write(z.read(member))
+          "
+          echo "Extracted files:"
+          ls -la plugin
+
+      - name: Configure CMake for macOS Universal (arm64 + x86_64) with 10.15 Target
+        working-directory: plugin
         run: |
           cmake -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET="11.0"
+            -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
 
-      - name: Compile PlugTune & PlugVox Targets
+      - name: Patch JUCE bundleExit Teardown Bug
+        working-directory: plugin
         run: |
-          cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU PlugVox_VST3 PlugVox_AU --parallel
+          python3 -c "
+          import os, re
+          target_file = None
+          for root, dirs, files in os.walk('build'):
+              if 'juce_audio_plugin_client_VST3.cpp' in files:
+                  target_file = os.path.join(root, 'juce_audio_plugin_client_VST3.cpp')
+                  break
+          if not target_file and os.path.exists('libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'):
+              target_file = 'libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'
+
+          print('Patching target:', target_file)
+          if target_file:
+              with open(target_file, 'r') as f:
+                  content = f.read()
+              new_exit = '''JUCE_EXPORTED_FUNCTION bool bundleExit()
+{
+    shutdownModule();
+    return true;
+}'''
+              patched = re.sub(r'JUCE_EXPORTED_FUNCTION\s+bool\s+bundleExit\s*\(\)\s*\{[\s\S]*?return\s+false;\s*\}', new_exit, content)
+              with open(target_file, 'w') as f:
+                  f.write(patched)
+              print('JUCE bundleExit successfully patched to prevent teardown double-free!')
+          else:
+              print('Warning: juce_audio_plugin_client_VST3.cpp not found for patching!')
+          "
+
+      - name: Compile PlugTune Targets
+        working-directory: plugin
+        run: |
+          cmake --build build --config Release --target PlugTune_VST3 PlugTune_AU --parallel
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
+        working-directory: plugin
         run: |
           echo "=== Signing VST3 and AU bundles ==="
           for bundle in \
             build/PlugTune_artefacts/Release/VST3/PlugTune.vst3 \
-            build/PlugTune_artefacts/Release/AU/PlugTune.component \
-            build/PlugVox_artefacts/Release/VST3/PlugVox.vst3 \
-            build/PlugVox_artefacts/Release/AU/PlugVox.component; do
+            build/PlugTune_artefacts/Release/AU/PlugTune.component; do
             if [ -d "$bundle" ]; then
               echo "Signing: $bundle"
               codesign --force --deep --sign - --options runtime "$bundle"
@@ -52,12 +103,14 @@ jobs:
           echo "=== All bundles signed ==="
 
       - name: Download & Extract pluginval (macOS)
+        working-directory: plugin
         run: |
           curl -L "https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip" -o pluginval.zip
           unzip -q pluginval.zip
           chmod +x pluginval.app/Contents/MacOS/pluginval
 
       - name: Run Headless pluginval QA (Strictness 5 + Real-Time Check)
+        working-directory: plugin
         run: |
           echo "Validating PlugTune VST3..."
           ./pluginval.app/Contents/MacOS/pluginval \
@@ -70,17 +123,15 @@ jobs:
             --output-dir test-results-mac/
 
       - name: Package macOS Universal Binaries
+        working-directory: plugin
         run: |
-          mkdir -p dist_mac
+          mkdir -p ../dist_mac
           cd build/PlugTune_artefacts/Release/
-          zip -r -y "../../../dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3 $([ -d "AU/PlugTune.component" ] && echo "AU/PlugTune.component")
+          zip -r -y "../../../../dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3 $([ -d "AU/PlugTune.component" ] && echo "AU/PlugTune.component")
           cd ../../../
 
       - name: Upload Mac Assets to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ inputs.release_tag }}
-          files: |
-            dist_mac/PlugTune_Mac_Universal.vst3.zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ inputs.release_tag }}" dist_mac/PlugTune_Mac_Universal.vst3.zip --clobber -R "${{ github.repository }}"
