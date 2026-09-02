@@ -149,8 +149,8 @@ jobs:
             echo "=== Building UNDERGROUND VST3 ==="
             cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
           else
-            echo "=== Building PlugTune VST3 ==="
-            cmake --build build --config Release --target PlugTune_VST3 --parallel
+            echo "=== Building PlugTune Suite VST3s ==="
+            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 --parallel
           fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
@@ -193,13 +193,14 @@ jobs:
         working-directory: plugin
         run: |
           mkdir -p "$GITHUB_WORKSPACE/dist_mac"
-          if [ -d "build/UNDERGROUND_artefacts/Release/VST3/UNDERGROUND.vst3" ]; then
-            cd build/UNDERGROUND_artefacts/Release/
-            zip -r -y "$GITHUB_WORKSPACE/dist_mac/UNDERGROUND_Mac_Universal.vst3.zip" VST3/UNDERGROUND.vst3
-          elif [ -d "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" ]; then
-            cd build/PlugTune_artefacts/Release/
-            zip -r -y "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3
-          fi
+          for art in build/*_artefacts/Release/VST3/*.vst3; do
+            if [ -d "$art" ]; then
+              bname=$(basename "$art" .vst3)
+              echo "Packaging $bname..."
+              (cd "$(dirname "$art")/.." && zip -r -y "$GITHUB_WORKSPACE/dist_mac/${bname}_Mac_Universal.vst3.zip" "VST3/${bname}.vst3")
+            fi
+          done
+          ls -la "$GITHUB_WORKSPACE/dist_mac"
 
       - name: Upload Mac Assets to GitHub Release
         env:
