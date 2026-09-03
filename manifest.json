@@ -32,13 +32,13 @@
       "description": "Commercial hybrid synth with dedicated Voice Choke & Cut Hardware Bay ('Cut Itself' note choking), 808 Anti-Squeak circuit, 3D knurled ADSR knobs with live LED arcs, and authentic electro-mechanical tines.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Win64_VST3.zip",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Mac_Universal.vst3.zip",
-      "sha256_win": "77b50fc6417509f18d3c9b71a60697d752c03b7de5b5fb0e9cc465f18c0f2a50",
+      "sha256_win": "1013b91422d3240b326b81794afc4b65b9b55ca89a4b0c6255c899b77d6c2314",
       "sha256_mac": "4fc8b343568da111d47d87310c45fd13747aa85e9ca939c66554ee848d04f9d8",
       "packages": {
         "windows_x64": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Win64_VST3.zip",
-          "sha256": "77b50fc6417509f18d3c9b71a60697d752c03b7de5b5fb0e9cc465f18c0f2a50",
-          "size_bytes": 11294976
+          "sha256": "1013b91422d3240b326b81794afc4b65b9b55ca89a4b0c6255c899b77d6c2314",
+          "size_bytes": 11296162
         },
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Mac_Universal.vst3.zip",
