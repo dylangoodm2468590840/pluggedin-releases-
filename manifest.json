@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "2.8.0",
+  "hub_version": "2.9.0",
   "manager": {
     "version": "2.8.0",
     "minimum_supported_version": "1.0.0",
@@ -109,7 +109,7 @@
       "dev_build": "DEV-1012",
       "description": "Authentic Renaissance Vox workflow: -48 dB leveling depth, automatic 40:1 program-dependent leveling ratio, 0.1ms clamp / 65ms release, illuminated LED ladder meters, pure clean vocal punch.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugVox_Win64_VST3.zip",
-      "download_url_mac": null,
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugVox_Mac_Universal.vst3.zip",
       "sha256_win": "1613003bca7724e44baefdace0bfbebef5a0ea375ddf8181a0b40c889fdfa27a",
       "sha256_mac": null,
       "packages": {
@@ -117,6 +117,12 @@
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugVox_Win64_VST3.zip",
           "sha256": "1613003bca7724e44baefdace0bfbebef5a0ea375ddf8181a0b40c889fdfa27a",
           "size_bytes": 4257792
+        },
+        "macos_universal": {
+          "format": "vst3_bundle",
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugVox_Mac_Universal.vst3.zip",
+          "size": 2247755,
+          "sha256": "5748b910f134b60ef488a77a423cd30b9dedf28097d6126b4caef812ca489c4b"
         }
       }
     },
@@ -130,7 +136,7 @@
       "dev_build": "DEV-1004",
       "description": "Authentic Teletronix T4B electro-luminescent optical cell modeling, dual-time-constant release memory lag, 12AX7 tube saturation warmth, and analog moving needle VU meter.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugOpto_Win64_VST3.zip",
-      "download_url_mac": null,
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugOpto_Mac_Universal.vst3.zip",
       "sha256_win": "a4d9f3163a91f13681be6dcef9a393ae0a17d7d6aca841105672b7e3e16d6294",
       "sha256_mac": null,
       "packages": {
@@ -138,6 +144,12 @@
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugOpto_Win64_VST3.zip",
           "sha256": "a4d9f3163a91f13681be6dcef9a393ae0a17d7d6aca841105672b7e3e16d6294",
           "size_bytes": 10244096
+        },
+        "macos_universal": {
+          "format": "vst3_bundle",
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugOpto_Mac_Universal.vst3.zip",
+          "size": 14308592,
+          "sha256": "f2afbfb60453b5bbfef1ef163ee076b372e1d5de081630195c20257e9d64c73d"
         }
       }
     },
@@ -151,7 +163,7 @@
       "dev_build": "DEV-1007",
       "description": "Solid State Logic 4000 G-Master bus compression, photorealistic Sifam Meter with 100% linear dB needle travel, zero number collisions, EAO illuminated button, and stepped chicken-head knobs.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugGlue_Win64_VST3.zip",
-      "download_url_mac": null,
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugGlue_Mac_Universal.vst3.zip",
       "sha256_win": "724faf8aedbed6b6c4b8c3f804ea3c25dbe14d3e30eef01fcb7d0a4536bfcdbd",
       "sha256_mac": null,
       "packages": {
@@ -159,6 +171,12 @@
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugGlue_Win64_VST3.zip",
           "sha256": "724faf8aedbed6b6c4b8c3f804ea3c25dbe14d3e30eef01fcb7d0a4536bfcdbd",
           "size_bytes": 10255360
+        },
+        "macos_universal": {
+          "format": "vst3_bundle",
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugGlue_Mac_Universal.vst3.zip",
+          "size": 13882526,
+          "sha256": "c7d95bfda2d8675f159f32a26d48de53f5b7449145085ec038b774d9bdf6bd14"
         }
       }
     },
@@ -172,7 +190,7 @@
       "dev_build": "DEV-1010",
       "description": "4096-point FFT with continuous fractional Catmull-Rom cubic interpolation, 1/24th-octave Gaussian smoothing, band-isolated dynamic EQ sidechain with 4:1 soft-knee vocal clamp, normalized ZDF SVF bells, and interactive resonance grab.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugEq_Win64_VST3.zip",
-      "download_url_mac": null,
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugEq_Mac_Universal.vst3.zip",
       "sha256_win": "0bb685ddd4700ce2fb2770b9f321ff84fb862cd507558301f2a26130db5b65d1",
       "sha256_mac": null,
       "packages": {
@@ -180,8 +198,16 @@
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugEq_Win64_VST3.zip",
           "sha256": "0bb685ddd4700ce2fb2770b9f321ff84fb862cd507558301f2a26130db5b65d1",
           "size_bytes": 4970496
+        },
+        "macos_universal": {
+          "format": "vst3_bundle",
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-mac-v2.8.0/PlugEq_Mac_Universal.vst3.zip",
+          "size": 2138053,
+          "sha256": "f50ccc311c9538d3f5a9b126cdce5f964014c97417922d4e5c6bc648aef834a5"
         }
       }
     }
-  ]
+  ],
+  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN-Central_Setup_2.9.0.exe",
+  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN.Central_Mac_Universal_2.9.0.dmg"
 }
