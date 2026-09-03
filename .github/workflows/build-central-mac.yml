@@ -149,8 +149,12 @@ jobs:
             echo "=== Building UNDERGROUND VST3 ==="
             cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
           else
-            echo "=== Building PlugTune VST3 ==="
+            echo "=== Building Full PluggedIN Audio Suite VST3 ==="
             cmake --build build --config Release --target PlugTune_VST3 --parallel
+            cmake --build build --config Release --target PlugVox_VST3 --parallel
+            cmake --build build --config Release --target PlugOpto_VST3 --parallel
+            cmake --build build --config Release --target PlugGlue_VST3 --parallel
+            cmake --build build --config Release --target PlugEq_VST3 --parallel
           fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
@@ -193,20 +197,34 @@ jobs:
         working-directory: plugin
         run: |
           mkdir -p "$GITHUB_WORKSPACE/dist_mac"
-          if [ -d "build/UNDERGROUND_artefacts/Release/VST3/UNDERGROUND.vst3" ]; then
-            cd build/UNDERGROUND_artefacts/Release/
-            zip -r -y "$GITHUB_WORKSPACE/dist_mac/UNDERGROUND_Mac_Universal.vst3.zip" VST3/UNDERGROUND.vst3
-          elif [ -d "build/PlugTune_artefacts/Release/VST3/PlugTune.vst3" ]; then
-            cd build/PlugTune_artefacts/Release/
-            zip -r -y "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" VST3/PlugTune.vst3
-          fi
+          for art in build/*_artefacts/Release/VST3/*.vst3; do
+            if [ -d "$art" ]; then
+              base=$(basename "$art" .vst3)
+              echo "Packaging: $base"
+              cd $(dirname "$art")/..
+              zip -r -y "$GITHUB_WORKSPACE/dist_mac/${base}_Mac_Universal.vst3.zip" VST3/${base}.vst3
+              cd "$GITHUB_WORKSPACE/plugin"
+            fi
+          done
+          echo "Built Mac Universal packages:"
+          ls -la "$GITHUB_WORKSPACE/dist_mac"
+
+      - name: Compute SHA-256 Hashes
+        run: |
+          cd "$GITHUB_WORKSPACE/dist_mac"
+          for z in *.zip; do
+            if [ -f "$z" ]; then
+              shasum -a 256 "$z" > "${z}.sha256"
+              cat "${z}.sha256"
+            fi
+          done
 
       - name: Upload Mac Assets to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE/dist_mac"
-          for z in *.zip; do
+          for z in *.zip *.sha256; do
             if [ -f "$z" ]; then
               gh release upload "${{ inputs.release_tag }}" "$z" --clobber -R "${{ github.repository }}"
             fi
