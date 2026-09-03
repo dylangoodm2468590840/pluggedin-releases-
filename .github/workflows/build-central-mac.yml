@@ -149,12 +149,8 @@ jobs:
             echo "=== Building UNDERGROUND VST3 ==="
             cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
           else
-            echo "=== Building Full PluggedIN Audio Suite VST3 ==="
-            cmake --build build --config Release --target PlugTune_VST3 --parallel
-            cmake --build build --config Release --target PlugVox_VST3 --parallel
-            cmake --build build --config Release --target PlugOpto_VST3 --parallel
-            cmake --build build --config Release --target PlugGlue_VST3 --parallel
-            cmake --build build --config Release --target PlugEq_VST3 --parallel
+            echo "=== Building PlugTune Suite VST3s ==="
+            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 --parallel
           fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
@@ -199,14 +195,11 @@ jobs:
           mkdir -p "$GITHUB_WORKSPACE/dist_mac"
           for art in build/*_artefacts/Release/VST3/*.vst3; do
             if [ -d "$art" ]; then
-              base=$(basename "$art" .vst3)
-              echo "Packaging: $base"
-              cd $(dirname "$art")/..
-              zip -r -y "$GITHUB_WORKSPACE/dist_mac/${base}_Mac_Universal.vst3.zip" VST3/${base}.vst3
-              cd "$GITHUB_WORKSPACE/plugin"
+              bname=$(basename "$art" .vst3)
+              echo "Packaging $bname..."
+              (cd "$(dirname "$art")/.." && zip -r -y "$GITHUB_WORKSPACE/dist_mac/${bname}_Mac_Universal.vst3.zip" "VST3/${bname}.vst3")
             fi
           done
-          echo "Built Mac Universal packages:"
           ls -la "$GITHUB_WORKSPACE/dist_mac"
 
       - name: Compute SHA-256 Hashes
