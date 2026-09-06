@@ -3,10 +3,10 @@
   "channel": "production",
   "hub_version": "3.0.0",
   "manager": {
-    "version": "2.9.0",
+    "version": "3.0.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "PluggedIN Central: Pure ad-hoc signature normalization for macOS DAWs, PLUGTNE & UNDERGRND clean-identity suites, and enhanced autonomous repair.",
+    "release_notes": "PluggedIN Central v3.0.0: Pure ad-hoc signature normalization for macOS DAWs, PLUGTNE & UNDERGRND clean-identity suites, and enhanced autonomous repair.",
     "packages": {
       "windows_x64": {
         "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
@@ -14,9 +14,9 @@
         "size_bytes": 109110039
       },
       "macos_universal": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN.Central_Mac_Universal_2.9.0.dmg",
-        "sha256": "8d5a91b7985c5e6e4cd996973c198042c46e34a92372ee377aacce54a4c846d3",
-        "size_bytes": 209917503
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.0.dmg",
+        "sha256": "848d45f21ceefe33b76492acec89eea9158bb3d88c3ecc729b16fe796d281524",
+        "size_bytes": 209898898
       }
     }
   },
@@ -58,18 +58,18 @@
       "description": "Ultra-low latency real-time pitch correction, dual vector oscilloscope, scale detection, and clean plugin identity bypassing FL Studio historical scan blocks.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
-      "sha256_win": "4acbb4c655bd1877bafbc8e6061a564ff5da68dc217a5e6759004dd382c9924a",
-      "sha256_mac": "fc6643255781c06b78e03fd64868e0d17f697d6164a3de34e017617f91eb8189",
+      "sha256_win": "9911534c23a063a12aa79e8af7becafb3d7c2e59fb3e72956899b09da33bcb3a",
+      "sha256_mac": "6b24d1544631a48ddec81e9a2471675f0a440fca9cfba0189eedcf15b9d5d089",
       "packages": {
         "windows_x64": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
-          "sha256": "4acbb4c655bd1877bafbc8e6061a564ff5da68dc217a5e6759004dd382c9924a",
-          "size_bytes": 15735771
+          "sha256": "9911534c23a063a12aa79e8af7becafb3d7c2e59fb3e72956899b09da33bcb3a",
+          "size_bytes": 15735768
         },
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
-          "sha256": "fc6643255781c06b78e03fd64868e0d17f697d6164a3de34e017617f91eb8189",
-          "size_bytes": 25358657
+          "sha256": "6b24d1544631a48ddec81e9a2471675f0a440fca9cfba0189eedcf15b9d5d089",
+          "size_bytes": 25440967
         }
       }
     },
@@ -84,18 +84,18 @@
       "description": "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, and clean plugin identity bypassing FL Studio historical scan blocks.",
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-      "sha256_win": "e2355e2c2c1ade1e15372192e6ede31968c081d3bb3f47e946a2051ab3deed37",
-      "sha256_mac": "fb8d2910cf0305ac9f33f27b34ac6e2de2c0103f369e1560844d529189ce1f83",
+      "sha256_win": "e3f5eed18a4c69d08e01c456727852de58b9a62d58c9cce47e39074c619a1c18",
+      "sha256_mac": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
       "packages": {
         "windows_x64": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
-          "sha256": "e2355e2c2c1ade1e15372192e6ede31968c081d3bb3f47e946a2051ab3deed37",
-          "size_bytes": 16157011
+          "sha256": "e3f5eed18a4c69d08e01c456727852de58b9a62d58c9cce47e39074c619a1c18",
+          "size_bytes": 16157038
         },
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-          "sha256": "fb8d2910cf0305ac9f33f27b34ac6e2de2c0103f369e1560844d529189ce1f83",
-          "size_bytes": 28701202
+          "sha256": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
+          "size_bytes": 28854402
         }
       }
     },
@@ -209,5 +209,5 @@
     }
   ],
   "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
-  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN.Central_Mac_Universal_2.9.0.dmg"
+  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.0.dmg"
 }
