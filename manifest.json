@@ -1,22 +1,22 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "3.0.0",
+  "hub_version": "3.0.1",
   "manager": {
-    "version": "3.0.0",
+    "version": "3.0.1",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "PluggedIN Central v3.0.0: Pure ad-hoc signature normalization for macOS DAWs, PLUGTNE & UNDERGRND clean-identity suites, and enhanced autonomous repair.",
+    "release_notes": "PluggedIN Central v3.0.1: Autonomous de-duplication engine silently purges legacy PlugTune/UNDERGROUND duplicate bundles and FL Studio cache, keeping only clean PLUGTNE & UNDERGRND suites.",
     "packages": {
       "windows_x64": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
-        "sha256": "4fd25a193e1a3a4db413b001604c1f80776dc3c6c5f64cf461e12ff8bf5a8c7b",
-        "size_bytes": 109110039
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.1.exe",
+        "sha256": "4867c89044d9cc232046a749b27f958e679dc81471fcd2e1cf20e1128cb9ce6a",
+        "size_bytes": 109111209
       },
       "macos_universal": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.0.dmg",
-        "sha256": "848d45f21ceefe33b76492acec89eea9158bb3d88c3ecc729b16fe796d281524",
-        "size_bytes": 209898898
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.1.dmg",
+        "sha256": "e55581874cd08a6a02790cef04ecfd915997060b34e29689a030bdef348e8c04",
+        "size_bytes": 209910945
       }
     }
   },
@@ -208,6 +208,6 @@
       }
     }
   ],
-  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
-  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.0.dmg"
+  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.1.exe",
+  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.1.dmg"
 }
