@@ -1,17 +1,17 @@
 {
   "schema_version": "1.0.0",
   "channel": "production",
-  "hub_version": "2.9.0",
+  "hub_version": "3.0.0",
   "manager": {
-    "version": "2.8.0",
+    "version": "3.0.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "PluggedIN Central v2.8.0: Flagship 7-Plugin Suite Release (PLUGGED 1, PLUGTUNE, UNDERGROUND, PLUGVOX, PLUGOPTO, PLUGGLUE, PLUG EQ), Autonomous Multi-DAW Self-Healing Engine (1-Click surgical cache reset for FL Studio, Logic Pro, Ableton, & REAPER), Gatekeeper quarantine un-locking, POSIX permission normalization, and Apple Silicon/Intel Universal support.",
+    "release_notes": "PluggedIN Central v3.0.0: Flagship upgrade introducing PLUGTNE & UNDERGRND clean-identity suites, pure ad-hoc signature normalization for macOS DAWs, and enhanced autonomous repair.",
     "packages": {
       "windows_x64": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PluggedIN-Central_Setup_2.8.0.exe",
-        "sha256": "8df913a6335c581a9b7843e6550070afa1b4eb1944dc923b1af99866d8548beb",
-        "size_bytes": 109107913
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
+        "sha256": "4fd25a193e1a3a4db413b001604c1f80776dc3c6c5f64cf461e12ff8bf5a8c7b",
+        "size_bytes": 109110039
       },
       "macos_universal": {
         "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PluggedIN.Central_Mac_Universal_2.8.0.dmg",
@@ -44,6 +44,58 @@
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Mac_Universal.vst3.zip",
           "sha256": "4fc8b343568da111d47d87310c45fd13747aa85e9ca939c66554ee848d04f9d8",
           "size_bytes": 6564878
+        }
+      }
+    },
+    {
+      "id": "pluggedin_plugtne",
+      "plugin_id": "pluggedin_plugtne",
+      "name": "PLUGTNE v1.0.0 (Clean-Identity Pitch Correction Suite)",
+      "subtitle": "Real-Time Pitch Correction & AutoTune Suite",
+      "category": "Vocal Multi-FX",
+      "latest_version": "1.0.0",
+      "dev_build": "v1.0.0",
+      "description": "Ultra-low latency real-time pitch correction, dual vector oscilloscope, scale detection, and clean plugin identity bypassing FL Studio historical scan blocks.",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
+      "sha256_win": "4acbb4c655bd1877bafbc8e6061a564ff5da68dc217a5e6759004dd382c9924a",
+      "sha256_mac": "607ba497bc0d6d297ad0fd682b82b49856c4e53f52824fe94c1b89a69918bf11",
+      "packages": {
+        "windows_x64": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
+          "sha256": "4acbb4c655bd1877bafbc8e6061a564ff5da68dc217a5e6759004dd382c9924a",
+          "size_bytes": 15735771
+        },
+        "macos_universal": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
+          "sha256": "607ba497bc0d6d297ad0fd682b82b49856c4e53f52824fe94c1b89a69918bf11",
+          "size_bytes": 25441063
+        }
+      }
+    },
+    {
+      "id": "pluggedin_undergrnd",
+      "plugin_id": "pluggedin_undergrnd",
+      "name": "UNDERGRND v4.2.3 (Clean-Identity Demon Pitch Suite)",
+      "subtitle": "Boutique Vocal Multi-FX Demon Suite",
+      "category": "Vocal Multi-FX",
+      "latest_version": "4.2.3",
+      "dev_build": "v4.2.3",
+      "description": "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, and clean plugin identity bypassing FL Studio historical scan blocks.",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
+      "sha256_win": "e2355e2c2c1ade1e15372192e6ede31968c081d3bb3f47e946a2051ab3deed37",
+      "sha256_mac": "65a58d081a9d1e1bbef5e90edb91178a1b814e6db40e135ae6ceb58248d94cd8",
+      "packages": {
+        "windows_x64": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
+          "sha256": "e2355e2c2c1ade1e15372192e6ede31968c081d3bb3f47e946a2051ab3deed37",
+          "size_bytes": 16157011
+        },
+        "macos_universal": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
+          "sha256": "65a58d081a9d1e1bbef5e90edb91178a1b814e6db40e135ae6ceb58248d94cd8",
+          "size_bytes": 28854488
         }
       }
     },
