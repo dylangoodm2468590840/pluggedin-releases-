@@ -3,7 +3,7 @@
   "channel": "production",
   "hub_version": "3.0.0",
   "manager": {
-    "version": "3.0.0",
+    "version": "2.9.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
     "release_notes": "PluggedIN Central v3.0.0: Flagship upgrade introducing PLUGTNE & UNDERGRND clean-identity suites, pure ad-hoc signature normalization for macOS DAWs, and enhanced autonomous repair.",
