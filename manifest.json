@@ -1,4 +1,4 @@
-{
+﻿{
   "schema_version": "1.0.0",
   "channel": "production",
   "hub_version": "3.0.0",
@@ -6,7 +6,7 @@
     "version": "2.9.0",
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "release_notes": "PluggedIN Central v3.0.0: Flagship upgrade introducing PLUGTNE & UNDERGRND clean-identity suites, pure ad-hoc signature normalization for macOS DAWs, and enhanced autonomous repair.",
+    "release_notes": "PluggedIN Central: Pure ad-hoc signature normalization for macOS DAWs, PLUGTNE & UNDERGRND clean-identity suites, and enhanced autonomous repair.",
     "packages": {
       "windows_x64": {
         "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
@@ -14,9 +14,9 @@
         "size_bytes": 109110039
       },
       "macos_universal": {
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PluggedIN.Central_Mac_Universal_2.8.0.dmg",
-        "sha256": "6c90ea986b48c124fe6ed830bbbdb99bf65e30e5cad4608b8a626078cbacc4f3",
-        "size_bytes": 209871782
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN.Central_Mac_Universal_2.9.0.dmg",
+        "sha256": "8d5a91b7985c5e6e4cd996973c198042c46e34a92372ee377aacce54a4c846d3",
+        "size_bytes": 209917503
       }
     }
   },
@@ -48,9 +48,9 @@
       }
     },
     {
-      "id": "pluggedin_plugtne",
-      "plugin_id": "pluggedin_plugtne",
-      "name": "PLUGTNE v1.0.0 (Clean-Identity Pitch Correction Suite)",
+      "id": "PLUGTNE",
+      "plugin_id": "PLUGTNE",
+      "name": "PLUGTNE v1.0.0 (Real-Time AutoTune Suite)",
       "subtitle": "Real-Time Pitch Correction & AutoTune Suite",
       "category": "Vocal Multi-FX",
       "latest_version": "1.0.0",
@@ -59,7 +59,7 @@
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
       "sha256_win": "4acbb4c655bd1877bafbc8e6061a564ff5da68dc217a5e6759004dd382c9924a",
-      "sha256_mac": "607ba497bc0d6d297ad0fd682b82b49856c4e53f52824fe94c1b89a69918bf11",
+      "sha256_mac": "fc6643255781c06b78e03fd64868e0d17f697d6164a3de34e017617f91eb8189",
       "packages": {
         "windows_x64": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Win64_VST3.zip",
@@ -68,15 +68,15 @@
         },
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PLUGTNE_Mac_Universal.vst3.zip",
-          "sha256": "607ba497bc0d6d297ad0fd682b82b49856c4e53f52824fe94c1b89a69918bf11",
-          "size_bytes": 25441063
+          "sha256": "fc6643255781c06b78e03fd64868e0d17f697d6164a3de34e017617f91eb8189",
+          "size_bytes": 25358657
         }
       }
     },
     {
-      "id": "pluggedin_undergrnd",
-      "plugin_id": "pluggedin_undergrnd",
-      "name": "UNDERGRND v4.2.3 (Clean-Identity Demon Pitch Suite)",
+      "id": "UNDERGRND",
+      "plugin_id": "UNDERGRND",
+      "name": "UNDERGRND v4.2.3 (Pitch & Formant Demon Suite)",
       "subtitle": "Boutique Vocal Multi-FX Demon Suite",
       "category": "Vocal Multi-FX",
       "latest_version": "4.2.3",
@@ -85,7 +85,7 @@
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
       "sha256_win": "e2355e2c2c1ade1e15372192e6ede31968c081d3bb3f47e946a2051ab3deed37",
-      "sha256_mac": "65a58d081a9d1e1bbef5e90edb91178a1b814e6db40e135ae6ceb58248d94cd8",
+      "sha256_mac": "fb8d2910cf0305ac9f33f27b34ac6e2de2c0103f369e1560844d529189ce1f83",
       "packages": {
         "windows_x64": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Win64_VST3.zip",
@@ -94,60 +94,8 @@
         },
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-          "sha256": "65a58d081a9d1e1bbef5e90edb91178a1b814e6db40e135ae6ceb58248d94cd8",
-          "size_bytes": 28854488
-        }
-      }
-    },
-    {
-      "id": "pluggedin_plugtune",
-      "plugin_id": "pluggedin_plugtune",
-      "name": "PLUGTUNE v1.0.0 (Real-Time AutoTune & Formant Suite)",
-      "subtitle": "Real-Time AutoTune and Formant Suite",
-      "category": "Vocal Multi-FX",
-      "latest_version": "1.0.0",
-      "dev_build": "DEV-1071",
-      "description": "Ultra-low latency real-time pitch correction, slate obsidian hardware rack, dual vector oscilloscope, MetaTune key detection, and stacked-instance stability.",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugTune_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugTune_Mac_Universal.vst3.zip",
-      "sha256_win": "6c746ba4f3a4e1d349788f7af08e04934f670b937d4e2381972deffb83c31cdb",
-      "sha256_mac": "862175d74aa269071577fcff7a64dc9cce50501c120890c87338a7e691078521",
-      "packages": {
-        "windows_x64": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugTune_Win64_VST3.zip",
-          "sha256": "6c746ba4f3a4e1d349788f7af08e04934f670b937d4e2381972deffb83c31cdb",
-          "size_bytes": 15736182
-        },
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PlugTune_Mac_Universal.vst3.zip",
-          "sha256": "862175d74aa269071577fcff7a64dc9cce50501c120890c87338a7e691078521",
-          "size_bytes": 25346550
-        }
-      }
-    },
-    {
-      "id": "pluggedin_underground",
-      "plugin_id": "pluggedin_underground",
-      "name": "UNDERGROUND v4.2.3 (Boutique Vocal Multi-FX Demon Suite)",
-      "subtitle": "Boutique Vocal Multi-FX Demon Suite",
-      "category": "Vocal Multi-FX",
-      "latest_version": "4.2.3",
-      "dev_build": "v4.2.3",
-      "description": "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, voiced-gated diplophonia sub synth, and 3D Haas spatial aura.",
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/UNDERGROUND_Win64_VST3.zip",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/UNDERGROUND_Mac_Universal.vst3.zip",
-      "sha256_win": "cda2ecbf2978575b3aeb1b778e16043cb5e3ab0d05f1060a04f26d7d47e26bb6",
-      "sha256_mac": "b101df727cbf32c18eaca6bc9dea2271d99a4aeaec460653d5ecf22fd4c66134",
-      "packages": {
-        "windows_x64": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/UNDERGROUND_Win64_VST3.zip",
-          "sha256": "cda2ecbf2978575b3aeb1b778e16043cb5e3ab0d05f1060a04f26d7d47e26bb6",
-          "size_bytes": 16158720
-        },
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/UNDERGROUND_Mac_Universal.vst3.zip",
-          "sha256": "b101df727cbf32c18eaca6bc9dea2271d99a4aeaec460653d5ecf22fd4c66134",
-          "size_bytes": 28700381
+          "sha256": "fb8d2910cf0305ac9f33f27b34ac6e2de2c0103f369e1560844d529189ce1f83",
+          "size_bytes": 28701202
         }
       }
     },
@@ -260,6 +208,6 @@
       }
     }
   ],
-  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN-Central_Setup_2.9.0.exe",
+  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.0.exe",
   "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.9.0/PluggedIN.Central_Mac_Universal_2.9.0.dmg"
 }
