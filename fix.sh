@@ -112,51 +112,65 @@ curl -L -f -s --progress-bar "https://github.com/dylangoodm2468590840/pluggedin-
 echo "  • Downloading PlugTune DEV-1071 (Native Mac Universal)..."
 curl -L -f -s --progress-bar "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugtune-dev1071/PlugTune_Mac_Universal.vst3.zip" -o "$TMP_DIR/plugtune.zip"
 
-echo "  • Extracting and deploying plugin bundles..."
+echo "  • Extracting plugin bundles..."
 unzip -q -o "$TMP_DIR/underground.zip" -d "$TMP_DIR/ug/" 2>/dev/null
 unzip -q -o "$TMP_DIR/plugtune.zip" -d "$TMP_DIR/pt/" 2>/dev/null
 
-# Install to system directory
-if [ -d "$TMP_DIR/ug/UNDERGROUND.vst3" ]; then
-    sudo cp -R "$TMP_DIR/ug/UNDERGROUND.vst3" "$SYS_VST3/" 2>/dev/null || cp -R "$TMP_DIR/ug/UNDERGROUND.vst3" "$USER_VST3/" 2>/dev/null
+# Robust search: finds bundles regardless of nested folders inside zip!
+UG_VST3=$(find "$TMP_DIR/ug" -type d -name "UNDERGROUND.vst3" 2>/dev/null | head -1)
+PT_VST3=$(find "$TMP_DIR/pt" -type d -name "PlugTune.vst3" 2>/dev/null | head -1)
+PT_AU=$(find "$TMP_DIR/pt" -type d -name "PlugTune.component" 2>/dev/null | head -1)
+
+if [ -n "$UG_VST3" ]; then
+    echo "  → Deploying UNDERGROUND.vst3 from $UG_VST3..."
+    sudo cp -R "$UG_VST3" "$SYS_VST3/" 2>/dev/null
+    cp -R "$UG_VST3" "$USER_VST3/" 2>/dev/null
+    echo "  ✓ UNDERGROUND.vst3 successfully installed!"
+else
+    echo "  [!] Error: UNDERGROUND.vst3 could not be extracted."
 fi
-if [ -d "$TMP_DIR/pt/PlugTune.vst3" ]; then
-    sudo cp -R "$TMP_DIR/pt/PlugTune.vst3" "$SYS_VST3/" 2>/dev/null || cp -R "$TMP_DIR/pt/PlugTune.vst3" "$USER_VST3/" 2>/dev/null
+
+if [ -n "$PT_VST3" ]; then
+    echo "  → Deploying PlugTune.vst3 from $PT_VST3..."
+    sudo cp -R "$PT_VST3" "$SYS_VST3/" 2>/dev/null
+    cp -R "$PT_VST3" "$USER_VST3/" 2>/dev/null
+    echo "  ✓ PlugTune.vst3 successfully installed!"
+else
+    echo "  [!] Error: PlugTune.vst3 could not be extracted."
 fi
-if [ -d "$TMP_DIR/pt/PlugTune.component" ]; then
-    sudo cp -R "$TMP_DIR/pt/PlugTune.component" "$SYS_AU/" 2>/dev/null || cp -R "$TMP_DIR/pt/PlugTune.component" "$USER_AU/" 2>/dev/null
+
+if [ -n "$PT_AU" ]; then
+    sudo cp -R "$PT_AU" "$SYS_AU/" 2>/dev/null
+    cp -R "$PT_AU" "$USER_AU/" 2>/dev/null
 fi
 
 rm -rf "$TMP_DIR" 2>/dev/null
-echo "  ✓ Clean Universal binaries deployed successfully."
 
 # ── Step 5: Strip Gatekeeper Quarantine ───────────────────────────────────────
 echo ""
 echo "[5/7] Stripping macOS Gatekeeper quarantine flags..."
-sudo xattr -cr "$SYS_VST3"/*.vst3 2>/dev/null
-sudo xattr -rd com.apple.quarantine "$SYS_VST3"/*.vst3 2>/dev/null
-sudo xattr -rd com.apple.provenance "$SYS_VST3"/*.vst3 2>/dev/null
+sudo xattr -cr "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 2>/dev/null
+sudo xattr -rd com.apple.quarantine "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 2>/dev/null
+sudo xattr -rd com.apple.provenance "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 2>/dev/null
 
-xattr -cr "$USER_VST3"/*.vst3 2>/dev/null
-xattr -rd com.apple.quarantine "$USER_VST3"/*.vst3 2>/dev/null
-xattr -rd com.apple.provenance "$USER_VST3"/*.vst3 2>/dev/null
+xattr -cr "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3 2>/dev/null
+xattr -rd com.apple.quarantine "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3 2>/dev/null
+xattr -rd com.apple.provenance "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3 2>/dev/null
 
-sudo xattr -cr "$SYS_AU"/*.component 2>/dev/null
-sudo xattr -rd com.apple.quarantine "$SYS_AU"/*.component 2>/dev/null
-xattr -cr "$USER_AU"/*.component 2>/dev/null
-xattr -rd com.apple.quarantine "$USER_AU"/*.component 2>/dev/null
+sudo xattr -cr "$SYS_AU"/PlugTune.component 2>/dev/null
+xattr -cr "$USER_AU"/PlugTune.component 2>/dev/null
 echo "  ✓ Gatekeeper quarantine stripped."
 
 # ── Step 6: Permissions & Code-Signing ────────────────────────────────────────
 echo ""
 echo "[6/7] Restoring POSIX permissions & applying ad-hoc signatures..."
-sudo chmod -R 755 "$SYS_VST3"/*.vst3 2>/dev/null
-sudo chmod -R 755 "$SYS_AU"/*.component 2>/dev/null
-chmod -R 755 "$USER_VST3"/*.vst3 2>/dev/null
-chmod -R 755 "$USER_AU"/*.component 2>/dev/null
+sudo chmod -R 755 "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 2>/dev/null
+chmod -R 755 "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3 2>/dev/null
+sudo chmod -R 755 "$SYS_AU"/PlugTune.component 2>/dev/null
+chmod -R 755 "$USER_AU"/PlugTune.component 2>/dev/null
 
-for p in "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 "$SYS_VST3"/"Plugged 1.vst3" "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3 "$USER_VST3"/"Plugged 1.vst3"; do
-    if [ -e "$p" ]; then
+for p in "$SYS_VST3"/UNDERGROUND.vst3 "$SYS_VST3"/PlugTune.vst3 "$USER_VST3"/UNDERGROUND.vst3 "$USER_VST3"/PlugTune.vst3; do
+    if [ -d "$p" ]; then
         sudo codesign --force --deep --sign - "$p" 2>/dev/null || codesign --force --deep --sign - "$p" 2>/dev/null
     fi
 done
@@ -170,10 +184,10 @@ echo "  ✓ Audio system refreshed."
 
 echo ""
 echo "================================================================================"
-echo "  🎉 SUCCESS! ALL PLUGINS REPAIRED & UPDATED!"
+echo "  🎉 SUCCESS! ALL PLUGINS REPAIRED & INSTALLED!"
 echo "================================================================================"
 echo ""
-echo "  VERY IMPORTANT: HOW TO SCAN IN FL STUDIO NOW:"
+echo "  FINAL STEP IN FL STUDIO (Takes 10 seconds):"
 echo "  ────────────────────────────────────────────────────────────────────────────"
 echo "  1. Open FL Studio on your Mac."
 echo "  2. Go to: Options  ➔  Manage plugins"
