@@ -35,7 +35,8 @@
         "macos_universal": {
           "size_bytes": 25342765,
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGTNE_Mac_Universal.vst3.zip",
-          "sha256": "9fe3c94071bee3042d0f72cdca6519f54603272773479c9b042b0af60e33c10f"
+          "sha256": "21f41b05ee067c031319e71f29ab081cab58e5743fc8d5172de0a4a720b65489",
+          "size": 25342765
         },
         "windows_x64": {
           "size_bytes": 15584815,
@@ -50,7 +51,7 @@
       "sha256_win": "c597a7ff29dde12af9195c58714793c67f8df5b3fcd7d54d3d3d2a63dc9f95db",
       "plugin_id": "PLUGTNE",
       "category": "Vocal Multi-FX",
-      "sha256_mac": "9fe3c94071bee3042d0f72cdca6519f54603272773479c9b042b0af60e33c10f",
+      "sha256_mac": "21f41b05ee067c031319e71f29ab081cab58e5743fc8d5172de0a4a720b65489",
       "latest_version": "1.0.1"
     },
     {
@@ -87,7 +88,7 @@
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVox_Mac_Universal.vst3.zip",
           "format": "vst3_bundle",
-          "sha256": "84e7cc03d2ff7485ba0d5bc6c1c0f12bf644059e45bd2e871e00ebfd36015ddb",
+          "sha256": "2eede85cb9e5853c40cf2b3063bdb5f2d3818b946b2651fc0b82715e20750d67",
           "size": 2275792
         },
         "windows_x64": {
@@ -103,7 +104,7 @@
       "sha256_win": "e101fb514242f48d47fe878c9ed8cceeadc4737fcc098b90d16f94e01fd01001",
       "plugin_id": "pluggedin_plugvox",
       "category": "Dynamics",
-      "sha256_mac": "84e7cc03d2ff7485ba0d5bc6c1c0f12bf644059e45bd2e871e00ebfd36015ddb",
+      "sha256_mac": "2eede85cb9e5853c40cf2b3063bdb5f2d3818b946b2651fc0b82715e20750d67",
       "latest_version": "1.0.1"
     },
     {
@@ -168,7 +169,7 @@
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugEq_Mac_Universal.vst3.zip",
           "format": "vst3_bundle",
-          "sha256": "c16ec5352f95983a9f47d8fef41bf5b62cea808d375de975d3929993b4ad9a0e",
+          "sha256": "c245217c8fb3068a17fa59cf541af0a112563837e34918b72d9dee13bfcb8d43",
           "size": 2187166
         },
         "windows_x64": {
@@ -184,7 +185,7 @@
       "sha256_win": "1e623551ddb29038842efa2231bc9eb5f200e480ec95156566ea9c0474874be8",
       "plugin_id": "pluggedin_plugeq",
       "category": "Equalizer",
-      "sha256_mac": "c16ec5352f95983a9f47d8fef41bf5b62cea808d375de975d3929993b4ad9a0e",
+      "sha256_mac": "c245217c8fb3068a17fa59cf541af0a112563837e34918b72d9dee13bfcb8d43",
       "latest_version": "1.0.1"
     },
     {
@@ -222,7 +223,7 @@
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugDelay_Mac_Universal.vst3.zip",
           "format": "vst3_bundle",
-          "sha256": "6dcef46863024edeb5fe49d7d06d0dc669394b785dc3435d6e375902e2c972a0",
+          "sha256": "8bb7386a16356b526818e502e79dca2ef67b5f173677d15a87d6e40c14d0fec5",
           "size": 2092523
         },
         "windows_x64": {
@@ -238,7 +239,7 @@
       "sha256_win": "27c2c886445f41b406d5746fd81050f9b6310558d74639e1de7ab60d832fe219",
       "plugin_id": "PlugDelay",
       "category": "Time-Based",
-      "sha256_mac": "6dcef46863024edeb5fe49d7d06d0dc669394b785dc3435d6e375902e2c972a0",
+      "sha256_mac": "8bb7386a16356b526818e502e79dca2ef67b5f173677d15a87d6e40c14d0fec5",
       "latest_version": "1.0.0"
     },
     {
@@ -276,8 +277,8 @@
         "macos_universal": {
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugRack_Mac_Universal.vst3.zip",
           "format": "vst3_bundle",
-          "sha256": "5111de0510c952452a38f501289327a5538d780905f197507245f6acff346c3a",
-          "size": 2304214
+          "sha256": "9275f0efaccee3caa8eb2f4227bb1b28ab44b05f932ce3bba2584347684225d6",
+          "size": 2304224
         },
         "windows_x64": {
           "size_bytes": 4910006,
@@ -292,7 +293,7 @@
       "sha256_win": "332c6261fe8429dfad6a72ecaedbe7586237a2cb53698d56009414c36cb29e3b",
       "plugin_id": "PlugRack",
       "category": "Utility",
-      "sha256_mac": "5111de0510c952452a38f501289327a5538d780905f197507245f6acff346c3a",
+      "sha256_mac": "9275f0efaccee3caa8eb2f4227bb1b28ab44b05f932ce3bba2584347684225d6",
       "latest_version": "1.0.0"
     }
   ],
