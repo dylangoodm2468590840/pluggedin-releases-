@@ -150,7 +150,7 @@ jobs:
             cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
           else
             echo "=== Building PlugTune Suite VST3s ==="
-            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 --parallel
+            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 --parallel
           fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
@@ -200,6 +200,12 @@ jobs:
               (cd "$(dirname "$art")/.." && zip -r -y "$GITHUB_WORKSPACE/dist_mac/${bname}_Mac_Universal.vst3.zip" "VST3/${bname}.vst3")
             fi
           done
+          if [ -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" ] && [ ! -f "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" ]; then
+            cp "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip"
+          fi
+          if [ -f "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" ] && [ ! -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" ]; then
+            cp "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip"
+          fi
           ls -la "$GITHUB_WORKSPACE/dist_mac"
 
       - name: Compute SHA-256 Hashes
