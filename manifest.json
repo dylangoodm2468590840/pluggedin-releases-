@@ -249,24 +249,24 @@
                                          "macos_universal":  {
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Mac_Universal.vst3.zip",
                                                                  "format":  "vst3_bundle",
-                                                                 "sha256":  "e9b9608fde3f6748d8d391e845c111b78cfb1832275cd58aff0c154182242943",
-                                                                 "size":  2279727
+                                                                 "sha256":  "7df123f77bdec2f274510a3c23324c28e8d90c20439899ba10b1d2c29cbc302a",
+                                                                 "size":  2284675
                                                              },
                                          "windows_x64":  {
-                                                             "size_bytes":  4887993,
+                                                             "size_bytes":  4889081,
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Win64_VST3.zip",
-                                                             "sha256":  "a381cf7b764029aacc855379b1910d3cd85f770367584615c9e08ca71e4c473e"
+                                                             "sha256":  "4ca4cfb1d1f3c42d36d8cc659f90a0d4f8f6a5b141625a54445f8fcd333b4757"
                                                          }
                                      },
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Win64_VST3.zip",
                         "name":  "PLUGVERB (Flagship Acoustic Space \u0026 Algorithmic Reverb)",
                         "description":  "Multi-band algorithmic space reverb with interactive decay visualizer, pre-delay, diffusion, and warmth coloring.",
-                        "dev_build":  "DEV-1001",
-                        "sha256_win":  "a381cf7b764029aacc855379b1910d3cd85f770367584615c9e08ca71e4c473e",
+                        "dev_build":  "DEV-1019",
+                        "sha256_win":  "4ca4cfb1d1f3c42d36d8cc659f90a0d4f8f6a5b141625a54445f8fcd333b4757",
                         "plugin_id":  "PlugVerb",
                         "category":  "Reverb",
-                        "sha256_mac":  "e9b9608fde3f6748d8d391e845c111b78cfb1832275cd58aff0c154182242943",
-                        "latest_version":  "1.0.0"
+                        "sha256_mac":  "7df123f77bdec2f274510a3c23324c28e8d90c20439899ba10b1d2c29cbc302a",
+                        "latest_version":  "1.0.1"
                     },
                     {
                         "id":  "PlugRack",
