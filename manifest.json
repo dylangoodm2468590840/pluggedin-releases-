@@ -1,322 +1,417 @@
 {
-  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
-  "plugins": [
-    {
-      "id": "pluggedin_plugged1",
-      "subtitle": "Flagship Hybrid Synthesizer & Sub-808 Engine",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "size_bytes": 6564878,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v2.8.0/PLUGGED_1_Mac_Universal.vst3.zip",
-          "sha256": "4fc8b343568da111d47d87310c45fd13747aa85e9ca939c66554ee848d04f9d8"
-        },
-        "windows_x64": {
-          "size_bytes": 11138077,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGGED_1_Win64_VST3.zip",
-          "sha256": "38f7a67800cd2496607c5677312534056383c6b330b3ab45c1497a357658d80f"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGGED_1_Win64_VST3.zip",
-      "name": "PLUGGED 1 (Flagship Hybrid Synth & Sub-808 Engine)",
-      "description": "Commercial hybrid synth with dedicated Voice Choke & Cut Hardware Bay ('Cut Itself' note choking), 808 Anti-Squeak circuit, 3D knurled ADSR knobs with live LED arcs, and authentic electro-mechanical tines.",
-      "dev_build": "DEV-1025",
-      "sha256_win": "38f7a67800cd2496607c5677312534056383c6b330b3ab45c1497a357658d80f",
-      "plugin_id": "pluggedin_plugged1",
-      "category": "Instrument",
-      "sha256_mac": "4fc8b343568da111d47d87310c45fd13747aa85e9ca939c66554ee848d04f9d8",
-      "latest_version": "1.0.1"
-    },
-    {
-      "id": "PLUGTNE",
-      "subtitle": "Real-Time Pitch Correction & AutoTune Suite",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGTNE_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "size_bytes": 25342765,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGTNE_Mac_Universal.vst3.zip",
-          "sha256": "21f41b05ee067c031319e71f29ab081cab58e5743fc8d5172de0a4a720b65489",
-          "size": 25342765
-        },
-        "windows_x64": {
-          "size_bytes": 15584815,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGTNE_Win64_VST3.zip",
-          "sha256": "c597a7ff29dde12af9195c58714793c67f8df5b3fcd7d54d3d3d2a63dc9f95db"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PLUGTNE_Win64_VST3.zip",
-      "name": "PLUGTNE v1.0.1 (Real-Time AutoTune Suite)",
-      "description": "Ultra-low latency real-time pitch correction, dual vector oscilloscope, scale detection, de-popped transitions, and clean plugin identity bypassing FL Studio historical scan blocks.",
-      "dev_build": "DEV-1072",
-      "sha256_win": "c597a7ff29dde12af9195c58714793c67f8df5b3fcd7d54d3d3d2a63dc9f95db",
-      "plugin_id": "PLUGTNE",
-      "category": "Vocal Multi-FX",
-      "sha256_mac": "21f41b05ee067c031319e71f29ab081cab58e5743fc8d5172de0a4a720b65489",
-      "latest_version": "1.0.1"
-    },
-    {
-      "id": "UNDERGRND",
-      "subtitle": "Boutique Vocal Multi-FX Demon Suite",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "size_bytes": 28854402,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-          "sha256": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34"
-        },
-        "windows_x64": {
-          "size_bytes": 16002211,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/UNDERGRND_Win64_VST3.zip",
-          "sha256": "89f9e5560df533ab2a91103247584b940552da1d5b146b03d36d299ab26f98ad"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/UNDERGRND_Win64_VST3.zip",
-      "name": "UNDERGRND v4.2.4 (Pitch & Formant Demon Suite)",
-      "description": "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, de-popped preset architecture, and clean plugin identity bypassing FL Studio historical scan blocks.",
-      "dev_build": "v4.2.4",
-      "sha256_win": "89f9e5560df533ab2a91103247584b940552da1d5b146b03d36d299ab26f98ad",
-      "plugin_id": "UNDERGRND",
-      "category": "Vocal Multi-FX",
-      "sha256_mac": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
-      "latest_version": "4.2.4"
-    },
-    {
-      "id": "pluggedin_plugvox",
-      "subtitle": "Modern RVox-Style Vocal Leveler & Gate",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVox_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVox_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "2eede85cb9e5853c40cf2b3063bdb5f2d3818b946b2651fc0b82715e20750d67",
-          "size": 2275792
-        },
-        "windows_x64": {
-          "size_bytes": 4139072,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVox_Win64_VST3.zip",
-          "sha256": "e101fb514242f48d47fe878c9ed8cceeadc4737fcc098b90d16f94e01fd01001"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVox_Win64_VST3.zip",
-      "name": "PLUGVOX (Modern RVox-Style Vocal Leveler & Gate)",
-      "description": "Authentic Renaissance Vox workflow: -48 dB leveling depth, automatic 40:1 program-dependent leveling ratio, 0.1ms clamp / 65ms release, illuminated LED ladder meters, pure clean vocal punch.",
-      "dev_build": "DEV-1013",
-      "sha256_win": "e101fb514242f48d47fe878c9ed8cceeadc4737fcc098b90d16f94e01fd01001",
-      "plugin_id": "pluggedin_plugvox",
-      "category": "Dynamics",
-      "sha256_mac": "2eede85cb9e5853c40cf2b3063bdb5f2d3818b946b2651fc0b82715e20750d67",
-      "latest_version": "1.0.1"
-    },
-    {
-      "id": "pluggedin_plugopto",
-      "subtitle": "Vintage CLA-2A Optical Tube Leveler",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugOpto_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugOpto_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "7f0ed538bc40a6aee78da5538b361d7b69f8a616843f891b41725acc2abba8c1",
-          "size": 14330789
-        },
-        "windows_x64": {
-          "size_bytes": 10252928,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugOpto_Win64_VST3.zip",
-          "sha256": "0704ea11a052567893f676ecd140ce4d163cdf93bb7e95c0a88521486762ef14"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugOpto_Win64_VST3.zip",
-      "name": "PLUGOPTO (Vintage CLA-2A Optical Tube Leveler)",
-      "description": "Authentic Teletronix T4B electro-luminescent optical cell modeling, dual-time-constant release memory lag, 12AX7 tube saturation warmth, and analog moving needle VU meter.",
-      "dev_build": "DEV-1016",
-      "sha256_win": "0704ea11a052567893f676ecd140ce4d163cdf93bb7e95c0a88521486762ef14",
-      "plugin_id": "pluggedin_plugopto",
-      "category": "Dynamics",
-      "sha256_mac": "7f0ed538bc40a6aee78da5538b361d7b69f8a616843f891b41725acc2abba8c1",
-      "latest_version": "1.0.2"
-    },
-    {
-      "id": "pluggedin_plugglue",
-      "subtitle": "Solid State Logic 4000 G-Master Stereo Bus Compressor",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugGlue_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugGlue_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "41009c5140f33129610b34b8e54ec236a01ea43ba3cf790fa2166156551c381f",
-          "size": 13912750
-        },
-        "windows_x64": {
-          "size_bytes": 10269349,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugGlue_Win64_VST3.zip",
-          "sha256": "d17d58a8a7ff8744f533f38468c310670738c213b36882a74d467c17e2ca4e61"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugGlue_Win64_VST3.zip",
-      "name": "PLUGGLUE (SSL 4000 G-Master Stereo Bus Compressor)",
-      "description": "Solid State Logic 4000 G-Master bus compression, photorealistic Sifam Meter with 100% linear dB needle travel, zero number collisions, EAO illuminated button, and stepped chicken-head knobs.",
-      "dev_build": "DEV-1011",
-      "sha256_win": "d17d58a8a7ff8744f533f38468c310670738c213b36882a74d467c17e2ca4e61",
-      "plugin_id": "pluggedin_plugglue",
-      "category": "Dynamics",
-      "sha256_mac": "41009c5140f33129610b34b8e54ec236a01ea43ba3cf790fa2166156551c381f",
-      "latest_version": "1.0.2"
-    },
-    {
-      "id": "pluggedin_plugeq",
-      "subtitle": "24-Band Precision Dynamic Visual Equalizer",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugEq_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugEq_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "c245217c8fb3068a17fa59cf541af0a112563837e34918b72d9dee13bfcb8d43",
-          "size": 2187166
-        },
-        "windows_x64": {
-          "size_bytes": 4835592,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugEq_Win64_VST3.zip",
-          "sha256": "1e623551ddb29038842efa2231bc9eb5f200e480ec95156566ea9c0474874be8"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugEq_Win64_VST3.zip",
-      "name": "PLUG EQ (24-Band Precision Dynamic Visual Equalizer)",
-      "description": "4096-point FFT with continuous fractional Catmull-Rom cubic interpolation, 1/24th-octave Gaussian smoothing, band-isolated dynamic EQ sidechain with 4:1 soft-knee vocal clamp, normalized ZDF SVF bells, and 30Hz high-pass filter crash fix.",
-      "dev_build": "DEV-1011",
-      "sha256_win": "1e623551ddb29038842efa2231bc9eb5f200e480ec95156566ea9c0474874be8",
-      "plugin_id": "pluggedin_plugeq",
-      "category": "Equalizer",
-      "sha256_mac": "c245217c8fb3068a17fa59cf541af0a112563837e34918b72d9dee13bfcb8d43",
-      "latest_version": "1.0.1"
-    },
-    {
-      "id": "PlugLimit",
-      "subtitle": "Precision Vocal & Mix Bus Peak Limiter",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugLimit_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugLimit_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "95b27b1b54692f19770c4999ed767924fa41a478f03b1fd95040f728104ea741",
-          "size": 2139585
-        },
-        "windows_x64": {
-          "size_bytes": 4947093,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugLimit_Win64_VST3.zip",
-          "sha256": "24df7809127998e1c0f1baf6335dc6fbf8f72d885d2e2efacedc4f9509f5ebcb"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugLimit_Win64_VST3.zip",
-      "name": "PLUGLIMIT (1:1 Hardware L1 Ultramaximizer & Peak Limiter)",
-      "description": "1:1 hardware console peak limiter with lookahead brickwall clamp, dual sculpted aluminum faders, knurled release knob, CRT oscilloscope, and stereo LED ladders.",
-      "dev_build": "DEV-1004",
-      "sha256_win": "24df7809127998e1c0f1baf6335dc6fbf8f72d885d2e2efacedc4f9509f5ebcb",
-      "plugin_id": "PlugLimit",
-      "category": "Dynamics",
-      "sha256_mac": "95b27b1b54692f19770c4999ed767924fa41a478f03b1fd95040f728104ea741",
-      "latest_version": "1.0.1"
-    },
-    {
-      "id": "PlugDelay",
-      "subtitle": "Flagship Vocal & Mix Studio Delay",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugDelay_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugDelay_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "8bb7386a16356b526818e502e79dca2ef67b5f173677d15a87d6e40c14d0fec5",
-          "size": 2092523
-        },
-        "windows_x64": {
-          "size_bytes": 4053257,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugDelay_Win64_VST3.zip",
-          "sha256": "27c2c886445f41b406d5746fd81050f9b6310558d74639e1de7ab60d832fe219"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugDelay_Win64_VST3.zip",
-      "name": "PLUGDELAY (Flagship Vocal & Mix Studio Delay)",
-      "description": "Stereo ping-pong delay with analog tape saturation, ducking sidechain, high-pass/low-pass filters, and millisecond/beat-sync tempos.",
-      "dev_build": "DEV-1001",
-      "sha256_win": "27c2c886445f41b406d5746fd81050f9b6310558d74639e1de7ab60d832fe219",
-      "plugin_id": "PlugDelay",
-      "category": "Time-Based",
-      "sha256_mac": "8bb7386a16356b526818e502e79dca2ef67b5f173677d15a87d6e40c14d0fec5",
-      "latest_version": "1.0.0"
-    },
-    {
-      "id": "PlugVerb",
-      "subtitle": "Flagship Acoustic Space & Algorithmic Reverb",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "95e1bb93b6a5b3b9a2a704c0e4b6ab25f108dd79aa3ee9033de0abe0e156d426",
-          "size": 2283000
-        },
-        "windows_x64": {
-          "size_bytes": 5035307,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Win64_VST3.zip",
-          "sha256": "a2610041e572c1315b98f738636ea0f37db297b5fff53d71d869ef6a6ab20ac1"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugVerb_Win64_VST3.zip",
-      "name": "PLUGVERB (Flagship Acoustic Space & Algorithmic Reverb)",
-      "description": "Multi-band algorithmic space reverb with interactive decay visualizer, pre-delay, diffusion, and warmth coloring.",
-      "dev_build": "DEV-1020",
-      "sha256_win": "a2610041e572c1315b98f738636ea0f37db297b5fff53d71d869ef6a6ab20ac1",
-      "plugin_id": "PlugVerb",
-      "category": "Reverb",
-      "sha256_mac": "95e1bb93b6a5b3b9a2a704c0e4b6ab25f108dd79aa3ee9033de0abe0e156d426",
-      "latest_version": "1.0.2"
-    },
-    {
-      "id": "PlugRack",
-      "subtitle": "Modular Multi-FX Hardware Host",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugRack_Mac_Universal.vst3.zip",
-      "packages": {
-        "macos_universal": {
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugRack_Mac_Universal.vst3.zip",
-          "format": "vst3_bundle",
-          "sha256": "9275f0efaccee3caa8eb2f4227bb1b28ab44b05f932ce3bba2584347684225d6",
-          "size": 2304224
-        },
-        "windows_x64": {
-          "size_bytes": 4910006,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugRack_Win64_VST3.zip",
-          "sha256": "332c6261fe8429dfad6a72ecaedbe7586237a2cb53698d56009414c36cb29e3b"
-        }
-      },
-      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.1.0/PlugRack_Win64_VST3.zip",
-      "name": "PLUGRACK (Modular Multi-FX Hardware Host)",
-      "description": "Chained modular channel strip rack host housing any combination of PluggedIN compressors, EQs, limiters, and vocal suites.",
-      "dev_build": "DEV-1001",
-      "sha256_win": "332c6261fe8429dfad6a72ecaedbe7586237a2cb53698d56009414c36cb29e3b",
-      "plugin_id": "PlugRack",
-      "category": "Utility",
-      "sha256_mac": "9275f0efaccee3caa8eb2f4227bb1b28ab44b05f932ce3bba2584347684225d6",
-      "latest_version": "1.0.0"
-    }
-  ],
-  "channel": "production",
-  "schema_version": "1.0.0",
-  "hub_version": "3.0.2",
-  "manager": {
-    "minimum_supported_version": "1.0.0",
-    "critical_update": false,
-    "version": "3.0.2",
-    "release_notes": "PluggedIN Central v3.0.2: Resolved macOS DAW process detection false positive where system background daemons (livefsd) blocked plugin installation.",
-    "packages": {
-      "macos_universal": {
-        "size_bytes": 209892587,
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg",
-        "sha256": "ccd1463a2e32fea264f061c1b4b7508b95e89ffeceb4742e093574b671a44bc1"
-      },
-      "windows_x64": {
-        "size_bytes": 109110551,
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
-        "sha256": "23bcd3349c9ac44856aad448c4452417727d25cc1c8d46148957d153e4840489"
-      }
-    }
-  },
-  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg"
+    "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
+    "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg",
+    "channel":  "production",
+    "schema_version":  "1.0.0",
+    "hub_version":  "3.0.2",
+    "manager":  {
+                    "minimum_supported_version":  "1.0.0",
+                    "critical_update":  false,
+                    "version":  "3.0.2",
+                    "release_notes":  "PluggedIN Central v3.0.2: Resolved macOS DAW process detection false positive where system background daemons (livefsd) blocked plugin installation.",
+                    "packages":  {
+                                     "windows_x64":  {
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
+                                                         "sha256":  "23bcd3349c9ac44856aad448c4452417727d25cc1c8d46148957d153e4840489",
+                                                         "size_bytes":  109110551
+                                                     },
+                                     "macos_universal":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg",
+                                                             "sha256":  "ccd1463a2e32fea264f061c1b4b7508b95e89ffeceb4742e093574b671a44bc1",
+                                                             "size_bytes":  209892587
+                                                         }
+                                 }
+                },
+    "plugins":  [
+                    {
+                        "id":  "pluggedin_plugged1",
+                        "plugin_id":  "pluggedin_plugged1",
+                        "name":  "PLUGGED 1 (Flagship Hybrid Synth \u0026 Sub-808 Engine)",
+                        "subtitle":  "Flagship Hybrid Synthesizer \u0026 Sub-808 Engine",
+                        "category":  "Instrument",
+                        "latest_version":  "1.0.2",
+                        "dev_build":  "DEV-1026",
+                        "description":  "Commercial hybrid synth with dedicated Voice Choke \u0026 Cut Hardware Bay (\u0027Cut Itself\u0027 note choking), 808 Anti-Squeak circuit, 3D knurled ADSR knobs with live LED arcs, RealismKeysEngine acoustic layer, and stable biquad filters.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGGED_1_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                        "sha256_win":  "2a0a9f25413dc3f7534674b08b9f3b8a64fc049bcb6fc5a73bf02a5daf8cb6aa",
+                        "sha256_mac":  "4f228898e71bd519eb02ecce713a17cbf648f2ceafc379d6d77c559706a427b0",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGGED_1_Win64_VST3.zip",
+                                                             "sha256":  "2a0a9f25413dc3f7534674b08b9f3b8a64fc049bcb6fc5a73bf02a5daf8cb6aa",
+                                                             "size_bytes":  11147476
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGGED_1_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "4f228898e71bd519eb02ecce713a17cbf648f2ceafc379d6d77c559706a427b0",
+                                                                 "size_bytes":  14140300
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "PLUGTNE",
+                        "plugin_id":  "PLUGTNE",
+                        "name":  "PLUGTNE v1.0.1 (Real-Time AutoTune Suite)",
+                        "subtitle":  "Real-Time Pitch Correction \u0026 AutoTune Suite",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "1.0.1",
+                        "dev_build":  "DEV-1072",
+                        "description":  "Ultra-low latency real-time pitch correction, dual vector oscilloscope, scale detection, de-popped transitions, and clean plugin identity bypassing FL Studio historical scan blocks.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGTNE_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGTNE_Mac_Universal.vst3.zip",
+                        "sha256_win":  "5953c3d30d7b832d3539432a110b5c5778fddff61182388f71bf9e14b3925b78",
+                        "sha256_mac":  "1bbe9eba840eb1a0218b9dfb95f3cfe68234e8581bc85e4c89f9ed9d53ff3862",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGTNE_Win64_VST3.zip",
+                                                             "sha256":  "5953c3d30d7b832d3539432a110b5c5778fddff61182388f71bf9e14b3925b78",
+                                                             "size_bytes":  15584935
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PLUGTNE_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "1bbe9eba840eb1a0218b9dfb95f3cfe68234e8581bc85e4c89f9ed9d53ff3862",
+                                                                 "size_bytes":  25342765
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "UNDERGRND",
+                        "plugin_id":  "UNDERGRND",
+                        "name":  "UNDERGRND v4.2.4 (Pitch \u0026 Formant Demon Suite)",
+                        "subtitle":  "Boutique Vocal Multi-FX Demon Suite",
+                        "category":  "Vocal Multi-FX",
+                        "latest_version":  "4.2.4",
+                        "dev_build":  "v4.2.4",
+                        "description":  "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, de-popped preset architecture, and clean plugin identity bypassing FL Studio historical scan blocks.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/UNDERGRND_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
+                        "sha256_win":  "65f233d2af300287105ad6ab3aaff1d53dbd087e2daee886acced12c46f5b0da",
+                        "sha256_mac":  "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/UNDERGRND_Win64_VST3.zip",
+                                                             "sha256":  "65f233d2af300287105ad6ab3aaff1d53dbd087e2daee886acced12c46f5b0da",
+                                                             "size_bytes":  16002335
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
+                                                                 "size_bytes":  28854402
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugvox",
+                        "plugin_id":  "pluggedin_plugvox",
+                        "name":  "PLUGVOX (Modern RVox-Style Vocal Leveler \u0026 Gate)",
+                        "subtitle":  "Modern RVox-Style Vocal Leveler \u0026 Gate",
+                        "category":  "Dynamics",
+                        "latest_version":  "1.0.1",
+                        "dev_build":  "DEV-1013",
+                        "description":  "Authentic Renaissance Vox workflow: -48 dB leveling depth, automatic 40:1 program-dependent leveling ratio, 0.1ms clamp / 65ms release, illuminated LED ladder meters, pure clean vocal punch.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVox_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVox_Mac_Universal.vst3.zip",
+                        "sha256_win":  "eb17041a411fd72db9281ba2186c2fa880c94ebd974a5dd3672ac54ea8ce8781",
+                        "sha256_mac":  "7ca8b62503a30a2a8049e8b2e8b0cbd4c2ef36c7d65f27af94839b94349aa983",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVox_Win64_VST3.zip",
+                                                             "sha256":  "eb17041a411fd72db9281ba2186c2fa880c94ebd974a5dd3672ac54ea8ce8781",
+                                                             "size_bytes":  4139192
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVox_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "7ca8b62503a30a2a8049e8b2e8b0cbd4c2ef36c7d65f27af94839b94349aa983",
+                                                                 "size_bytes":  2275792
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugopto",
+                        "plugin_id":  "pluggedin_plugopto",
+                        "name":  "PLUGOPTO (Vintage CLA-2A Optical Tube Leveler)",
+                        "subtitle":  "Vintage CLA-2A Optical Tube Leveler",
+                        "category":  "Dynamics",
+                        "latest_version":  "1.0.2",
+                        "dev_build":  "DEV-1016",
+                        "description":  "Authentic Teletronix T4B electro-luminescent optical cell modeling, dual-time-constant release memory lag, 12AX7 tube saturation warmth, and analog moving needle VU meter.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugOpto_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugOpto_Mac_Universal.vst3.zip",
+                        "sha256_win":  "ff08873c018018fa32745360f2b057a882b42e333d6ca6fa67751d2d35e8a88f",
+                        "sha256_mac":  "6855f28fb3e91b02cd2c8990440d0744980e713d86e3f9b6b354bcbb5d7f8fa8",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugOpto_Win64_VST3.zip",
+                                                             "sha256":  "ff08873c018018fa32745360f2b057a882b42e333d6ca6fa67751d2d35e8a88f",
+                                                             "size_bytes":  10123073
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugOpto_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "6855f28fb3e91b02cd2c8990440d0744980e713d86e3f9b6b354bcbb5d7f8fa8",
+                                                                 "size_bytes":  14330789
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugglue",
+                        "plugin_id":  "pluggedin_plugglue",
+                        "name":  "PLUGGLUE (SSL 4000 G-Master Stereo Bus Compressor)",
+                        "subtitle":  "Solid State Logic 4000 G-Master Stereo Bus Compressor",
+                        "category":  "Dynamics",
+                        "latest_version":  "1.0.2",
+                        "dev_build":  "DEV-1011",
+                        "description":  "Solid State Logic 4000 G-Master bus compression, photorealistic Sifam Meter with 100% linear dB needle travel, zero number collisions, EAO illuminated button, and stepped chicken-head knobs.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugGlue_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugGlue_Mac_Universal.vst3.zip",
+                        "sha256_win":  "cbda33bff3379f232926583752278d926f91e2defa84ce00f57daa5e66eed4ed",
+                        "sha256_mac":  "24533b24b64cd437fde89c1ab933bb3d146ea58ec5399fd15afb28e7743b0fb7",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugGlue_Win64_VST3.zip",
+                                                             "sha256":  "cbda33bff3379f232926583752278d926f91e2defa84ce00f57daa5e66eed4ed",
+                                                             "size_bytes":  10138846
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugGlue_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "24533b24b64cd437fde89c1ab933bb3d146ea58ec5399fd15afb28e7743b0fb7",
+                                                                 "size_bytes":  13912750
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugeq",
+                        "plugin_id":  "pluggedin_plugeq",
+                        "name":  "PLUG EQ (24-Band Precision Dynamic Visual Equalizer)",
+                        "subtitle":  "24-Band Precision Dynamic Visual Equalizer",
+                        "category":  "Equalizer",
+                        "latest_version":  "1.0.2",
+                        "dev_build":  "DEV-1012",
+                        "description":  "4096-point FFT with continuous fractional Catmull-Rom cubic interpolation, 1/24th-octave Gaussian smoothing, band-isolated dynamic EQ sidechain with 4:1 soft-knee vocal clamp, normalized ZDF SVF bells, and 30Hz high-pass filter crash fix.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugEq_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugEq_Mac_Universal.vst3.zip",
+                        "sha256_win":  "3bb14cfd89e0bbf6e6da72c5b1a6232fdfea0a13ec23a74fd1fc376b9b627315",
+                        "sha256_mac":  "aea0836af8f3f06a1fee9952a25d6c8594ab04908c8d1e80af60c3f84a4aa4ff",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugEq_Win64_VST3.zip",
+                                                             "sha256":  "3bb14cfd89e0bbf6e6da72c5b1a6232fdfea0a13ec23a74fd1fc376b9b627315",
+                                                             "size_bytes":  4840830
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugEq_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "aea0836af8f3f06a1fee9952a25d6c8594ab04908c8d1e80af60c3f84a4aa4ff",
+                                                                 "size_bytes":  2187166
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "PlugLimit",
+                        "plugin_id":  "PlugLimit",
+                        "name":  "PLUGLIMIT (1:1 Hardware L1 Ultramaximizer \u0026 Peak Limiter)",
+                        "subtitle":  "Precision Vocal \u0026 Mix Bus Peak Limiter",
+                        "category":  "Dynamics",
+                        "latest_version":  "1.0.1",
+                        "dev_build":  "DEV-1004",
+                        "description":  "1:1 hardware console peak limiter with lookahead brickwall clamp, dual sculpted aluminum faders, knurled release knob, CRT oscilloscope, and stereo LED ladders.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugLimit_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugLimit_Mac_Universal.vst3.zip",
+                        "sha256_win":  "f19e243eacd1cff1e98ca19a029498e7dfe1077311cdf7c2c7a71ceeb23a8ac1",
+                        "sha256_mac":  "4f853f1ec0afb2f50cbc2c64ba0414ede6c6ded2e98beaf3ee1b979cb6911a54",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugLimit_Win64_VST3.zip",
+                                                             "sha256":  "f19e243eacd1cff1e98ca19a029498e7dfe1077311cdf7c2c7a71ceeb23a8ac1",
+                                                             "size_bytes":  4801555
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugLimit_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "4f853f1ec0afb2f50cbc2c64ba0414ede6c6ded2e98beaf3ee1b979cb6911a54",
+                                                                 "size_bytes":  2139585
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "PlugDelay",
+                        "plugin_id":  "PlugDelay",
+                        "name":  "PLUGDELAY (Flagship Vocal \u0026 Mix Studio Delay)",
+                        "subtitle":  "Flagship Vocal \u0026 Mix Studio Delay",
+                        "category":  "Time-Based",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1001",
+                        "description":  "Stereo ping-pong delay with analog tape saturation, ducking sidechain, high-pass/low-pass filters, and millisecond/beat-sync tempos.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugDelay_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugDelay_Mac_Universal.vst3.zip",
+                        "sha256_win":  "61c768904f0fd2f18fece7e17d5b0ddaa392b7436a90159d334656c8370199b0",
+                        "sha256_mac":  "775dbd29c574fce1366bc65a90d650a7981cd81bcd8b290b76277f396317c967",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugDelay_Win64_VST3.zip",
+                                                             "sha256":  "61c768904f0fd2f18fece7e17d5b0ddaa392b7436a90159d334656c8370199b0",
+                                                             "size_bytes":  4053381
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugDelay_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "775dbd29c574fce1366bc65a90d650a7981cd81bcd8b290b76277f396317c967",
+                                                                 "size_bytes":  2092523
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "PlugVerb",
+                        "plugin_id":  "PlugVerb",
+                        "name":  "PLUGVERB (Flagship Acoustic Space \u0026 Algorithmic Reverb)",
+                        "subtitle":  "Flagship Acoustic Space \u0026 Algorithmic Reverb",
+                        "category":  "Reverb",
+                        "latest_version":  "1.0.2",
+                        "dev_build":  "DEV-1020",
+                        "description":  "Multi-band algorithmic space reverb with interactive decay visualizer, pre-delay, diffusion, and warmth coloring.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVerb_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVerb_Mac_Universal.vst3.zip",
+                        "sha256_win":  "8218db6526381b9a3ccf0de46565ff2f1e60af1490c2a0b664ca755d1468f03f",
+                        "sha256_mac":  "52e387a2a334c48da7b5ec6995145bde5029d39bcd24e07f113a0aa8a7f5c506",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVerb_Win64_VST3.zip",
+                                                             "sha256":  "8218db6526381b9a3ccf0de46565ff2f1e60af1490c2a0b664ca755d1468f03f",
+                                                             "size_bytes":  4889136
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugVerb_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "52e387a2a334c48da7b5ec6995145bde5029d39bcd24e07f113a0aa8a7f5c506",
+                                                                 "size_bytes":  2283000
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "PlugRack",
+                        "plugin_id":  "PlugRack",
+                        "name":  "PLUGRACK (Modular Multi-FX Hardware Host)",
+                        "subtitle":  "Modular Multi-FX Hardware Host",
+                        "category":  "Utility",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1001",
+                        "description":  "Chained modular channel strip rack host housing any combination of PluggedIN compressors, EQs, limiters, and vocal suites.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugRack_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugRack_Mac_Universal.vst3.zip",
+                        "sha256_win":  "13ee6203d0a8b5bcdf7d577e2a2ba210aae129976b6978832dc50cbe1196caa7",
+                        "sha256_mac":  "70ecb8cb9076fd1826f73923221720c8be5d6f4a83a9395714e810de74df9432",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugRack_Win64_VST3.zip",
+                                                             "sha256":  "13ee6203d0a8b5bcdf7d577e2a2ba210aae129976b6978832dc50cbe1196caa7",
+                                                             "size_bytes":  4910128
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugRack_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "70ecb8cb9076fd1826f73923221720c8be5d6f4a83a9395714e810de74df9432",
+                                                                 "size_bytes":  2304224
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugsilky",
+                        "plugin_id":  "pluggedin_plugsilky",
+                        "name":  "PLUGSILKY (Dynamic Multi-Band Air \u0026 High-End Polisher)",
+                        "subtitle":  "Dynamic Multi-Band Air \u0026 High-End Polisher",
+                        "category":  "Mastering",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1012",
+                        "description":  "Ultra-clean dynamic multi-band spectral exciter and air polisher, +1.5 dBFS linear headroom, de-popped master presets with ballistic low-end control, Gaussian stereo expansion, and 1023-sample compensated bypass.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugSilky_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugSilky_Mac_Universal.vst3.zip",
+                        "sha256_win":  "32ee1ca7d02a8bfa8503f3bfce4ce41ec02f48178eeb4f8a8c48f8bf888eaef9",
+                        "sha256_mac":  "b42b499b7bbced14e83e6bc401ab982546d817e1b688b4f4d545ec29f9945967",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugSilky_Win64_VST3.zip",
+                                                             "sha256":  "32ee1ca7d02a8bfa8503f3bfce4ce41ec02f48178eeb4f8a8c48f8bf888eaef9",
+                                                             "size_bytes":  4112404
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugSilky_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "b42b499b7bbced14e83e6bc401ab982546d817e1b688b4f4d545ec29f9945967",
+                                                                 "size_bytes":  2187065
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugblue",
+                        "plugin_id":  "pluggedin_plugblue",
+                        "name":  "PLUGBLUE (Vintage Blue-Stripe Optical Leveler)",
+                        "subtitle":  "Vintage Blue-Stripe Optical Leveler",
+                        "category":  "Dynamics",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1002",
+                        "description":  "Aggressive vintage 1176 Blue-Stripe discrete FET compressor recreation with ultra-fast attack times, harmonic drive characteristics, and all-buttons-in mode modeling.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugBlue_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugBlue_Mac_Universal.vst3.zip",
+                        "sha256_win":  "5aebd6d7acee8eb1858e1e1032ae87936e569b96f441412531bcb61f59154e66",
+                        "sha256_mac":  "070f51a0598600631d635623d12d2d6f080e42ae79e42340aaf4a9d8d8c48a63",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugBlue_Win64_VST3.zip",
+                                                             "sha256":  "5aebd6d7acee8eb1858e1e1032ae87936e569b96f441412531bcb61f59154e66",
+                                                             "size_bytes":  4033621
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugBlue_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "070f51a0598600631d635623d12d2d6f080e42ae79e42340aaf4a9d8d8c48a63",
+                                                                 "size_bytes":  2022029
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugchop",
+                        "plugin_id":  "pluggedin_plugchop",
+                        "name":  "PLUGCHOP (Stutter, Glitch \u0026 Rhythmic Gater)",
+                        "subtitle":  "Stutter, Glitch \u0026 Rhythmic Gater",
+                        "category":  "Modulation",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1004",
+                        "description":  "Tempo-synced stutter sequencer, buffer glitch repeat engine, envelope-shaped rhythmic chopper, and reverse transient trigger.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugChop_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugChop_Mac_Universal.vst3.zip",
+                        "sha256_win":  "ff8a8ce3269e4c0465ec3c4415e40344d7ca2cf305974b643f0127a1e73a4db5",
+                        "sha256_mac":  "dd8c49327f718f63dc9cd2009200dbdcafef2828453982bdcef5dbaf82444968",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugChop_Win64_VST3.zip",
+                                                             "sha256":  "ff8a8ce3269e4c0465ec3c4415e40344d7ca2cf305974b643f0127a1e73a4db5",
+                                                             "size_bytes":  5110386
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugChop_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "dd8c49327f718f63dc9cd2009200dbdcafef2828453982bdcef5dbaf82444968",
+                                                                 "size_bytes":  3464511
+                                                             }
+                                     }
+                    },
+                    {
+                        "id":  "pluggedin_plugwarp",
+                        "plugin_id":  "pluggedin_plugwarp",
+                        "name":  "PLUGWARP (Dual-Stage Pitch, Time \u0026 Spectral Warper)",
+                        "subtitle":  "Dual-Stage Pitch, Time \u0026 Spectral Warper",
+                        "category":  "Pitch / Time",
+                        "latest_version":  "1.0.0",
+                        "dev_build":  "DEV-1002",
+                        "description":  "Dual-engine real-time granular time-stretching, formant-preserved pitch warping, and frequency spectrum tape morphing.",
+                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugWarp_Win64_VST3.zip",
+                        "download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugWarp_Mac_Universal.vst3.zip",
+                        "sha256_win":  "6b7299be7bec0002e56a4394702ec0821012592125079afb78a5e44342db5fcf",
+                        "sha256_mac":  "2a95c054389dfb6e2721692737d2184ab3602f9a658a1dafa6ffa4d13ea7021b",
+                        "packages":  {
+                                         "windows_x64":  {
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugWarp_Win64_VST3.zip",
+                                                             "sha256":  "6b7299be7bec0002e56a4394702ec0821012592125079afb78a5e44342db5fcf",
+                                                             "size_bytes":  4089689
+                                                         },
+                                         "macos_universal":  {
+                                                                 "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.2.0/PlugWarp_Mac_Universal.vst3.zip",
+                                                                 "sha256":  "2a95c054389dfb6e2721692737d2184ab3602f9a658a1dafa6ffa4d13ea7021b",
+                                                                 "size_bytes":  2140916
+                                                             }
+                                     }
+                    }
+                ]
 }
