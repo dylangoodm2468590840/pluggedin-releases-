@@ -207,14 +207,10 @@ jobs:
             cp "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip"
           fi
           # Ensure PLUGGED 1 aliases
-          for f in "$GITHUB_WORKSPACE/dist_mac/"*"Plugged"*.zip "$GITHUB_WORKSPACE/dist_mac/"*"PLUGGED"*.zip; do
-            if [ -f "$f" ]; then
-              cp -f "$f" "$GITHUB_WORKSPACE/dist_mac/PLUGGED_1_Mac_Universal.vst3.zip"
-              cp -f "$f" "$GITHUB_WORKSPACE/dist_mac/Plugged1_Mac_Universal.vst3.zip"
-              cp -f "$f" "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip"
-              break
-            fi
-          done
+          if [ -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" ]; then
+            cp -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PLUGGED_1_Mac_Universal.vst3.zip" || true
+            cp -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/Plugged1_Mac_Universal.vst3.zip" || true
+          fi
           ls -la "$GITHUB_WORKSPACE/dist_mac"
 
       - name: Compute SHA-256 Hashes
