@@ -150,7 +150,7 @@ jobs:
             cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
           else
             echo "=== Building PlugTune Suite VST3s ==="
-            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 --parallel
+            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 PlugSilky_VST3 PlugBlue_VST3 PlugChop_VST3 PlugWarp_VST3 Plugged1_VST3 --parallel
           fi
 
       - name: Ad-Hoc Sign Bundles with Hardened Runtime
