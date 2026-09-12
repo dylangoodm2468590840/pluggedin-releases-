@@ -33,51 +33,51 @@
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PLUGTNE_Mac_Universal.vst3.zip",
       "packages": {
         "macos_universal": {
-          "size_bytes": 25289728,
+          "size_bytes": 25291108,
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PLUGTNE_Mac_Universal.vst3.zip",
-          "sha256": "7d8a273bba8a2b9b0678940a83eeafeca1119fc2ec613a77a81febfdf1804a08"
+          "sha256": "cc5b314ee22d25e7f7a49edb278eda1f89037268f12e7b0ec6181d0a5a11cfb8"
         },
         "windows_x64": {
-          "size_bytes": 15446055,
+          "size_bytes": 15448701,
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PLUGTNE_Win64_VST3.zip",
-          "sha256": "186dea768f66831fa57530faafed6cf45d647dd9b35fdfe5eff48a650d52dc7b"
+          "sha256": "b2fd206381fabeb0da318f7b8b5c9ed97295d214aa28cdd35876f31f0e8fb510"
         }
       },
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PLUGTNE_Win64_VST3.zip",
-      "name": "PLUGTNE v1.0.2 (Real-Time AutoTune Suite)",
+      "name": "PLUGTNE v1.0.3 (Real-Time AutoTune Suite)",
       "description": "Ultra-low latency real-time pitch correction, dual vector oscilloscope, scale detection, de-popped transitions, and clean plugin identity bypassing FL Studio historical scan blocks.",
-      "dev_build": "DEV-1078",
-      "sha256_win": "186dea768f66831fa57530faafed6cf45d647dd9b35fdfe5eff48a650d52dc7b",
+      "dev_build": "DEV-1079",
+      "sha256_win": "b2fd206381fabeb0da318f7b8b5c9ed97295d214aa28cdd35876f31f0e8fb510",
       "plugin_id": "PLUGTNE",
       "category": "Vocal Multi-FX",
-      "sha256_mac": "7d8a273bba8a2b9b0678940a83eeafeca1119fc2ec613a77a81febfdf1804a08",
-      "latest_version": "1.0.2"
+      "sha256_mac": "cc5b314ee22d25e7f7a49edb278eda1f89037268f12e7b0ec6181d0a5a11cfb8",
+      "latest_version": "1.0.3"
     },
     {
       "id": "UNDERGRND",
       "subtitle": "Boutique Vocal Multi-FX Demon Suite",
-      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/UNDERGRND_Mac_Universal.vst3.zip",
       "packages": {
         "macos_universal": {
-          "size_bytes": 28854402,
-          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/UNDERGRND_Mac_Universal.vst3.zip",
-          "sha256": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34"
+          "size_bytes": 28597319,
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/UNDERGRND_Mac_Universal.vst3.zip",
+          "sha256": "b19da62182551a9d326edf9b0141f02fcdd1dccc4c6d7ba018827228d2d1108b"
         },
         "windows_x64": {
-          "size_bytes": 15847905,
+          "size_bytes": 31697798,
           "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/UNDERGRND_Win64_VST3.zip",
-          "sha256": "e54add6481592b21f4b02906b9b9e9ba8d1a73c97da39fe512900ce27434dd61"
+          "sha256": "0459f0c641227259f635dbf62b9092d492311013cb3f7434132eb05700406d47"
         }
       },
       "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/UNDERGRND_Win64_VST3.zip",
-      "name": "UNDERGRND v4.2.5 (Pitch & Formant Demon Suite)",
+      "name": "UNDERGRND v4.2.6 (Pitch & Formant Demon Suite)",
       "description": "Decimated NSDF pitch tracking, 3-band parametric formant warping, 12AX7 tube drive, de-popped preset architecture, and clean plugin identity bypassing FL Studio historical scan blocks.",
-      "dev_build": "v4.2.5",
-      "sha256_win": "e54add6481592b21f4b02906b9b9e9ba8d1a73c97da39fe512900ce27434dd61",
+      "dev_build": "DEV-0110",
+      "sha256_win": "0459f0c641227259f635dbf62b9092d492311013cb3f7434132eb05700406d47",
       "plugin_id": "UNDERGRND",
       "category": "Vocal Multi-FX",
-      "sha256_mac": "1b733bc045ea52d3ef5359041777173d3e03167fc829f9d01c9d21b5ef927c34",
-      "latest_version": "4.2.5"
+      "sha256_mac": "b19da62182551a9d326edf9b0141f02fcdd1dccc4c6d7ba018827228d2d1108b",
+      "latest_version": "4.2.6"
     },
     {
       "id": "pluggedin_plugvox",
