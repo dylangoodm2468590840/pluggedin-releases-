@@ -312,6 +312,84 @@
       "category": "Sampler",
       "sha256_mac": "3ad7c5280c435e01a8caf362308923cf75b8ef5f261a4e3e77695cac717230dd",
       "latest_version": "2.0.0"
+    },
+    {
+      "id": "PlugSilky",
+      "plugin_id": "PlugSilky",
+      "name": "PLUGSILKY (Dynamic Multi-Band Air & High-End Polisher)",
+      "subtitle": "Dynamic Multi-Band Air & High-End Polisher",
+      "category": "Mastering",
+      "latest_version": "1.0.0",
+      "dev_build": "DEV-1012",
+      "description": "Ultra-clean dynamic multi-band spectral exciter and air polisher, +1.5 dBFS linear headroom, de-popped master presets with ballistic low-end control, Gaussian stereo expansion, and 1023-sample compensated bypass.",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugSilky_Win64_VST3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugSilky_Mac_Universal.vst3.zip",
+      "sha256_win": "5ce69a58906729ba38f3c4db06fa197ba931eb74040e28090192a078a96481c1",
+      "sha256_mac": "203d20706fe08ca6af420c5fb2085d5c236754fa5ed351e65d44aadb2fb1eae6",
+      "packages": {
+        "windows_x64": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugSilky_Win64_VST3.zip",
+          "sha256": "5ce69a58906729ba38f3c4db06fa197ba931eb74040e28090192a078a96481c1",
+          "size_bytes": 3998348
+        },
+        "macos_universal": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugSilky_Mac_Universal.vst3.zip",
+          "sha256": "203d20706fe08ca6af420c5fb2085d5c236754fa5ed351e65d44aadb2fb1eae6",
+          "size_bytes": 2430535
+        }
+      }
+    },
+    {
+      "id": "PlugBlue",
+      "plugin_id": "PlugBlue",
+      "name": "PLUGBLUE (Vintage Blue-Stripe Optical Leveler)",
+      "subtitle": "Vintage Blue-Stripe Optical Leveler",
+      "category": "Dynamics",
+      "latest_version": "1.0.0",
+      "dev_build": "DEV-1003",
+      "description": "Aggressive vintage 1176 Blue-Stripe discrete FET compressor recreation with ultra-fast attack times, harmonic drive characteristics, and all-buttons-in mode modeling.",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugBlue_Win64_VST3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugBlue_Mac_Universal.vst3.zip",
+      "sha256_win": "d18d165eb55549ce15309564d04caaf81e0ee17f27dd1e197acea7f65a4343e4",
+      "sha256_mac": "754be2541aa0cc070cee882e81c20766e20964038bb99409c98dde7a60ffb970",
+      "packages": {
+        "windows_x64": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugBlue_Win64_VST3.zip",
+          "sha256": "d18d165eb55549ce15309564d04caaf81e0ee17f27dd1e197acea7f65a4343e4",
+          "size_bytes": 3919537
+        },
+        "macos_universal": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugBlue_Mac_Universal.vst3.zip",
+          "sha256": "754be2541aa0cc070cee882e81c20766e20964038bb99409c98dde7a60ffb970",
+          "size_bytes": 2296569
+        }
+      }
+    },
+    {
+      "id": "PlugWarp",
+      "plugin_id": "PlugWarp",
+      "name": "PLUGWARP (Dual-Stage Pitch, Time & Spectral Warper)",
+      "subtitle": "Dual-Stage Pitch, Time & Spectral Warper",
+      "category": "Pitch / Time",
+      "latest_version": "1.0.0",
+      "dev_build": "DEV-1004",
+      "description": "Dual-engine real-time granular time-stretching, formant-preserved pitch warping, and frequency spectrum tape morphing.",
+      "download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugWarp_Win64_VST3.zip",
+      "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugWarp_Mac_Universal.vst3.zip",
+      "sha256_win": "49d6d0ba554f1f61cb16f95e603f0ea0a30aec0f1132955d7caaec20f0d908d4",
+      "sha256_mac": "76553d2fd8d4f2af783a05f89f012238f8daf1002e47b6d47229b5b937d12502",
+      "packages": {
+        "windows_x64": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugWarp_Win64_VST3.zip",
+          "sha256": "49d6d0ba554f1f61cb16f95e603f0ea0a30aec0f1132955d7caaec20f0d908d4",
+          "size_bytes": 3973647
+        },
+        "macos_universal": {
+          "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugWarp_Mac_Universal.vst3.zip",
+          "sha256": "76553d2fd8d4f2af783a05f89f012238f8daf1002e47b6d47229b5b937d12502",
+          "size_bytes": 2395745
+        }
+      }
     }
   ],
   "channel": "production",
