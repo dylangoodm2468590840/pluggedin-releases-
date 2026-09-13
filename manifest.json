@@ -311,7 +311,7 @@
       "plugin_id": "PlugChop",
       "category": "Sampler",
       "sha256_mac": "3ad7c5280c435e01a8caf362308923cf75b8ef5f261a4e3e77695cac717230dd",
-      "latest_version": "1.0.0"
+      "latest_version": "2.0.0"
     },
     {
       "id": "PlugSilky",
