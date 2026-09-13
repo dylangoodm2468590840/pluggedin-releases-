@@ -288,7 +288,7 @@
       "latest_version": "1.0.1"
     },
     {
-      "id": "pluggedin_plugchop",
+      "id": "PlugChop",
       "subtitle": "16-Pad MPC & Serato Slicing Sample Workstation",
       "download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.3.0/PlugChop_Mac_Universal.vst3.zip",
       "packages": {
@@ -308,10 +308,10 @@
       "description": "16-pad MPC/Serato sample beat workstation featuring dull/medium/sharp transient slicing, 1-to-16 beat grid chopping, key detection, real-time transient snapping, reverse/one-shot/gate playback, and zero-distortion playback.",
       "dev_build": "DEV-1022",
       "sha256_win": "d6cc4859a8e7a7d0e31a5dbe99ad94819039bda4c47b845b67cda8f3c9a3a8cf",
-      "plugin_id": "pluggedin_plugchop",
+      "plugin_id": "PlugChop",
       "category": "Sampler",
       "sha256_mac": "3ad7c5280c435e01a8caf362308923cf75b8ef5f261a4e3e77695cac717230dd",
-      "latest_version": "2.0.0"
+      "latest_version": "1.0.0"
     },
     {
       "id": "PlugSilky",
