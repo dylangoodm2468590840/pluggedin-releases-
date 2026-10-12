@@ -1,5 +1,5 @@
 {
-  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.4/PluggedIN-Central_Setup_3.0.4.exe",
+  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN-Central_Setup_3.0.5.exe",
   "plugins": [
     {
       "id": "pluggedin_plugged1",
@@ -487,24 +487,24 @@
   ],
   "channel": "production",
   "schema_version": "1.0.0",
-  "hub_version": "3.0.4",
+  "hub_version": "3.0.5",
   "manager": {
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "version": "3.0.4",
-    "release_notes": "PluggedIN Central v3.0.4: High-resolution hardware faceplates, uncropped gear showcase stage, PlugChop 2.0 halftime copy, and Slate/Waves DAW safety.",
+    "version": "3.0.5",
+    "release_notes": "PluggedIN Central v3.0.5: Official high-resolution macOS (.icns) and Windows (.ico) branding icons, and performance improvements.",
     "packages": {
       "macos_universal": {
-        "size_bytes": 209892587,
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg",
-        "sha256": "ccd1463a2e32fea264f061c1b4b7508b95e89ffeceb4742e093574b671a44bc1"
+        "size_bytes": 214023019,
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN.Central_Mac_Universal_3.0.5.dmg",
+        "sha256": "0835b3222a8bb4faa4cb4f105d809eb85a072fb76ba6549c97f2e06d03767958"
       },
       "windows_x64": {
-        "size_bytes": 117181158,
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.4/PluggedIN-Central_Setup_3.0.4.exe",
-        "sha256": "ed37a0f1d2d5dada7de17490bc6048b77fffb1cb0dec4e39080e0814ad67ee16"
+        "size_bytes": 117247080,
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN-Central_Setup_3.0.5.exe",
+        "sha256": "e9c3cdbf4c661c6180d7c5542e9da924b66c4f7fa29336931f2002522628d83e"
       }
     }
   },
-  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN.Central_Mac_Universal_3.0.2.dmg"
+  "hub_download_url_mac": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN.Central_Mac_Universal_3.0.5.dmg"
 }
