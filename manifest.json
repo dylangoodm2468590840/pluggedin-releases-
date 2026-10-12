@@ -1,5 +1,5 @@
 {
-  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
+  "hub_download_url_win": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.4/PluggedIN-Central_Setup_3.0.4.exe",
   "plugins": [
     {
       "id": "pluggedin_plugged1",
@@ -487,12 +487,12 @@
   ],
   "channel": "production",
   "schema_version": "1.0.0",
-  "hub_version": "3.0.2",
+  "hub_version": "3.0.4",
   "manager": {
     "minimum_supported_version": "1.0.0",
     "critical_update": false,
-    "version": "3.0.2",
-    "release_notes": "PluggedIN Central v3.0.2: Resolved macOS DAW process detection false positive where system background daemons (livefsd) blocked plugin installation.",
+    "version": "3.0.4",
+    "release_notes": "PluggedIN Central v3.0.4: High-resolution hardware faceplates, uncropped gear showcase stage, PlugChop 2.0 halftime copy, and Slate/Waves DAW safety.",
     "packages": {
       "macos_universal": {
         "size_bytes": 209892587,
@@ -500,9 +500,9 @@
         "sha256": "ccd1463a2e32fea264f061c1b4b7508b95e89ffeceb4742e093574b671a44bc1"
       },
       "windows_x64": {
-        "size_bytes": 109110551,
-        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.0/PluggedIN-Central_Setup_3.0.2.exe",
-        "sha256": "23bcd3349c9ac44856aad448c4452417727d25cc1c8d46148957d153e4840489"
+        "size_bytes": 117181158,
+        "url": "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.4/PluggedIN-Central_Setup_3.0.4.exe",
+        "sha256": "ed37a0f1d2d5dada7de17490bc6048b77fffb1cb0dec4e39080e0814ad67ee16"
       }
     }
   },
