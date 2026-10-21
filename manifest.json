@@ -1,5 +1,5 @@
 {
-    "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN-Central_Setup_3.0.5.exe",
+    "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
     "plugins":  [
                     {
                         "id":  "pluggedin_plugged1",
@@ -487,24 +487,24 @@
                 ],
     "channel":  "production",
     "schema_version":  "1.0.0",
-    "hub_version":  "3.0.5",
+    "hub_version": "3.0.6",
     "manager":  {
                     "minimum_supported_version":  "1.0.0",
                     "critical_update":  false,
-                    "version":  "3.0.5",
-                    "release_notes":  "PluggedIN Central v3.0.5: Official high-resolution macOS (.icns) and Windows (.ico) branding icons, and performance improvements.",
+                    "version": "3.0.6",
+                    "release_notes": "PluggedIN Central v3.0.6: Official custom domain support, 6-digit email verification security, and zero-phone business inquiries.",
                     "packages":  {
                                      "macos_universal":  {
-                                                             "size_bytes":  214023019,
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN.Central_Mac_Universal_3.0.5.dmg",
-                                                             "sha256":  "0835b3222a8bb4faa4cb4f105d809eb85a072fb76ba6549c97f2e06d03767958"
+                                                             "size_bytes": 219526717,
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
+                                                             "sha256": "fd9c1edff0fd980b01242b77abd53b3da479b1a57dbf3d7b672d05b0309c2438"
                                                          },
                                      "windows_x64":  {
-                                                         "size_bytes":  117247080,
-                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN-Central_Setup_3.0.5.exe",
-                                                         "sha256":  "e9c3cdbf4c661c6180d7c5542e9da924b66c4f7fa29336931f2002522628d83e"
+                                                         "size_bytes": 117245037,
+                                                         "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
+                                                         "sha256": "81a2b47f6156c49d244a85ba8160f3364843e931dc633b480d894de6b236606e"
                                                      }
                                  }
                 },
-    "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.5/PluggedIN.Central_Mac_Universal_3.0.5.dmg"
+    "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg"
 }
