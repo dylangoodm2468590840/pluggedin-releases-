@@ -17,18 +17,11 @@ jobs:
       contents: write
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js 22
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
       - name: Download and Extract Hub Source
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          rm -rf hub hub-source.zip
           mkdir -p hub
           gh release download "${{ inputs.release_tag || 'central-v2.6.0' }}" -p "hub-source.zip" -R "${{ github.repository }}"
           python3 -c "
@@ -57,20 +50,16 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Verify Built Artifacts
-        run: ls -la hub/release/
-
       - name: Upload Mac Binaries to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ inputs.release_tag || 'central-v2.6.0' }}
-          files: |
-            hub/release/*.dmg
-            hub/release/*.zip
-            hub/release/*.yml
-            hub/release/*.blockmap
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd hub/release
+          for f in *.dmg *.zip *.yml *.blockmap; do
+            if [ -f "$f" ]; then
+              gh release upload "${{ inputs.release_tag || 'central-v2.6.0' }}" "$f" --clobber -R "${{ github.repository }}"
+            fi
+          done
 
   build-plugin:
     name: macOS Universal Plugin (arm64 + x86_64) & QA
@@ -80,9 +69,6 @@ jobs:
       contents: write
 
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
       - name: Install Ninja
         run: which ninja || brew install ninja || true
 
@@ -90,8 +76,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          rm -f plugin-source.zip
+          rm -rf "$GITHUB_WORKSPACE/dist_mac"
           mkdir -p plugin
-          gh release download "${{ inputs.release_tag }}" -p "plugin-source.zip" -R "${{ github.repository }}"
+          rm -rf plugin/build/PlugDrip_artefacts plugin/build/PlugAxe_artefacts/Release/VST3/PlugAxe.vst3
+          gh release download "${{ inputs.release_tag }}" -p "plugin-source.zip" -R "${{ github.repository }}" --clobber
           python3 -c "
           import zipfile, os
           with zipfile.ZipFile('plugin-source.zip') as z:
