@@ -1,13 +1,13 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-26T22:57:57Z",
+    "updated_at":  "2026-10-28T19:29:24Z",
     "hub_version":  "3.0.6",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
     "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
     "manager":  {
                     "version":  "3.0.6",
-                    "release_notes":  "PluggedIN Central v3.0.6 - Full 20-Plugin Studio Ecosystem, Pro-Q 3 Precision PlugEq (DEV-1025), and High-Voltage PlugAmp Reactor (DEV-1004).",
+                    "release_notes":  "PluggedIN Central v3.0.6 - Full 19-Plugin Studio Ecosystem featuring PlugCords Guitar \u0026 Bass Suite (v1.1.0), PlugAmp 4x Oversampled Tube Reactor (v1.1.0), PlugKnock 16-Pad Drum Engine (v1.1.0), and PlugGrand Workstation (v1.1.0).",
                     "packages":  {
                                      "windows_x64":  {
                                                          "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
@@ -27,15 +27,15 @@
                         "name":  "PLUGGED 1",
                         "subtitle":  "Flagship Multi-Voice Hybrid Synthesizer",
                         "category":  "Instruments \u0026 Synths",
-                        "latest_version":  "1.0.3",
-                        "dev_build":  "DEV-1105",
+                        "latest_version":  "1.1.0",
+                        "dev_build":  "DEV-1106",
                         "tier":  "flagship",
                         "accent_color":  "#00f0ff",
-                        "description":  "Flagship polyphonic multi-engine synthesizer featuring custom wavetable morphing, lush unison voices, studio-grade effects rack, and sub-bass reinforcement.",
+                        "description":  "Flagship polyphonic multi-engine synthesizer and phase-locked 808 workstation featuring 3-stage Bezier pitch punch, anti-click legato glide, dynamic sub-harmonic tracking, and studio-grade FX rack.",
                         "features":  [
-                                         "Multi-voice wavetable \u0026 analog oscillator engine",
-                                         "Zero-delay feedback state-variable filter",
-                                         "Integrated chorus, delay, reverb, and distortion rack",
+                                         "Phase-locked Sub-808 engine with 3-stage Bezier transient punch \u0026 dynamic sub-harmonic tracking",
+                                         "Zero-click legato portamento \u0026 multi-voice wavetable/analog oscillators",
+                                         "Zero-delay feedback state-variable filter \u0026 integrated studio FX rack",
                                          "Interactive 3D hardware faceplate \u0026 real-time visualizer"
                                      ],
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PLUGGED_1_Win64_VST3.zip",
@@ -43,7 +43,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PLUGGED_1_Win64_VST3.zip",
-                                                             "sha256":  "c9fec53297fa7367667c0baceb3c156c2d4252880f28589486d697ccd83455ae",
+                                                             "sha256":  "4819ee6dcdc2ae955b5a9e388c5c27cfb75e3b7d21f96535a3c263868e7fe8b8",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -74,7 +74,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PLUGTNE_Win64_VST3.zip",
-                                                             "sha256":  "666c1593d0e13e206513bfe318a9f632775162dbcada7f8ba809f7695fc000cb",
+                                                             "sha256":  "fd9d606abb6d447055fa46a40299f92e46660cacfa12f094b9e8fda615ce2f7c",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -121,7 +121,7 @@
                         "subtitle":  "Real-Time Vocal Doubler \u0026 Stereo Harmonic Processor",
                         "category":  "Vocal Multi-FX",
                         "latest_version":  "1.0.2",
-                        "dev_build":  "DEV-1021",
+                        "dev_build":  "DEV-1022",
                         "tier":  "pro",
                         "accent_color":  "#a855f7",
                         "description":  "Studio vocal chain processor combining micro-pitch stereo doubling, optical leveling, air exciter, and spatial dimension in one console.",
@@ -136,7 +136,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugVox_Win64_VST3.zip",
-                                                             "sha256":  "f449ac48a38b197607e5f323646cc8d3d937220a3f3f38ed5ae9e3317cfc999d",
+                                                             "sha256":  "88a4e1d41dea754f2343b69a4c93bc99fd0852d45054a8e55cb8ae303539aeca",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -152,7 +152,7 @@
                         "subtitle":  "Warm Optical Vocal \u0026 Bass Leveler",
                         "category":  "Dynamics",
                         "latest_version":  "1.0.3",
-                        "dev_build":  "DEV-1020",
+                        "dev_build":  "DEV-1021",
                         "tier":  "pro",
                         "accent_color":  "#f59e0b",
                         "description":  "Classic electro-optical leveling amplifier modeled with program-dependent two-stage release and warm tube makeup gain.",
@@ -167,7 +167,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugOpto_Win64_VST3.zip",
-                                                             "sha256":  "d96f7cfc04287a6867be9dbe4d3ae4ad356efcfd14474ecf1b701aebfd195016",
+                                                             "sha256":  "4928d60a18455bb53f0d3136914b922850d1efbbf42f2bb2324fccf6ee6b16df",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -183,7 +183,7 @@
                         "subtitle":  "Master Bus VCA Glue Compressor",
                         "category":  "Dynamics",
                         "latest_version":  "1.0.3",
-                        "dev_build":  "DEV-1013",
+                        "dev_build":  "DEV-1014",
                         "tier":  "pro",
                         "accent_color":  "#38bdf8",
                         "description":  "British console master bus VCA compressor engineered to bind drums, instruments, and full mixes together with punch and authority.",
@@ -198,7 +198,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugGlue_Win64_VST3.zip",
-                                                             "sha256":  "07b6773ed05c31e16e0ed27846e35517ba468c1b1d514c8f270290186d402bfe",
+                                                             "sha256":  "ece5273fa6146dbb57317c494b3ec467130f6f8106e1b1e039dbbb57e67a7807",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -214,7 +214,7 @@
                         "subtitle":  "Pro-Q 3 Studio Precision 24-Band Dynamic EQ",
                         "category":  "Equalization",
                         "latest_version":  "1.0.3",
-                        "dev_build":  "DEV-1025",
+                        "dev_build":  "DEV-1026",
                         "tier":  "flagship",
                         "accent_color":  "#00e5ff",
                         "description":  "Flagship 24-band dynamic parametric equalizer featuring Nyquist-decamped Pro-Q 3 filter math, 9 filter shapes, 6dB-96dB/oct + Brickwall slopes, real-time pre/post FFT analyzer, and floating 3-knob wing HUD.",
@@ -229,7 +229,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugEq_Win64_VST3.zip",
-                                                             "sha256":  "8325d16b2f4578f5ccb37968b1865228bbf0065aa3207bc9d3c28d76e148bf41",
+                                                             "sha256":  "b6e879c28aa2f44295c477d80515d57e472babe5b8756a6d293ba9e05b2d7408",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -245,7 +245,7 @@
                         "subtitle":  "True Peak Precision Mastering Limiter",
                         "category":  "Mastering",
                         "latest_version":  "1.0.2",
-                        "dev_build":  "DEV-1004",
+                        "dev_build":  "DEV-1005",
                         "tier":  "pro",
                         "accent_color":  "#10b981",
                         "description":  "Transparent lookahead brickwall mastering limiter with inter-sample True Peak ceiling protection and LUFS loudness telemetry.",
@@ -260,7 +260,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugLimit_Win64_VST3.zip",
-                                                             "sha256":  "1596637129d70bc8cd59aabd420efb52263f786dcaa9aeabfe8ab5ddd0afd104",
+                                                             "sha256":  "ad43e489a8ac0572f007ce7d8737609f70d46994a0a590adbc137480c63d7cb1",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -276,7 +276,7 @@
                         "subtitle":  "Stereo Tape \u0026 Ping-Pong Echo Processor",
                         "category":  "Time-Based FX",
                         "latest_version":  "1.0.1",
-                        "dev_build":  "DEV-1007",
+                        "dev_build":  "DEV-1008",
                         "tier":  "pro",
                         "accent_color":  "#34d399",
                         "description":  "Host-synced stereo delay and analog tape echo processor with built-in ducking, feedback filtering, and tape wow/flutter modulation.",
@@ -291,7 +291,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugDelay_Win64_VST3.zip",
-                                                             "sha256":  "11739b29cf039eeb775d9f8316b65fc1d8c5cd78b5738c1d2cd8d5b86e422cbc",
+                                                             "sha256":  "147b3cd19c6b4fad0615fa8d2b47b0f1f3916f7db3011de2805640a4cadda308",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -307,7 +307,7 @@
                         "subtitle":  "Algorithmic Lush Space \u0026 Plate Reverb",
                         "category":  "Reverb \u0026 Space",
                         "latest_version":  "1.0.3",
-                        "dev_build":  "DEV-1021",
+                        "dev_build":  "DEV-1022",
                         "tier":  "pro",
                         "accent_color":  "#818cf8",
                         "description":  "High-density algorithmic studio reverb featuring vintage plate, concert hall, shimmer chamber, and modulated cloud spaces.",
@@ -322,7 +322,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugVerb_Win64_VST3.zip",
-                                                             "sha256":  "efc5342e4b989fa06f7ffc07b92316d2d531c29174bb1ea6c4e850dd8100cc6a",
+                                                             "sha256":  "f09fe1b6055b4b0fb07f44ab0cb0b70a4fff9b18d6d3b1f47264adf22588f2d6",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -338,7 +338,7 @@
                         "subtitle":  "Multi-FX Modular Channel Strip",
                         "category":  "Multi-FX",
                         "latest_version":  "1.0.1",
-                        "dev_build":  "DEV-1022",
+                        "dev_build":  "DEV-1023",
                         "tier":  "pro",
                         "accent_color":  "#f43f5e",
                         "description":  "Modular 500-series style studio channel strip combining preamp drive, gate, compressor, musical EQ, and output limiter.",
@@ -353,7 +353,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugRack_Win64_VST3.zip",
-                                                             "sha256":  "cd66680ca0ecc85c60635186dc0c01edc402fbcffa94d286074a1e2f5816104d",
+                                                             "sha256":  "a2ff1ebd9cad55dcb11346df45ab678c386a5d0e083d7c142882037b43a79cb8",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -369,7 +369,7 @@
                         "subtitle":  "Rhythmic Stutter, Gross Time \u0026 Gate Sequencer",
                         "category":  "Creative FX",
                         "latest_version":  "2.0.0",
-                        "dev_build":  "DEV-1030",
+                        "dev_build":  "DEV-1031",
                         "tier":  "pro",
                         "accent_color":  "#00f0ff",
                         "description":  "Tempo-synced time manipulator, rhythmic trance gate, tape-stop, halftime, and glitch buffer sequencer.",
@@ -384,7 +384,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugChop_Win64_VST3.zip",
-                                                             "sha256":  "6f30594dc79d3f19faa48dc70a1395242b4dae4d9fc4c11b2092c6a8412e3e18",
+                                                             "sha256":  "fb4cd63daa8b5b5048f56f379abf6ba2dbf69185b0aba6534743ef135fc579a4",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -400,7 +400,7 @@
                         "subtitle":  "Silky High-End Air \u0026 Presence Exciter",
                         "category":  "Color \u0026 Tone",
                         "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1025",
+                        "dev_build":  "DEV-1026",
                         "tier":  "pro",
                         "accent_color":  "#fbbf24",
                         "description":  "Dynamic harmonic air exciter and harshness tamer that adds expensive studio sheen to vocals, acoustic instruments, and master buses.",
@@ -415,7 +415,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugSilky_Win64_VST3.zip",
-                                                             "sha256":  "7bf23f47a276136b70bd1d73cf9d74643de8312c708180158431e923fe87ee44",
+                                                             "sha256":  "7a5b576c87222634acba666a9b1356011ece231cb993df7302de8ccb0e2749c3",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -431,7 +431,7 @@
                         "subtitle":  "Aggressive Fast FET Drum \u0026 Vocal Punch Compressor",
                         "category":  "Dynamics",
                         "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1003",
+                        "dev_build":  "DEV-1004",
                         "tier":  "pro",
                         "accent_color":  "#3b82f6",
                         "description":  "Ultra-fast Blue Stripe FET limiting amplifier modeled for explosive vocal presence, aggressive drum room smash, and gritty bass lock.",
@@ -446,7 +446,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugBlue_Win64_VST3.zip",
-                                                             "sha256":  "2670cfe76f3ce2f03cd48ee0bbbdccb4c186667890d50ee5e7842d98a0f13f03",
+                                                             "sha256":  "e8bf1767ba22e202d80f98d072715b05bfca7b677ed043c617716f97df34f7ef",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -462,7 +462,7 @@
                         "subtitle":  "Tape Saturation \u0026 Harmonic Pitch Modulation",
                         "category":  "Tape \u0026 Modulation",
                         "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1007",
+                        "dev_build":  "DEV-1008",
                         "tier":  "pro",
                         "accent_color":  "#ec4899",
                         "description":  "Vintage reel-to-reel tape warble, VHS drift, analog chorus, and lo-fi harmonic coloration processor.",
@@ -477,7 +477,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugWarp_Win64_VST3.zip",
-                                                             "sha256":  "277df12398a3376af7aa46631dae8863586985e19d462d088997a8ef3146e3eb",
+                                                             "sha256":  "9b4a4ab80d2fc73b0a3b3f3210342dd1d634fc92ff7755a9a39fd7150c9a42ba",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -492,23 +492,23 @@
                         "name":  "PLUGAMP",
                         "subtitle":  "High-Voltage Tube Reactor \u0026 Dual-Mic Studio Console",
                         "category":  "Distortion \u0026 Saturation",
-                        "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1004",
+                        "latest_version":  "1.1.0",
+                        "dev_build":  "DEV-1007",
                         "tier":  "flagship",
                         "accent_color":  "#ff8c00",
-                        "description":  "High-voltage tube amplifier reactor, overdrive pedal bay, interactive dual-mic 4x12/2x12 cabinet stage, and studio finisher rack built for rock, pop-punk, trap-metal, and R\u0026B guitar production.",
+                        "description":  "High-voltage 4x oversampled tube amplifier reactor, overdrive pedal bay, interactive dual-mic 4x12/2x12 cabinet stage, and Hermite quad-track studio finisher rack built for rock, pop-punk, trap-metal, and R\u0026B guitar \u0026 bass production.",
                         "features":  [
+                                         "4x oversampled asymmetric 12AX7/EL34 tube cascade with dynamic power-amp sag",
                                          "4 Pre-Amp Drive circuits (Pure DI, Green 808, Gold Drive, Velvet Fuzz) with ultra-fast noise gate",
-                                         "Interactive 2D Speaker Cone Mic Placement with 5 studio cabinet models",
-                                         "808-Safe low-end phase lock \u0026 one-click Quad-Track stereo doubler",
+                                         "Interactive 2D Speaker Cone Mic Placement with 5 studio cabinet models \u0026 Hermite Quad-Track doubler",
                                          "24 mix-ready artist-inspired presets with tight studio room ambience"
                                      ],
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugAmp_Win64_VST3.zip",
-                        "download_url_mac":  "",
+                        "download_url_mac":  null,
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugAmp_Win64_VST3.zip",
-                                                             "sha256":  "da6d2d28252c28ba85826415c5ae11b0300becbcb10d62835c4b8429792dad3a",
+                                                             "sha256":  "635de897b59375395501882a3e4fda9745618e7798230081612db814f9d00c3c",
                                                              "format":  "zip"
                                                          }
                                      }
@@ -518,23 +518,23 @@
                         "name":  "PLUGKNOCK",
                         "subtitle":  "Studio Drum Designer \u0026 Mix-Flare Engine",
                         "category":  "Instruments \u0026 Synths",
-                        "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1014",
+                        "latest_version":  "1.1.0",
+                        "dev_build":  "DEV-1018",
                         "tier":  "flagship",
                         "accent_color":  "#f97316",
-                        "description":  "Hard-hitting drum workstation and transient punch engine loaded with custom 808s, kicks, snares, claps, and mix-flare processing.",
+                        "description":  "Hard-hitting studio drum workstation and Mix-Flare transient engine loaded with 36 acoustic \u0026 trap drum models, multi-velocity round-robin articulation, and 2x oversampled bus clipping.",
                         "features":  [
-                                         "Multi-velocity studio drum \u0026 808 synthesis engine",
-                                         "Transient punch shaper, soft clipper, and sub-harmonics",
-                                         "Built-in mix-flare saturation and room glue",
-                                         "Instant kit switching and MIDI performance mapping"
+                                         "36 multi-velocity studio drum \u0026 808 models with 4-way round-robin micro-variation",
+                                         "6 Hero Mix-Flare controls: Smack, Clip, Body, Tight, Layer, and Flare Room",
+                                         "Authentic hi-hat choke groups, Bezier kick transient punch, and Pultec low-end sculpting",
+                                         "4 Mix Target Modes (Trap Knock, Live Rock Punch, Radio Pop Crisp, Lo-Fi Dusty)"
                                      ],
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugKnock_Win64_VST3.zip",
-                        "download_url_mac":  "",
+                        "download_url_mac":  null,
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugKnock_Win64_VST3.zip",
-                                                             "sha256":  "76f14f3ed910e89c3903656b7ff18a7604716d4ec2bae4fa14a4fe70b2b76c10",
+                                                             "sha256":  "d1ebe00c08d49f0113712fdbd4efd415bd9b9b6f86784a1a1095940a6c1a2e45",
                                                              "format":  "zip"
                                                          }
                                      }
@@ -544,23 +544,23 @@
                         "name":  "PLUGGRAND",
                         "subtitle":  "Multi-Zone Pianos, Keys, Brass \u0026 Orchestra Workstation",
                         "category":  "Instruments \u0026 Synths",
-                        "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1011",
+                        "latest_version":  "1.1.0",
+                        "dev_build":  "DEV-1012",
                         "tier":  "flagship",
                         "accent_color":  "#eab308",
-                        "description":  "Concert grand piano, vintage electric keys, orchestral strings, and brass workstation engineered for cinematic and modern production.",
+                        "description":  "Concert grand piano, intimate felt piano, vintage electric keys, orchestral strings, and brass workstation engineered for cinematic and modern production.",
                         "features":  [
-                                         "Multi-zone acoustic grand, felt piano, and vintage electric keys",
-                                         "Symphonic strings \u0026 brass ensemble layers",
-                                         "Hammer mechanics, key release, and sympathetic resonance controls",
-                                         "Studio ribbon/condenser mic blend and concert hall ambience"
+                                         "14 multi-zone acoustic grand, felt piano, vintage keys, strings \u0026 brass instruments",
+                                         "4-layer hybrid engine combining Multi-Zone Sample ROM + Physical Modeling Keys, Brass \u0026 Mallets",
+                                         "5 Hero Acoustic Controls: Tone/Felt, Hammer Mechanics, Vintage Lo-Fi, Stereo Width \u0026 Concert Hall",
+                                         "88-key interactive keyboard with zero-aliasing interpolation"
                                      ],
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugGrand_Win64_VST3.zip",
-                        "download_url_mac":  "",
+                        "download_url_mac":  null,
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugGrand_Win64_VST3.zip",
-                                                             "sha256":  "e759043a88ecc300b996bae768af48a244a98e3bcd0ada6ed8924770b15c0669",
+                                                             "sha256":  "a9c6c505a5990f841ba47e5021d856b2cb1103925ef3d050f77b7b1ede1d5482",
                                                              "format":  "zip"
                                                          }
                                      }
@@ -568,51 +568,25 @@
                     {
                         "id":  "PlugCords",
                         "name":  "PLUGCORDS",
-                        "subtitle":  "Studio Electric \u0026 Acoustic Guitar Workstation",
+                        "subtitle":  "Studio Electric, Acoustic \u0026 Bass Guitar Workstation",
                         "category":  "Instruments \u0026 Synths",
-                        "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1010",
+                        "latest_version":  "1.1.0",
+                        "dev_build":  "DEV-1013",
                         "tier":  "flagship",
                         "accent_color":  "#ef4444",
-                        "description":  "Playable studio electric and acoustic guitar instrument workstation with realistic articulation modeling, pick attack control, and DI/amped routing.",
+                        "description":  "Playable studio electric, acoustic, and bass guitar instrument workstation with 11 multi-zone models, hybrid Karplus-Strong string physics, humanized chord strumming, and built-in 4x12 / 8x10 Ampeg-style amp \u0026 cabinet rig.",
                         "features":  [
-                                         "Multi-articulation electric \u0026 acoustic guitar engines",
-                                         "Clean DI output mode for pairing with PlugAmp",
-                                         "Dynamic palm-mute, fret slide, and pick bite expression",
-                                         "Built-in stereo doubling and studio pedalboard"
+                                         "11 Studio Guitar \u0026 Bass Models including Overdrive Stack, Clean Single-Coil, Acoustic Dreadnought, Nylon, Fingered P-Bass, Picked Punk Bass \u0026 Sub Bass",
+                                         "41 genre-ready presets across Pop-Punk, Metal, Trap/Emo, Clean/R\u0026B, Acoustic, and Studio Bass",
+                                         "Humanized strum engine, power-chord generator, velocity palm-muting \u0026 fret-slide expression",
+                                         "Built-in 2x oversampled Tube Amp, 4x12 Guitar Cab, 8x10 SVT Bass Cab \u0026 Stereo Haas Doubler"
                                      ],
                         "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugCords_Win64_VST3.zip",
-                        "download_url_mac":  "",
+                        "download_url_mac":  null,
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugCords_Win64_VST3.zip",
-                                                             "sha256":  "ff151dd21bb32079d2d9be2d9b3d8be3285de2e88ce412a9eec22b69e2d684a1",
-                                                             "format":  "zip"
-                                                         }
-                                     }
-                    },
-                    {
-                        "id":  "PlugDrip",
-                        "name":  "PLUGDRIP",
-                        "subtitle":  "Melody Sauce, Halftime \u0026 Underwater Machine",
-                        "category":  "Creative FX",
-                        "latest_version":  "1.0.0",
-                        "dev_build":  "DEV-1006",
-                        "tier":  "pro",
-                        "accent_color":  "#38bdf8",
-                        "description":  "One-knob underwater submerge filter, tempo-synced halftime speed shifter, lush chorus dimension, and melody sauce finisher.",
-                        "features":  [
-                                         "Giant Submerge wheel for instant underwater OVO/trap filtering",
-                                         "1/2, 1-Bar, and 2-Bar smooth halftime pitch \u0026 time engine",
-                                         "5 one-click style presets (Underwater, Trap, Vinyl, Cloud, Crunch)",
-                                         "Analog warmth, stereo dimension, and shimmer tail"
-                                     ],
-                        "download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugDrip_Win64_VST3.zip",
-                        "download_url_mac":  "",
-                        "packages":  {
-                                         "windows_x64":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugDrip_Win64_VST3.zip",
-                                                             "sha256":  "36a0335529d9da4ae1720be7fae040ed4be961bb646aacf36829011c1236e5eb",
+                                                             "sha256":  "bd1a9ddac15ec4e9ca8668e51f9030436f2e06fc18dcd56e4e4b9859098ca6e4",
                                                              "format":  "zip"
                                                          }
                                      }
