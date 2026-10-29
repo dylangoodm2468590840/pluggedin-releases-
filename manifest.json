@@ -1,10 +1,10 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-29T21:28:43Z",
+    "updated_at":  "2026-10-29T21:31:58Z",
     "hub_version":  "3.0.7",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.7.exe",
-    "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
+    "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.7.dmg",
     "manager":  {
                     "version":  "3.0.7",
                     "release_notes":  "PluggedIN Central v3.0.7 - Full 19-Plugin Studio Ecosystem featuring PlugCords Guitar \u0026 Bass Suite (v1.1.0), PlugAmp 4x Oversampled Tube Reactor (v1.1.0), PlugKnock 16-Pad Drum Engine (v1.1.0), and PlugGrand Workstation (v1.1.0).",
@@ -15,8 +15,8 @@
                                                          "format":  "exe"
                                                      },
                                      "macos_universal":  {
-                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
-                                                             "sha256":  "fa3c9645d07ea963a20ba05e33588c610838c0e6f6ae9b43b36d4b20e43d674b",
+                                                             "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.7.dmg",
+                                                             "sha256":  "749f8121a64128fc31abdc90448ecd136b5bc460bade9116621a7889f0a6876b",
                                                              "format":  "dmg"
                                                          }
                                  }
