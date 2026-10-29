@@ -1,7 +1,7 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-28T21:09:54Z",
+    "updated_at":  "2026-10-29T16:40:53Z",
     "hub_version":  "3.0.6",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
     "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
@@ -28,7 +28,7 @@
                         "subtitle":  "Flagship Multi-Voice Hybrid Synthesizer",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1106",
+                        "dev_build":  "DEV-1107",
                         "tier":  "flagship",
                         "accent_color":  "#00f0ff",
                         "description":  "Flagship polyphonic multi-engine synthesizer and phase-locked 808 workstation featuring 3-stage Bezier pitch punch, anti-click legato glide, dynamic sub-harmonic tracking, and studio-grade FX rack.",
@@ -43,7 +43,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PLUGGED_1_Win64_VST3.zip",
-                                                             "sha256":  "4819ee6dcdc2ae955b5a9e388c5c27cfb75e3b7d21f96535a3c263868e7fe8b8",
+                                                             "sha256":  "a1f2e34b88ed86182afddd34a2af2165e247802b921665578f07588381ee21c0",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -555,7 +555,7 @@
                         "subtitle":  "Multi-Zone Pianos, Keys, Brass \u0026 Orchestra Workstation",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1012",
+                        "dev_build":  "DEV-1013",
                         "tier":  "flagship",
                         "accent_color":  "#eab308",
                         "description":  "Concert grand piano, intimate felt piano, vintage electric keys, orchestral strings, and brass workstation engineered for cinematic and modern production.",
@@ -570,7 +570,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugGrand_Win64_VST3.zip",
-                                                             "sha256":  "a9c6c505a5990f841ba47e5021d856b2cb1103925ef3d050f77b7b1ede1d5482",
+                                                             "sha256":  "7b984d36e5ac9b24fee0b8d57cd1c2314de8c6a295d9d735128b761357a142a0",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -586,7 +586,7 @@
                         "subtitle":  "Studio Electric, Acoustic \u0026 Bass Guitar Workstation",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1013",
+                        "dev_build":  "DEV-1014",
                         "tier":  "flagship",
                         "accent_color":  "#ef4444",
                         "description":  "Playable studio electric, acoustic, and bass guitar instrument workstation with 11 multi-zone models, hybrid Karplus-Strong string physics, humanized chord strumming, and built-in 4x12 / 8x10 Ampeg-style amp \u0026 cabinet rig.",
@@ -601,7 +601,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugCords_Win64_VST3.zip",
-                                                             "sha256":  "bd1a9ddac15ec4e9ca8668e51f9030436f2e06fc18dcd56e4e4b9859098ca6e4",
+                                                             "sha256":  "d147305b3c48435f43729a3980b797e3f8174966eb9224d137f22c331c8dbccd",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
