@@ -21,13 +21,13 @@ jobs:
       contents: write
 
     steps:
-      - name: Download and Extract Hub Source
+      - name: Download and Extract Hub Source (Preserving node_modules Cache)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          rm -rf hub hub-source.zip
+          rm -rf hub/src hub/dist hub/dist-electron hub/release hub-source.zip
           mkdir -p hub
-          gh release download "${{ inputs.release_tag || 'central-v2.6.0' }}" -p "hub-source.zip" -R "${{ github.repository }}"
+          gh release download "${{ inputs.release_tag || 'central-v3.0.6' }}" -p "hub-source.zip" -R "${{ github.repository }}"
           python3 -c "
           import zipfile, os
           with zipfile.ZipFile('hub-source.zip') as z:
@@ -42,9 +42,14 @@ jobs:
                           f.write(z.read(member))
           "
 
-      - name: Install dependencies
+      - name: Install dependencies (Cached)
         working-directory: hub
-        run: npm ci
+        run: |
+          if [ ! -d "node_modules/electron" ]; then
+            npm ci
+          else
+            echo "Cached node_modules detected - skipping full npm ci!"
+          fi
 
       - name: Build macOS Universal App (.dmg and .zip)
         working-directory: hub
@@ -52,14 +57,25 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Mac Binaries to GitHub Release
+      - name: Compute SHA-256 & Upload Mac Binaries to GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd hub/release
-          for f in *.dmg *.zip *.yml *.blockmap; do
+          if [ -f "PluggedIN.Central_Mac_Universal_3.0.7.dmg" ]; then
+            cp -f "PluggedIN.Central_Mac_Universal_3.0.7.dmg" "PluggedIN.Central_Mac_Universal_3.0.6.dmg"
+          fi
+          if [ -f "PluggedIN.Central_Mac_Universal_3.0.7.zip" ]; then
+            cp -f "PluggedIN.Central_Mac_Universal_3.0.7.zip" "PluggedIN.Central_Mac_Universal_3.0.6.zip"
+          fi
+          for f in *.dmg *.zip; do
             if [ -f "$f" ]; then
-              gh release upload "${{ inputs.release_tag || 'central-v2.6.0' }}" "$f" --clobber -R "${{ github.repository }}"
+              shasum -a 256 "$f" > "${f}.sha256"
+            fi
+          done
+          for f in *.dmg *.zip *.yml *.blockmap *.sha256; do
+            if [ -f "$f" ]; then
+              gh release upload "${{ inputs.release_tag || 'central-v3.0.6' }}" "$f" --clobber -R "${{ github.repository }}"
             fi
           done
 
