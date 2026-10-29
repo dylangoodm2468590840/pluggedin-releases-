@@ -68,9 +68,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd hub/release
-          if [ -f "PluggedIN.Central_Mac_Universal_3.0.7.dmg" ]; then
-            cp -f "PluggedIN.Central_Mac_Universal_3.0.7.dmg" "PluggedIN.Central_Mac_Universal_3.0.6.dmg"
-          fi
+          
           if [ -f "PluggedIN.Central_Mac_Universal_3.0.7.zip" ]; then
             cp -f "PluggedIN.Central_Mac_Universal_3.0.7.zip" "PluggedIN.Central_Mac_Universal_3.0.6.zip"
           fi
