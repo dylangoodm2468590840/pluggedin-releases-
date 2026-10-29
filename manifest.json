@@ -1,7 +1,7 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-29T17:55:27Z",
+    "updated_at":  "2026-10-29T18:06:12Z",
     "hub_version":  "3.0.6",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.6.exe",
     "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.6.dmg",
@@ -31,6 +31,7 @@
                         "dev_build":  "DEV-1107",
                         "tier":  "flagship",
                         "accent_color":  "#00f0ff",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/Plugged1.png",
                         "description":  "Flagship polyphonic multi-engine synthesizer and phase-locked 808 workstation featuring 3-stage Bezier pitch punch, anti-click legato glide, dynamic sub-harmonic tracking, and studio-grade FX rack.",
                         "features":  [
                                          "Phase-locked Sub-808 engine with 3-stage Bezier transient punch \u0026 dynamic sub-harmonic tracking",
@@ -62,6 +63,7 @@
                         "dev_build":  "DEV-1082",
                         "tier":  "flagship",
                         "accent_color":  "#00e5ff",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugtne.png",
                         "description":  "Ultra-low latency real-time vocal pitch correction, formant shifting, and throat modeling suite engineered for modern tracking and mixing.",
                         "features":  [
                                          "Zero-latency tracking mode for live vocal recording",
@@ -93,6 +95,7 @@
                         "dev_build":  "DEV-0110",
                         "tier":  "flagship",
                         "accent_color":  "#ff3b30",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/undergrnd.png",
                         "description":  "Multi-stage analog harmonic saturator, wavefolder, and sub-bass exciter built for heavy 808s, aggressive drums, and gritty synth buses.",
                         "features":  [
                                          "Multi-circuit tube, tape, and transformer saturation",
@@ -124,6 +127,7 @@
                         "dev_build":  "DEV-1022",
                         "tier":  "pro",
                         "accent_color":  "#a855f7",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/PlugVox.png",
                         "description":  "Studio vocal chain processor combining micro-pitch stereo doubling, optical leveling, air exciter, and spatial dimension in one console.",
                         "features":  [
                                          "Phase-coherent stereo vocal widening \u0026 micro-shift",
@@ -155,6 +159,7 @@
                         "dev_build":  "DEV-1021",
                         "tier":  "pro",
                         "accent_color":  "#f59e0b",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/PlugOpto.png",
                         "description":  "Classic electro-optical leveling amplifier modeled with program-dependent two-stage release and warm tube makeup gain.",
                         "features":  [
                                          "Authentic T4B optical cell memory \u0026 two-stage release",
@@ -186,6 +191,7 @@
                         "dev_build":  "DEV-1014",
                         "tier":  "pro",
                         "accent_color":  "#38bdf8",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/PlugGlue.png",
                         "description":  "British console master bus VCA compressor engineered to bind drums, instruments, and full mixes together with punch and authority.",
                         "features":  [
                                          "Classic stepped attack, release, and ratio topology",
@@ -217,6 +223,7 @@
                         "dev_build":  "DEV-1026",
                         "tier":  "flagship",
                         "accent_color":  "#00e5ff",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/PlugEq.png",
                         "description":  "Flagship 24-band dynamic parametric equalizer featuring Nyquist-decamped Pro-Q 3 filter math, 9 filter shapes, 6dB-96dB/oct + Brickwall slopes, real-time pre/post FFT analyzer, and floating 3-knob wing HUD.",
                         "features":  [
                                          "Up to 24 dynamic bands with Bell, Low/High Cut, Shelf, Notch, BandPass, Tilt \u0026 Flat-Tilt",
@@ -248,6 +255,7 @@
                         "dev_build":  "DEV-1005",
                         "tier":  "pro",
                         "accent_color":  "#10b981",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/pluglimit.png",
                         "description":  "Transparent lookahead brickwall mastering limiter with inter-sample True Peak ceiling protection and LUFS loudness telemetry.",
                         "features":  [
                                          "Lookahead transient preservation stage",
@@ -279,6 +287,7 @@
                         "dev_build":  "DEV-1008",
                         "tier":  "pro",
                         "accent_color":  "#34d399",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugdelay.png",
                         "description":  "Host-synced stereo delay and analog tape echo processor with built-in ducking, feedback filtering, and tape wow/flutter modulation.",
                         "features":  [
                                          "BPM-synced straight, dotted, and triplet subdivisions",
@@ -310,6 +319,7 @@
                         "dev_build":  "DEV-1022",
                         "tier":  "pro",
                         "accent_color":  "#818cf8",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugverb.png",
                         "description":  "High-density algorithmic studio reverb featuring vintage plate, concert hall, shimmer chamber, and modulated cloud spaces.",
                         "features":  [
                                          "Ultra-dense diffusion network with zero metallic ringing",
@@ -341,6 +351,7 @@
                         "dev_build":  "DEV-1023",
                         "tier":  "pro",
                         "accent_color":  "#f43f5e",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugrack.png",
                         "description":  "Modular 500-series style studio channel strip combining preamp drive, gate, compressor, musical EQ, and output limiter.",
                         "features":  [
                                          "Drag-and-drop modular signal chain routing",
@@ -372,6 +383,7 @@
                         "dev_build":  "DEV-1031",
                         "tier":  "pro",
                         "accent_color":  "#00f0ff",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugchop.png",
                         "description":  "Tempo-synced time manipulator, rhythmic trance gate, tape-stop, halftime, and glitch buffer sequencer.",
                         "features":  [
                                          "36 instant rhythmic time-manipulation \u0026 gate banks",
@@ -403,6 +415,7 @@
                         "dev_build":  "DEV-1026",
                         "tier":  "pro",
                         "accent_color":  "#fbbf24",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugsilky.png",
                         "description":  "Dynamic harmonic air exciter and harshness tamer that adds expensive studio sheen to vocals, acoustic instruments, and master buses.",
                         "features":  [
                                          "Dynamic resonance suppression in the 2.5kHz-8kHz harshness zone",
@@ -434,6 +447,7 @@
                         "dev_build":  "DEV-1004",
                         "tier":  "pro",
                         "accent_color":  "#3b82f6",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugblue.png",
                         "description":  "Ultra-fast Blue Stripe FET limiting amplifier modeled for explosive vocal presence, aggressive drum room smash, and gritty bass lock.",
                         "features":  [
                                          "20-microsecond ultra-fast FET attack response",
@@ -465,6 +479,7 @@
                         "dev_build":  "DEV-1008",
                         "tier":  "pro",
                         "accent_color":  "#ec4899",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugwarp.png",
                         "description":  "Vintage reel-to-reel tape warble, VHS drift, analog chorus, and lo-fi harmonic coloration processor.",
                         "features":  [
                                          "Dual-oscillator organic wow and flutter pitch drift",
@@ -496,6 +511,7 @@
                         "dev_build":  "DEV-1007",
                         "tier":  "flagship",
                         "accent_color":  "#ff8c00",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugamp.jpg",
                         "description":  "High-voltage 4x oversampled tube amplifier reactor, overdrive pedal bay, interactive dual-mic 4x12/2x12 cabinet stage, and Hermite quad-track studio finisher rack built for rock, pop-punk, trap-metal, and R\u0026B guitar \u0026 bass production.",
                         "features":  [
                                          "4x oversampled asymmetric 12AX7/EL34 tube cascade with dynamic power-amp sag",
@@ -527,6 +543,7 @@
                         "dev_build":  "DEV-1018",
                         "tier":  "flagship",
                         "accent_color":  "#f97316",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugknock.jpg",
                         "description":  "Hard-hitting studio drum workstation and Mix-Flare transient engine loaded with 36 acoustic \u0026 trap drum models, multi-velocity round-robin articulation, and 2x oversampled bus clipping.",
                         "features":  [
                                          "36 multi-velocity studio drum \u0026 808 models with 4-way round-robin micro-variation",
@@ -558,6 +575,7 @@
                         "dev_build":  "DEV-1013",
                         "tier":  "flagship",
                         "accent_color":  "#eab308",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/pluggrand.jpg",
                         "description":  "Concert grand piano, intimate felt piano, vintage electric keys, orchestral strings, and brass workstation engineered for cinematic and modern production.",
                         "features":  [
                                          "14 multi-zone acoustic grand, felt piano, vintage keys, strings \u0026 brass instruments",
@@ -589,6 +607,7 @@
                         "dev_build":  "DEV-1014",
                         "tier":  "flagship",
                         "accent_color":  "#ef4444",
+                        "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugcords.jpg",
                         "description":  "Playable studio electric, acoustic, and bass guitar instrument workstation with 11 multi-zone models, hybrid Karplus-Strong string physics, humanized chord strumming, and built-in 4x12 / 8x10 Ampeg-style amp \u0026 cabinet rig.",
                         "features":  [
                                          "11 Studio Guitar \u0026 Bass Models including Overdrive Stack, Clean Single-Coil, Acoustic Dreadnought, Nylon, Fingered P-Bass, Picked Punk Bass \u0026 Sub Bass",
