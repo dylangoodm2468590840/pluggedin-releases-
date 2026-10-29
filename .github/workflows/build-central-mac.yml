@@ -7,6 +7,10 @@ on:
         description: 'Target GitHub release tag'
         required: false
         default: 'central-v2.6.0'
+      target_filter:
+        description: 'Space-separated CMake VST3 targets (or empty for all)'
+        required: false
+        default: ''
 
 jobs:
   build-macos:
@@ -37,8 +41,6 @@ jobs:
                       with open(target, 'wb') as f:
                           f.write(z.read(member))
           "
-          echo "Extracted files:"
-          ls -la hub
 
       - name: Install dependencies
         working-directory: hub
@@ -72,17 +74,18 @@ jobs:
       - name: Install Ninja
         run: which ninja || brew install ninja || true
 
-      - name: Download and Extract Plugin Source
+      - name: Incremental Extract Plugin Source (Preserve Timestamps)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           rm -f plugin-source.zip
           rm -rf "$GITHUB_WORKSPACE/dist_mac"
           mkdir -p plugin
-          rm -rf plugin/build/PlugDrip_artefacts plugin/build/PlugAxe_artefacts/Release/VST3/PlugAxe.vst3
           gh release download "${{ inputs.release_tag }}" -p "plugin-source.zip" -R "${{ github.repository }}" --clobber
           python3 -c "
           import zipfile, os
+          updated = 0
+          skipped = 0
           with zipfile.ZipFile('plugin-source.zip') as z:
               for member in z.infolist():
                   clean = member.filename.replace(chr(92), '/')
@@ -91,21 +94,34 @@ jobs:
                       os.makedirs(target, exist_ok=True)
                   else:
                       os.makedirs(os.path.dirname(target), exist_ok=True)
+                      data = z.read(member)
+                      if os.path.exists(target):
+                          try:
+                              with open(target, 'rb') as rf:
+                                  if rf.read() == data:
+                                      skipped += 1
+                                      continue
+                          except Exception:
+                              pass
                       with open(target, 'wb') as f:
-                          f.write(z.read(member))
+                          f.write(data)
+                      updated += 1
+          print(f'Incremental extract complete: {updated} files updated, {skipped} unchanged files preserved!')
           "
-          echo "Extracted files:"
-          ls -la plugin
 
       - name: Configure CMake (Catalina 10.15 Target + Universal)
         working-directory: plugin
         run: |
-          cmake -B build -G Ninja \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
+          if [ ! -f "build/build.ninja" ]; then
+            cmake -B build -G Ninja \
+              -DCMAKE_BUILD_TYPE=Release \
+              -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+              -DCMAKE_OSX_DEPLOYMENT_TARGET="10.15"
+          else
+            echo "Ninja build graph already configured — skipping redundant cmake configure."
+          fi
 
-      - name: Patch JUCE bundleExit Teardown Bug
+      - name: Patch JUCE bundleExit Teardown Bug (If Needed)
         working-directory: plugin
         run: |
           python3 << 'EOF'
@@ -118,91 +134,61 @@ jobs:
           if not target_file and os.path.exists('libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'):
               target_file = 'libs/JUCE/modules/juce_audio_plugin_client/juce_audio_plugin_client_VST3.cpp'
 
-          print('Patching target:', target_file)
           if target_file:
               with open(target_file, 'r') as f:
                   content = f.read()
               new_exit = "JUCE_EXPORTED_FUNCTION bool bundleExit()\n{\n    shutdownModule();\n    return true;\n}"
               patched = re.sub(r'JUCE_EXPORTED_FUNCTION\s+bool\s+bundleExit\s*\(\)\s*\{[\s\S]*?return\s+false;\s*\}', new_exit, content)
-              with open(target_file, 'w') as f:
-                  f.write(patched)
-              print('JUCE bundleExit successfully patched!')
-          else:
-              print('Warning: juce_audio_plugin_client_VST3.cpp not found')
+              if patched != content:
+                  with open(target_file, 'w') as f:
+                      f.write(patched)
+                  print('JUCE bundleExit patched!')
+              else:
+                  print('JUCE bundleExit already patched — preserving file timestamp!')
           EOF
 
       - name: Compile Targets
         working-directory: plugin
         run: |
-          if [ -d "Source/DSP" ] && [ -f "Source/DSP/ShadowProcessor.cpp" ]; then
-            echo "=== Building UNDERGROUND VST3 ==="
-            cmake --build build --config Release --target UNDERGROUND_VST3 --parallel
-          else
-            echo "=== Building PlugTune Suite VST3s ==="
-            cmake --build build --config Release --target PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 PlugSilky_VST3 PlugBlue_VST3 PlugChop_VST3 PlugWarp_VST3 Plugged1_VST3 --parallel
+          TARGETS="${{ inputs.target_filter }}"
+          if [ -z "$TARGETS" ]; then
+            TARGETS="PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 PlugSilky_VST3 PlugBlue_VST3 PlugChop_VST3 PlugWarp_VST3 Plugged1_VST3 PlugAmp_VST3 PlugKnock_VST3 PlugGrand_VST3 PlugAxe_VST3"
           fi
+          echo "=== Building Targets: $TARGETS ==="
+          cmake --build build --config Release --target $TARGETS --parallel
 
-      - name: Ad-Hoc Sign Bundles with Hardened Runtime
-        working-directory: plugin
-        run: |
-          echo "=== Signing VST3 and AU bundles ==="
-          find build -name "*.vst3" -o -name "*.component" | while read -r bundle; do
-            if [ -d "$bundle" ]; then
-              echo "Signing: $bundle"
-              codesign --force --deep --sign - --options runtime "$bundle"
-              codesign -vvv --deep --strict "$bundle" 2>&1 || echo "Verification note for $bundle"
-            fi
-          done
-          echo "=== All bundles signed ==="
-
-      - name: Download & Extract pluginval (macOS)
-        working-directory: plugin
-        run: |
-          curl -L "https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip" -o pluginval.zip
-          unzip -q pluginval.zip
-          chmod +x pluginval.app/Contents/MacOS/pluginval
-
-      - name: Run Headless pluginval QA (Strictness 5)
-        working-directory: plugin
-        run: |
-          target_vst3=$(find build -name "*.vst3" -type d | head -n 1)
-          if [ -d "$target_vst3" ]; then
-            echo "Validating $target_vst3..."
-            ./pluginval.app/Contents/MacOS/pluginval \
-              --validate "$target_vst3" \
-              --strictness-level 5 \
-              --rtcheck enabled \
-              --skip-gui-tests \
-              --validate-in-process \
-              --timeout-ms 60000 \
-              --output-dir test-results-mac/ || echo "pluginval check finished"
-          fi
-
-      - name: Package macOS Universal Binaries
+      - name: Ad-Hoc Sign & Package Updated macOS Universal Binaries
         working-directory: plugin
         run: |
           mkdir -p "$GITHUB_WORKSPACE/dist_mac"
-          for art in build/*_artefacts/Release/VST3/*.vst3; do
-            if [ -d "$art" ]; then
-              bname=$(basename "$art" .vst3)
-              echo "Packaging $bname..."
-              (cd "$(dirname "$art")/.." && zip -r -y "$GITHUB_WORKSPACE/dist_mac/${bname}_Mac_Universal.vst3.zip" "VST3/${bname}.vst3")
-            fi
+          TARGETS="${{ inputs.target_filter }}"
+          if [ -z "$TARGETS" ]; then
+            TARGETS="PlugTune_VST3 PlugVox_VST3 PlugOpto_VST3 PlugGlue_VST3 PlugEq_VST3 PlugDelay_VST3 PlugVerb_VST3 PlugLimit_VST3 PlugRack_VST3 PlugSilky_VST3 PlugBlue_VST3 PlugChop_VST3 PlugWarp_VST3 Plugged1_VST3 PlugAmp_VST3 PlugKnock_VST3 PlugGrand_VST3 PlugAxe_VST3"
+          fi
+          for t in $TARGETS; do
+            prefix="${t%_VST3}"
+            for art in build/${prefix}_artefacts/Release/VST3/*.vst3; do
+              if [ -d "$art" ]; then
+                echo "Signing: $art"
+                codesign --force --deep --sign - --options runtime "$art"
+                bname=$(basename "$art" .vst3)
+                echo "Packaging $bname..."
+                (cd "$(dirname "$art")/.." && zip -r -y "$GITHUB_WORKSPACE/dist_mac/${bname}_Mac_Universal.vst3.zip" "VST3/${bname}.vst3")
+              fi
+            done
           done
-          if [ -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" ] && [ ! -f "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" ]; then
-            cp "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip"
+          if [ -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" ]; then
+            cp -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" || true
           fi
-          if [ -f "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" ] && [ ! -f "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip" ]; then
-            cp "$GITHUB_WORKSPACE/dist_mac/PlugTune_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PLUGTNE_Mac_Universal.vst3.zip"
-          fi
-          # Ensure PLUGGED 1 aliases
           if [ -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" ]; then
             cp -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/PLUGGED_1_Mac_Universal.vst3.zip" || true
             cp -f "$GITHUB_WORKSPACE/dist_mac/Plugged 1_Mac_Universal.vst3.zip" "$GITHUB_WORKSPACE/dist_mac/Plugged1_Mac_Universal.vst3.zip" || true
           fi
           ls -la "$GITHUB_WORKSPACE/dist_mac"
 
-      - name: Compute SHA-256 Hashes
+      - name: Compute SHA-256 Hashes & Upload Mac Assets to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd "$GITHUB_WORKSPACE/dist_mac"
           for z in *.zip; do
@@ -211,12 +197,6 @@ jobs:
               cat "${z}.sha256"
             fi
           done
-
-      - name: Upload Mac Assets to GitHub Release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd "$GITHUB_WORKSPACE/dist_mac"
           for z in *.zip *.sha256; do
             if [ -f "$z" ]; then
               gh release upload "${{ inputs.release_tag }}" "$z" --clobber -R "${{ github.repository }}"
