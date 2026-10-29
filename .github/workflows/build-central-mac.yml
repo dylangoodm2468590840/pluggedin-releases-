@@ -42,20 +42,27 @@ jobs:
                           f.write(z.read(member))
           "
 
-      - name: Install dependencies (Cached)
+      - name: Install dependencies & Build macOS Universal App (.dmg and .zip)
         working-directory: hub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.volta/bin:$HOME/.fnm:$PATH"
+          if [ -d "$HOME/.nvm/versions/node" ]; then
+            LATEST_NODE=$(ls "$HOME/.nvm/versions/node" | tail -n 1)
+            export PATH="$HOME/.nvm/versions/node/$LATEST_NODE/bin:$PATH"
+          fi
+          if ! command -v npm >/dev/null 2>&1; then
+            echo "Installing node via Homebrew..."
+            brew install node
+          fi
+          echo "Using node: $(which node) ($(node -v)) and npm: $(which npm) ($(npm -v))"
           if [ ! -d "node_modules/electron" ]; then
             npm ci
           else
             echo "Cached node_modules detected - skipping full npm ci!"
           fi
-
-      - name: Build macOS Universal App (.dmg and .zip)
-        working-directory: hub
-        run: npm run dist:mac
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          npm run dist:mac
 
       - name: Compute SHA-256 & Upload Mac Binaries to GitHub Release
         env:
