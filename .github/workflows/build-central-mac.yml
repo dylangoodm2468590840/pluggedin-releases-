@@ -47,15 +47,14 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.volta/bin:$HOME/.fnm:$PATH"
-          if [ -d "$HOME/.nvm/versions/node" ]; then
-            LATEST_NODE=$(ls "$HOME/.nvm/versions/node" | tail -n 1)
-            export PATH="$HOME/.nvm/versions/node/$LATEST_NODE/bin:$PATH"
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "x86_64" ]; then NODE_ARCH="x64"; else NODE_ARCH="arm64"; fi
+          if [ ! -x "$HOME/.local/node/bin/npm" ]; then
+            echo "Bootstrapping Node.js v22.14.0 ($NODE_ARCH) into $HOME/.local/node..."
+            mkdir -p "$HOME/.local/node"
+            curl -fsSL "https://nodejs.org/dist/v22.14.0/node-v22.14.0-darwin-${NODE_ARCH}.tar.gz" | tar -xz -C "$HOME/.local/node" --strip-components=1
           fi
-          if ! command -v npm >/dev/null 2>&1; then
-            echo "Installing node via Homebrew..."
-            brew install node
-          fi
+          export PATH="$HOME/.local/node/bin:/opt/homebrew/bin:/usr/local/bin:$PATH"
           echo "Using node: $(which node) ($(node -v)) and npm: $(which npm) ($(npm -v))"
           if [ ! -d "node_modules/electron" ]; then
             npm ci
