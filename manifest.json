@@ -1,7 +1,7 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-29T21:31:58Z",
+    "updated_at":  "2026-10-31T17:02:07Z",
     "hub_version":  "3.0.7",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.7.exe",
     "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.7.dmg",
@@ -28,7 +28,7 @@
                         "subtitle":  "Flagship Multi-Voice Hybrid Synthesizer",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1107",
+                        "dev_build":  "DEV-1108",
                         "tier":  "flagship",
                         "accent_color":  "#00f0ff",
                         "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/Plugged1.png",
@@ -44,7 +44,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PLUGGED_1_Win64_VST3.zip",
-                                                             "sha256":  "a1f2e34b88ed86182afddd34a2af2165e247802b921665578f07588381ee21c0",
+                                                             "sha256":  "c2302a332ba9ad55a55143cb818f6493c06578ac733cbb0689204b6d50151a49",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -540,13 +540,13 @@
                         "subtitle":  "Studio Drum Designer \u0026 Mix-Flare Engine",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1018",
+                        "dev_build":  "DEV-1026",
                         "tier":  "flagship",
                         "accent_color":  "#f97316",
                         "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugknock.jpg",
-                        "description":  "Hard-hitting studio drum workstation and Mix-Flare transient engine loaded with 36 acoustic \u0026 trap drum models, multi-velocity round-robin articulation, and 2x oversampled bus clipping.",
+                        "description":  "Hard-hitting studio drum workstation and Mix-Flare transient engine loaded with 46 acoustic, trap, 808 \u0026 West Coast/stadium stomp models, multi-velocity round-robin articulation, and 2x oversampled bus clipping.",
                         "features":  [
-                                         "36 multi-velocity studio drum \u0026 808 models with 4-way round-robin micro-variation",
+                                         "46 multi-velocity studio drum, 808 \u0026 stomp models (including 10 West Coast, Stadium \u0026 Timber Stomps) with 4-way round-robin micro-variation",
                                          "6 Hero Mix-Flare controls: Smack, Clip, Body, Tight, Layer, and Flare Room",
                                          "Authentic hi-hat choke groups, Bezier kick transient punch, and Pultec low-end sculpting",
                                          "4 Mix Target Modes (Trap Knock, Live Rock Punch, Radio Pop Crisp, Lo-Fi Dusty)"
@@ -556,7 +556,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugKnock_Win64_VST3.zip",
-                                                             "sha256":  "d1ebe00c08d49f0113712fdbd4efd415bd9b9b6f86784a1a1095940a6c1a2e45",
+                                                             "sha256":  "4e1e9c38fb32e78774d360fcab5dd8337a5e7cf3ad1ece1a601d6f3f3056abf7",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
@@ -604,7 +604,7 @@
                         "subtitle":  "Studio Electric, Acoustic \u0026 Bass Guitar Workstation",
                         "category":  "Instruments \u0026 Synths",
                         "latest_version":  "1.1.0",
-                        "dev_build":  "DEV-1014",
+                        "dev_build":  "DEV-1015",
                         "tier":  "flagship",
                         "accent_color":  "#ef4444",
                         "image_url":  "https://raw.githubusercontent.com/dylangoodm2468590840/pluggedin-releases-/main/assets/plugins/plugcords.jpg",
@@ -620,7 +620,7 @@
                         "packages":  {
                                          "windows_x64":  {
                                                              "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugCords_Win64_VST3.zip",
-                                                             "sha256":  "d147305b3c48435f43729a3980b797e3f8174966eb9224d137f22c331c8dbccd",
+                                                             "sha256":  "cbcf08ae3b7f61ae8290867cc686e259dfb8277450c61446b76783a4e9af7133",
                                                              "format":  "zip"
                                                          },
                                          "macos_universal":  {
