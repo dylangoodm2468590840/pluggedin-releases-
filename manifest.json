@@ -1,7 +1,7 @@
 {
     "schema_version":  "2.0.0",
     "channel":  "stable",
-    "updated_at":  "2026-10-31T17:02:07Z",
+    "updated_at":  "2026-10-31T17:17:02Z",
     "hub_version":  "3.0.7",
     "hub_download_url_win":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN-Central_Setup_3.0.7.exe",
     "hub_download_url_mac":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/central-v3.0.6/PluggedIN.Central_Mac_Universal_3.0.7.dmg",
@@ -49,7 +49,7 @@
                                                          },
                                          "macos_universal":  {
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/Plugged.1_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "91c8c6f8e97346c9a3809d3e7324bb8f7133a9f99943dd550470188d4541c46e",
+                                                                 "sha256":  "206df8f1a4305c2f963a1bdab0d8fa42fb80d10b62e826aec0ca284389e2071f",
                                                                  "format":  "zip"
                                                              }
                                      }
@@ -561,7 +561,7 @@
                                                          },
                                          "macos_universal":  {
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugKnock_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "ee8d637131dbec12b1f1c1ddabeb8a52863c818b9f004f2a940692a537cedc75",
+                                                                 "sha256":  "6f0a49e2e0415f82248c51ea1eb2e066d2800a3e20a10ae49d337b10b963bbea",
                                                                  "format":  "zip"
                                                              }
                                      }
@@ -625,7 +625,7 @@
                                                          },
                                          "macos_universal":  {
                                                                  "url":  "https://github.com/dylangoodm2468590840/pluggedin-releases-/releases/download/plugins-v3.4.0/PlugCords_Mac_Universal.vst3.zip",
-                                                                 "sha256":  "f952fe5cb8499d0f64ff29b34afc6f0082b6b4c7f64246ba72a0375d27a4c917",
+                                                                 "sha256":  "931d95590e9aa061e74c89f37730273508c6b57a070fc0bc6807b10de6b61fe9",
                                                                  "format":  "zip"
                                                              }
                                      }
